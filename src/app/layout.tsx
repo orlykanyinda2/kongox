@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
-import { NextIntlClientProvider } from "next-intl";
+import { NextIntlClientProvider, useMessages } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { EnregistrementServiceWorker } from "@/components/EnregistrementServiceWorker";
 import { scriptTheme } from "@/lib/theme";
@@ -39,7 +39,13 @@ export const viewport: Viewport = {
   ],
 };
 
+// Textes envoyés au navigateur : seulement ceux des composants "use client" (pages plus légères).
+// Ajouter ici le nom d'une section de messages/fr.json si un nouveau composant client l'utilise.
+const TEXTES_NAVIGATEUR = ["accueil", "bonus", "compte", "marche", "navigation", "prediction", "profil", "proposer", "theme"] as const;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  const tous = useMessages();
+  const textesNavigateur = Object.fromEntries(TEXTES_NAVIGATEUR.map((cle) => [cle, tous[cle]]));
   return (
     <html
       lang="fr"
@@ -51,7 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: scriptTheme }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={textesNavigateur}>{children}</NextIntlClientProvider>
         <EnregistrementServiceWorker />
       </body>
     </html>
