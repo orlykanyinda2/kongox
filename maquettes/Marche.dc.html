@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>KongoX — Page d'un marché</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:#386641;text-decoration:none}a:hover{color:#1F3A26}
+button{font-family:inherit;cursor:pointer}
+@keyframes kxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes kxSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes kxPop{0%{transform:rotate(-2deg) scale(.6);opacity:0}60%{transform:rotate(-5deg) scale(1.06);opacity:1}100%{transform:rotate(-2deg) scale(1);opacity:1}}
+@keyframes kxUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kxGrow{from{width:0}to{width:78%}}
+@keyframes kxPulse{0%{box-shadow:0 0 0 0 rgba(147,129,255,.7)}100%{box-shadow:0 0 0 12px rgba(147,129,255,0)}}
+@keyframes kxMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes kxBubble{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kxDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.kx-float{animation:kxFloat 6s ease-in-out infinite}
+.kx-float-slow{animation:kxFloat 9s ease-in-out infinite}
+.kx-spin{animation:kxSpin 18s linear infinite}
+.kx-pop{display:inline-block;animation:kxPop .9s cubic-bezier(.2,.9,.3,1.3) .35s both}
+.kx-up{animation:kxUp .8s ease-out both}
+.kx-up-2{animation:kxUp .8s ease-out .2s both}
+.kx-up-3{animation:kxUp .8s ease-out .4s both}
+.kx-up-4{animation:kxUp .9s ease-out .6s both}
+.kx-grow{animation:kxGrow 1.6s ease-out 1s both}
+.kx-pulse{animation:kxPulse 1.6s ease-out infinite}
+.kx-marquee{animation:kxMarquee 38s linear infinite}
+.kx-b1{animation:kxBubble .5s ease-out 1.2s both}
+.kx-b2{animation:kxBubble .5s ease-out 2.2s both}
+.kx-b3{animation:kxBubble .5s ease-out 3.2s both}
+.kx-dot{animation:kxDot 1.2s infinite}
+.kx-dot2{animation:kxDot 1.2s .2s infinite}
+.kx-dot3{animation:kxDot 1.2s .4s infinite}
+@media (prefers-reduced-motion: reduce){.kx-float,.kx-float-slow,.kx-spin,.kx-pop,.kx-up,.kx-up-2,.kx-up-3,.kx-up-4,.kx-grow,.kx-pulse,.kx-marquee,.kx-b1,.kx-b2,.kx-b3,.kx-dot,.kx-dot2,.kx-dot3{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1640px; box-sizing: border-box; background: #FFFFFF; color: #1F3A26; font-family: Inter, system-ui, sans-serif">
+
+<header style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; background: #FFFFFF; border-bottom: 1px solid #DDE5D0">
+<a href="Mobile.dc.html" aria-label="Retour à l'accueil" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #DDE5D0; color: #1F3A26; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+</a>
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px">Kongo<span style="margin-left: 2px; padding: 0 5px; border-radius: 7px; background: #A7C957; color: #1F3A26">X</span></span>
+<button type="button" aria-label="Partager ce marché" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid #DDE5D0; background: #FFFFFF; color: #1F3A26; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"></path></svg>
+</button>
+</header>
+
+<div style="padding: 18px; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; gap: 8px; align-items: center">
+<span style="padding: 4px 9px; border-radius: 999px; background: #D8E8C0; color: #2B4F33; font-weight: 700; font-size: 11px">Football</span>
+<span style="color: #4B5A44; font-size: 12px; font-weight: 600">Ferme le 12 déc. · Source : CAF</span>
+</div>
+<h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px; line-height: 1.15">Les Léopards vont-ils se qualifier pour la CAN 2027 ?</h1>
+
+<section aria-label="Évolution du pourcentage" style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 18px; box-shadow: 4px 4px 0 #6A994E; padding: 16px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<div><span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 40px; color: #386641">78 %</span><span style="margin-left: 6px; color: #4B5A44; font-size: 14px">OUI</span></div>
+<span style="color: #386641; font-weight: 700; font-size: 13px">+26 pts en 14 j</span>
+</div>
+<svg width="354" height="120" viewBox="0 0 354 120" role="img" aria-label="Le OUI est passé de 52 % à 78 % en 14 jours" style="margin-top: 8px; display: block">
+<line x1="0" y1="30" x2="354" y2="30" stroke="#F1F5E8" stroke-width="1"></line>
+<line x1="0" y1="60" x2="354" y2="60" stroke="#F1F5E8" stroke-width="1"></line>
+<line x1="0" y1="90" x2="354" y2="90" stroke="#F1F5E8" stroke-width="1"></line>
+<polyline points="0,70 27,66 54,72 81,64 108,60 135,62 162,52 189,48 216,44 243,38 270,34 297,30 324,28 354,26" fill="none" stroke="#386641" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"></polyline>
+<circle class="kx-pulse" cx="354" cy="26" r="6" fill="#BC4749"></circle>
+</svg>
+<div style="margin-top: 6px; display: flex; gap: 6px">
+<button type="button" style="height: 36px; padding: 0 12px; border-radius: 10px; border: 0; background: #F1F5E8; color: #1F3A26; font-weight: 600; font-size: 13px">24 h</button>
+<button type="button" aria-pressed="true" style="height: 36px; padding: 0 12px; border-radius: 10px; border: 0; background: #1F3A26; color: #FFFFFF; font-weight: 600; font-size: 13px">14 j</button>
+<button type="button" style="height: 36px; padding: 0 12px; border-radius: 10px; border: 0; background: #F1F5E8; color: #1F3A26; font-weight: 600; font-size: 13px">Tout</button>
+</div>
+</section>
+
+<section aria-label="Faire ma prédiction" style="background: #386641; color: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; box-shadow: 6px 6px 0 #BC4749; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div role="group" aria-label="Choisir OUI ou NON" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" onClick="{{pickOui}}" aria-pressed="{{ouiPressed}}" style="{{ouiStyle}}">OUI · 78 %</button>
+<button type="button" onClick="{{pickNon}}" aria-pressed="{{nonPressed}}" style="{{nonStyle}}">NON · 22 %</button>
+</div>
+<div>
+<label for="mise" style="display: block; font-size: 13px; color: #E4EAD3; font-weight: 600">Combien de pièces ?</label>
+<div style="margin-top: 6px; display: flex; align-items: center; gap: 10px; height: 56px; padding: 0 16px; border-radius: 14px; background: #2A4A31; border: 1px solid #6A994E">
+<svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#A7C957"></circle><circle cx="12" cy="12" r="6" fill="none" stroke="#1F3A26" stroke-width="2"></circle></svg>
+<input id="mise" type="text" inputmode="numeric" value="{{montant}}" readonly style="flex: 1; min-width: 0; border: 0; background: transparent; color: #FFFFFF; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 26px">
+<span style="color: #C9D4B8; font-size: 13px">pièces</span>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px">
+<sc-for list="{{montants}}" as="a" hint-placeholder-count="4">
+<button type="button" onClick="{{a.pick}}" style="{{a.style}}">{{a.label}}</button>
+</sc-for>
+</div>
+<div style="display: flex; justify-content: space-between; font-size: 14px; color: #E4EAD3">
+<span>Gain possible si tu as raison</span><span style="color: #A7C957; font-weight: 700">{{gain}}</span>
+</div>
+<button type="button" style="height: 56px; border-radius: 14px; border: 0; background: #A7C957; color: #1F3A26; font-weight: 700; font-size: 17px">{{cta}}</button>
+<span style="text-align: center; color: #C9D4B8; font-size: 12px">Pièces gratuites. Jamais d'argent réel. Limite : 2 000 pièces par jour.</span>
+</section>
+
+<a href="#" style="height: 52px; border-radius: 14px; background: #EAF2DA; color: #386641; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5z"></path></svg>
+Partager sur WhatsApp
+</a>
+
+<section aria-label="Assistant KongoX" style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 18px; box-shadow: 4px 4px 0 #6A994E; padding: 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px">
+<span style="width: 36px; height: 36px; border-radius: 10px; background: #1F3A26; color: #A7C957; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+</span>
+<span style="font-weight: 700; font-size: 15px">Demande à l'assistant</span>
+</div>
+<div class="kx-b1" style="align-self: flex-end; max-width: 80%; padding: 10px 12px; border-radius: 14px 14px 4px 14px; background: #F1F5E8; font-size: 14px">Ba Léopards bazali na forme lelo ?</div>
+<div class="kx-b2" style="max-width: 88%; padding: 10px 12px; border-radius: 14px 14px 14px 4px; background: #EAF2DA; color: #1F3A26; font-size: 14px; line-height: 1.45">Iyo ! Ba Léopards balongi 3 na match 4 ya suka. 78 % ya bato ya KongoX bakanisi bakozwa qualification.</div>
+<label for="question-ia" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Ta question à l'assistant</label>
+<input id="question-ia" type="text" placeholder="Écris en lingala, swahili, français…" style="height: 46px; padding: 0 14px; border-radius: 12px; border: 1px solid #DDE5D0; background: #F2E8CF; color: #1F3A26; font-family: inherit; font-size: 14px">
+</section>
+
+<section aria-label="Commentaires" style="display: flex; flex-direction: column; gap: 10px">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px">Commentaires · 214</h2>
+<sc-for list="{{commentaires}}" as="c" hint-placeholder-count="3">
+<article style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 16px; box-shadow: 3px 3px 0 #6A994E; padding: 14px; display: flex; flex-direction: column; gap: 6px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-weight: 700; font-size: 14px">@{{c.nom}}</span>
+<span style="{{c.badgeStyle}}">{{c.choix}}</span>
+</div>
+<p style="margin: 0; font-size: 14px; line-height: 1.45; color: #2B3A2E">{{c.texte}}</p>
+</article>
+</sc-for>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { side: 'oui', montant: 200 };
+  }
+  renderVals() {
+    var self = this;
+    var side = this.state.side;
+    var m = this.state.montant;
+    var pct = side === 'oui' ? 78 : 22;
+    var gain = Math.round(m * 100 / pct);
+    var on = 'height:56px;border-radius:14px;font-weight:700;font-size:17px;border:3px solid #F2E8CF;box-shadow:4px 4px 0 #1F3A26;';
+    var off = 'height:56px;border-radius:14px;font-weight:700;font-size:17px;border:3px solid transparent;opacity:0.75;';
+    var montants = [50, 100, 200, 500].map(function (v) {
+      var sel = v === m;
+      return {
+        label: String(v),
+        style: 'height:44px;border-radius:10px;font-weight:700;font-size:14px;border:0;background:' + (sel ? '#A7C957' : '#2A4A31') + ';color:' + (sel ? '#1F3A26' : '#FFFFFF'),
+        pick: function () { self.setState({ montant: v }); }
+      };
+    });
+    var commentaires = [
+      { nom: 'Leopard_Fidele', choix: 'OUI', texte: 'Avec notre attaque, on passe facile. Allez les Léopards !' },
+      { nom: 'Mama_Pronostic', choix: 'NON', texte: 'Le dernier match à l’extérieur va être très dur. Je reste prudente.' },
+      { nom: 'Kin_la_Belle', choix: 'OUI', texte: 'Tokolonga ! Mboka mobimba esengeli kosimba ekipe.' }
+    ].map(function (c) {
+      return Object.assign({}, c, {
+        badgeStyle: 'padding:3px 9px;border-radius:999px;font-weight:700;font-size:11px;' + (c.choix === 'OUI' ? 'background:#EAF2DA;color:#386641' : 'background:#BC4749;color:#FFFFFF')
+      });
+    });
+    return {
+      ouiStyle: (side === 'oui' ? on : off) + 'background:#A7C957;color:#1F3A26',
+      nonStyle: (side === 'non' ? on : off) + 'background:#BC4749;color:#FFFFFF',
+      ouiPressed: side === 'oui' ? 'true' : 'false',
+      nonPressed: side === 'non' ? 'true' : 'false',
+      pickOui: function () { self.setState({ side: 'oui' }); },
+      pickNon: function () { self.setState({ side: 'non' }); },
+      montant: String(m),
+      montants: montants,
+      gain: '≈ ' + gain + ' pièces',
+      cta: 'Valider : ' + (side === 'oui' ? 'OUI' : 'NON') + ' avec ' + m + ' pièces',
+      commentaires: commentaires
+    };
+  }
+}
+</script>
+</body>
+</html>

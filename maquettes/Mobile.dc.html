@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>KongoX — Accueil mobile</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:#386641;text-decoration:none}a:hover{color:#1F3A26}
+button{font-family:inherit;cursor:pointer}
+@keyframes kxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes kxSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes kxPop{0%{transform:rotate(-2deg) scale(.6);opacity:0}60%{transform:rotate(-5deg) scale(1.06);opacity:1}100%{transform:rotate(-2deg) scale(1);opacity:1}}
+@keyframes kxUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kxGrow{from{width:0}to{width:78%}}
+@keyframes kxPulse{0%{box-shadow:0 0 0 0 rgba(147,129,255,.7)}100%{box-shadow:0 0 0 12px rgba(147,129,255,0)}}
+@keyframes kxMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes kxBubble{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kxDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.kx-float{animation:kxFloat 6s ease-in-out infinite}
+.kx-float-slow{animation:kxFloat 9s ease-in-out infinite}
+.kx-spin{animation:kxSpin 18s linear infinite}
+.kx-pop{display:inline-block;animation:kxPop .9s cubic-bezier(.2,.9,.3,1.3) .35s both}
+.kx-up{animation:kxUp .8s ease-out both}
+.kx-up-2{animation:kxUp .8s ease-out .2s both}
+.kx-up-3{animation:kxUp .8s ease-out .4s both}
+.kx-up-4{animation:kxUp .9s ease-out .6s both}
+.kx-grow{animation:kxGrow 1.6s ease-out 1s both}
+.kx-pulse{animation:kxPulse 1.6s ease-out infinite}
+.kx-marquee{animation:kxMarquee 38s linear infinite}
+.kx-b1{animation:kxBubble .5s ease-out 1.2s both}
+.kx-b2{animation:kxBubble .5s ease-out 2.2s both}
+.kx-b3{animation:kxBubble .5s ease-out 3.2s both}
+.kx-dot{animation:kxDot 1.2s infinite}
+.kx-dot2{animation:kxDot 1.2s .2s infinite}
+.kx-dot3{animation:kxDot 1.2s .4s infinite}
+@media (prefers-reduced-motion: reduce){.kx-float,.kx-float-slow,.kx-spin,.kx-pop,.kx-up,.kx-up-2,.kx-up-3,.kx-up-4,.kx-grow,.kx-pulse,.kx-marquee,.kx-b1,.kx-b2,.kx-b3,.kx-dot,.kx-dot2,.kx-dot3{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1900px; box-sizing: border-box; background: {{t.bg}}; color: {{t.ink}}; font-family: Inter, system-ui, sans-serif; position: relative; overflow: hidden">
+
+<header style="padding: 16px 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; background: {{t.header}}; border-bottom: 1px solid {{t.border}}">
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px; letter-spacing: -0.5px">Kongo<span style="margin-left: 2px; padding: 0 5px; border-radius: 7px; background: #A7C957; color: #1F3A26">X</span></span>
+<div style="display: flex; align-items: center; gap: 8px">
+<span style="display: flex; align-items: center; gap: 6px; height: 40px; padding: 0 12px; border-radius: 12px; background: {{t.soft}}; font-weight: 700; font-size: 14px">
+<svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#A7C957"></circle><circle cx="12" cy="12" r="6" fill="none" stroke="#1F3A26" stroke-width="2"></circle></svg>
+1 250
+</span>
+<button type="button" onClick="{{toggleDark}}" aria-label="{{darkLabel}}" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.border}}; background: {{t.surface}}; color: {{t.ink}}; display: flex; align-items: center; justify-content: center">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path></svg>
+</button>
+</div>
+</header>
+
+<div style="padding: 18px; display: flex; flex-direction: column; gap: 18px">
+<section aria-labelledby="titre-mobile" style="position: relative; overflow: hidden; margin: -18px -18px 0; padding: 30px 18px 34px; text-align: center; border-bottom: 2px solid {{t.line}}">
+<div aria-hidden="true" class="kx-float" style="position: absolute; top: 14px; left: 14px; width: 38px; height: 38px; border-radius: 50%; border: 9px solid #A7C957; box-sizing: border-box"></div>
+<div aria-hidden="true" class="kx-spin" style="position: absolute; top: 20px; right: 18px; width: 30px; height: 30px; border-radius: 9px; background: #BC4749; border: 2px solid #1F3A26"></div>
+<div aria-hidden="true" class="kx-float-slow" style="position: absolute; bottom: -40px; left: -40px; width: 110px; height: 110px; border-radius: 50%; background: #6A994E; opacity: 0.85"></div>
+<span class="kx-up" style="position: relative; display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 9px; border-radius: 999px; background: {{t.surface}}; border: 2px solid {{t.line}}; font-weight: 700; font-size: 12px">
+<span class="kx-pulse" style="width: 8px; height: 8px; border-radius: 50%; background: #BC4749"></span>
+Jamais d'argent réel
+</span>
+<h1 id="titre-mobile" class="kx-up-2" style="position: relative; margin: 22px 0 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 44px; line-height: 0.98; letter-spacing: -1.5px">Le Congo a un avis.<br><span class="kx-pop" style="margin-top: 12px; padding: 2px 18px 8px; border-radius: 22px; background: #A7C957; color: #1F3A26; border: 3px solid #1F3A26; box-shadow: 6px 6px 0 #1F3A26">Prouve-le.</span></h1>
+<p class="kx-up-3" style="position: relative; margin: 26px 0 0; font-size: 15px; line-height: 1.5; color: {{t.muted}}">Mise tes pièces gratuites sur le foot, la musique, la politique et la vie de tous les jours.</p>
+<a href="#" class="kx-up-3" style="position: relative; margin-top: 18px; height: 52px; border-radius: 14px; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 4px 4px 0 #A7C957">Commencer — 1 000 pièces offertes</a>
+</section>
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-radius: 14px; background: #1F3A26; color: #FFFFFF; border: 2px solid #1F3A26">
+<svg class="kx-pulse" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A7C957" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4.5 2 7.5-6.5-4.5-6.5 4.5 2-7.5L2 9h7z"></path></svg>
+<span style="font-size: 14px; font-weight: 600">Série de 6 jours. Reviens demain : +100 pièces</span>
+</div>
+
+<article style="background: #386641; color: #FFFFFF; border: 2px solid #1F3A26; border-radius: 22px; padding: 20px; box-shadow: 6px 6px 0 #BC4749">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="padding: 5px 10px; border-radius: 999px; background: #BC4749; color: #FFFFFF; font-weight: 700; font-size: 12px">Soki du jour</span>
+<span style="color: #C9D4B8; font-size: 12px; font-weight: 600">Ferme dans 6 j</span>
+</div>
+<h1 style="margin: 14px 0 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px; line-height: 1.15">Les Léopards vont-ils se qualifier pour la CAN 2027 ?</h1>
+<div style="margin-top: 14px; display: flex; align-items: baseline; gap: 8px"><span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 44px; color: #A7C957; line-height: 1">78 %</span><span style="color: #E4EAD3; font-size: 14px">pensent OUI</span></div>
+<div style="margin-top: 12px; height: 8px; border-radius: 999px; background: #BC4749; overflow: hidden"><div class="kx-grow" style="width: 78%; height: 100%; background: #A7C957"></div></div>
+<div style="margin-top: 16px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<a href="Marche.dc.html" style="height: 50px; border-radius: 14px; background: #A7C957; color: #1F3A26; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center">OUI · 78 %</a>
+<a href="Marche.dc.html" style="height: 50px; border-radius: 14px; background: #BC4749; color: #FFFFFF; font-weight: 700; font-size: 16px; display: flex; align-items: center; justify-content: center">NON · 22 %</a>
+</div>
+</article>
+
+<div role="group" aria-label="Filtrer par catégorie" style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 2px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button>
+</sc-for>
+</div>
+
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px">Tendances</h2>
+<sc-for list="{{marches}}" as="m" hint-placeholder-count="4">
+<a href="Marche.dc.html" style="display: flex; flex-direction: column; gap: 12px; background: {{t.surface}}; border: 2px solid {{t.line}}; border-radius: 18px; box-shadow: 4px 4px 0 {{t.shadow}}; padding: 16px; color: {{t.ink}}">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="{{m.tagStyle}}">{{m.catLabel}}</span>
+<span style="color: {{t.muted}}; font-size: 12px; font-weight: 600">{{m.fin}}</span>
+</div>
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; line-height: 1.25">{{m.q}}</span>
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; height: 8px; border-radius: 999px; background: {{t.nonSoft}}; overflow: hidden"><div style="{{m.barStyle}}"></div></div>
+<span style="font-weight: 700; font-size: 14px; color: {{t.ouiText}}">OUI {{m.ouiPct}}</span>
+</div>
+<span style="color: {{t.muted}}; font-size: 12px">{{m.vol}} pièces · {{m.coms}} commentaires</span>
+</a>
+</sc-for>
+</div>
+
+<nav aria-label="Navigation" style="position: absolute; left: 0; right: 0; bottom: 0; height: 76px; background: {{t.header}}; border-top: 1px solid {{t.border}}; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center">
+<a href="#" aria-current="page" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: {{t.activeNav}}; font-size: 11px; font-weight: 700">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"></path></svg>Accueil</a>
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: {{t.muted}}; font-size: 11px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3l2.5 5.5L12 12 9.5 8.5zM12 12l5 3M12 12l-5 3"></path></svg>Foot</a>
+<a href="#" aria-label="Proposer une question" style="display: flex; justify-content: center">
+<span style="width: 52px; height: 52px; border-radius: 16px; background: #A7C957; color: #1F3A26; display: flex; align-items: center; justify-content: center">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>
+</span></a>
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: {{t.muted}}; font-size: 11px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"></path></svg>Classement</a>
+<a href="#" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: {{t.muted}}; font-size: 11px; font-weight: 600">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.4A8.4 8.4 0 1 1 21 11.5z"></path></svg>Chat</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"sombre":{"editor":"boolean","default":false},"$preview":{"width":390,"height":1900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { cat: 'tous', dark: null };
+  }
+  renderVals() {
+    var dark = this.state.dark === null ? !!this.props.sombre : this.state.dark;
+    var t = dark ? {
+      bg: '#13241A', header: '#1A3121', surface: '#1F3A26', soft: '#2A4A31', ink: '#F2E8CF', muted: '#C9D4B8', border: '#386641', line: '#6A994E', shadow: '#0C1810',
+      ouiText: '#A7C957', nonSoft: '#BC4749', activeNav: '#A7C957'
+    } : {
+      bg: '#FFFFFF', header: '#FFFFFF', surface: '#FFFFFF', soft: '#F1F5E8', ink: '#1F3A26', muted: '#4B5A44', border: '#DDE5D0', line: '#1F3A26', shadow: '#6A994E',
+      ouiText: '#386641', nonSoft: '#BC4749', activeNav: '#1F3A26'
+    };
+    var tags = {
+      foot: 'background:#D8E8C0;color:#2B4F33',
+      musique: 'background:#F6D9D5;color:#8E2F31',
+      politique: 'background:#E4DCC4;color:#4A3F1E',
+      vie: 'background:#EAF2DA;color:#386641'
+    };
+    var base = 'padding:4px 9px;border-radius:999px;font-weight:700;font-size:11px;';
+    var data = [
+      { cat: 'musique', catLabel: 'Musique', q: 'Fally Ipupa sortira-t-il un nouvel album avant juin 2027 ?', oui: 47, vol: '96 420', coms: 388, fin: '7 mois' },
+      { cat: 'politique', catLabel: 'Politique', q: 'Le gouvernement annoncera-t-il une baisse du prix du carburant avant mars ?', oui: 23, vol: '41 780', coms: 512, fin: '4 mois' },
+      { cat: 'vie', catLabel: 'Vie quotidienne', q: 'Y aura-t-il plus de 3 coupures de courant à Limete cette semaine ?', oui: 82, vol: '12 340', coms: 76, fin: '4 j' },
+      { cat: 'foot', catLabel: 'Football', q: 'TP Mazembe gagnera-t-il le championnat Linafoot cette saison ?', oui: 61, vol: '58 900', coms: 214, fin: '3 mois' },
+      { cat: 'vie', catLabel: 'Vie quotidienne', q: 'Le dollar dépassera-t-il 3 000 FC au marché avant février ?', oui: 44, vol: '39 050', coms: 158, fin: '3 mois' },
+      { cat: 'musique', catLabel: 'Musique', q: 'Le prochain clip de Ferre Gola dépassera-t-il 5 millions de vues en 30 jours ?', oui: 69, vol: '33 600', coms: 145, fin: '30 j' }
+    ];
+    var self = this;
+    var cur = this.state.cat;
+    var marches = data.filter(function (m) { return cur === 'tous' || m.cat === cur; }).slice(0, 5).map(function (m) {
+      return Object.assign({}, m, {
+        tagStyle: base + tags[m.cat],
+        ouiPct: m.oui + ' %',
+        barStyle: 'width:' + m.oui + '%;height:100%;background:#6A994E'
+      });
+    });
+    var catDefs = [
+      { id: 'tous', label: 'Tous' }, { id: 'foot', label: 'Football' }, { id: 'musique', label: 'Musique' },
+      { id: 'politique', label: 'Politique' }, { id: 'vie', label: 'Vie quotidienne' }
+    ];
+    var cats = catDefs.map(function (c) {
+      var on = c.id === cur;
+      return {
+        label: c.label,
+        pressed: on ? 'true' : 'false',
+        style: 'flex:none;height:44px;padding:0 16px;border-radius:999px;font-weight:700;font-size:14px;border:1px solid ' + (on ? '#1F3A26' : t.border) + ';background:' + (on ? (dark ? '#A7C957' : '#1F3A26') : t.surface) + ';color:' + (on ? (dark ? '#1F3A26' : '#FFFFFF') : t.ink),
+        pick: function () { self.setState({ cat: c.id }); }
+      };
+    });
+    return {
+      t: t,
+      cats: cats,
+      marches: marches,
+      darkLabel: dark ? 'Passer en mode clair' : 'Passer en mode sombre',
+      toggleDark: function () { self.setState({ dark: !dark }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>KongoX — Profil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:#386641;text-decoration:none}a:hover{color:#1F3A26}
+button{font-family:inherit;cursor:pointer}
+@keyframes kxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes kxSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes kxPop{0%{transform:rotate(-2deg) scale(.6);opacity:0}60%{transform:rotate(-5deg) scale(1.06);opacity:1}100%{transform:rotate(-2deg) scale(1);opacity:1}}
+@keyframes kxUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kxGrow{from{width:0}to{width:78%}}
+@keyframes kxPulse{0%{box-shadow:0 0 0 0 rgba(188,71,73,.7)}100%{box-shadow:0 0 0 12px rgba(188,71,73,0)}}
+@keyframes kxMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes kxBubble{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kxDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.kx-float{animation:kxFloat 6s ease-in-out infinite}
+.kx-float-slow{animation:kxFloat 9s ease-in-out infinite}
+.kx-spin{animation:kxSpin 18s linear infinite}
+.kx-pop{display:inline-block;animation:kxPop .9s cubic-bezier(.2,.9,.3,1.3) .35s both}
+.kx-up{animation:kxUp .8s ease-out both}
+.kx-up-2{animation:kxUp .8s ease-out .2s both}
+.kx-up-3{animation:kxUp .8s ease-out .4s both}
+.kx-up-4{animation:kxUp .9s ease-out .6s both}
+.kx-grow{animation:kxGrow 1.6s ease-out 1s both}
+.kx-pulse{animation:kxPulse 1.6s ease-out infinite}
+.kx-marquee{animation:kxMarquee 38s linear infinite}
+.kx-b1{animation:kxBubble .5s ease-out 1.2s both}
+.kx-b2{animation:kxBubble .5s ease-out 2.2s both}
+.kx-b3{animation:kxBubble .5s ease-out 3.2s both}
+.kx-dot{animation:kxDot 1.2s infinite}
+.kx-dot2{animation:kxDot 1.2s .2s infinite}
+.kx-dot3{animation:kxDot 1.2s .4s infinite}
+@media (prefers-reduced-motion: reduce){.kx-float,.kx-float-slow,.kx-spin,.kx-pop,.kx-up,.kx-up-2,.kx-up-3,.kx-up-4,.kx-grow,.kx-pulse,.kx-marquee,.kx-b1,.kx-b2,.kx-b3,.kx-dot,.kx-dot2,.kx-dot3{animation:none}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #FFFFFF; color: #1F3A26">
+<header style="background: #FFFFFF; border-bottom: 2px solid #1F3A26">
+<div style="max-width: 1280px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+<a href="Main.dc.html" style="display: flex; align-items: center; gap: 10px; color: #1F3A26" aria-label="KongoX, accueil">
+<span style="width: 40px; height: 40px; border-radius: 12px; background: #A7C957; display: flex; align-items: center; justify-content: center; border: 2px solid #1F3A26; box-shadow: 3px 3px 0 #1F3A26">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1F3A26" stroke-width="3.5" stroke-linecap="round" aria-hidden="true"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+</span>
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 25px; letter-spacing: -0.8px">Kongo<span style="margin-left: 2px; padding: 0 6px; border-radius: 8px; background: #A7C957; color: #1F3A26">X</span></span>
+</a>
+<nav aria-label="Navigation principale" style="display: flex; flex-wrap: wrap; gap: 4px; flex: 1 1 auto">
+<a href="Main.dc.html" style="padding: 10px 14px; border-radius: 10px; color: #1F3A26; font-weight: 600; font-size: 15px">Marchés</a>
+<a href="Classement.dc.html" style="padding: 10px 14px; border-radius: 10px; color: #1F3A26; font-weight: 600; font-size: 15px">Classement</a>
+<a href="Partenaires.dc.html" style="padding: 10px 14px; border-radius: 10px; color: #1F3A26; font-weight: 600; font-size: 15px">Partenaires</a>
+<a href="Profil.dc.html" aria-current="page" style="padding: 10px 14px; border-radius: 10px; background: #1F3A26; color: #FFFFFF; font-weight: 600; font-size: 15px">Mon profil</a>
+</nav>
+<span style="display: flex; align-items: center; gap: 8px; height: 44px; padding: 0 14px; border-radius: 12px; background: #F1F5E8; border: 2px solid #1F3A26; font-weight: 700; font-size: 15px"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#A7C957"></circle><circle cx="12" cy="12" r="6" fill="none" stroke="#1F3A26" stroke-width="2"></circle></svg>1 250 pièces</span>
+<a href="Proposer.dc.html" style="height: 44px; padding: 0 18px; border-radius: 12px; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 15px; display: flex; align-items: center; box-shadow: 3px 3px 0 #A7C957">Proposer une question</a>
+</div>
+</header>
+
+<main style="max-width: 1280px; margin: 0 auto; padding: 40px 24px 0; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+
+<div style="flex: 999 1 640px; min-width: 0; display: flex; flex-direction: column; gap: 24px">
+<section class="kx-up" style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; box-shadow: 6px 6px 0 #6A994E; padding: 28px; display: flex; flex-direction: column; gap: 20px; box-shadow: 8px 8px 0 #6A994E">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 20px">
+<span style="width: 96px; height: 96px; border-radius: 28px; background: #A7C957; border: 3px solid #1F3A26; box-shadow: 5px 5px 0 #1F3A26; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 36px; display: flex; align-items: center; justify-content: center">PK</span>
+<div style="flex: 1 1 240px; min-width: 0">
+<h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 36px; letter-spacing: -1px">@Prono_King243</h1>
+<p style="margin: 4px 0 0; color: #4B5A44; font-size: 15px">Kinshasa · Membre depuis septembre 2026 · Spécialiste Premier League</p>
+</div>
+<div style="display: flex; gap: 10px">
+<button type="button" style="height: 48px; padding: 0 22px; border-radius: 14px; border: 2px solid #1F3A26; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 15px; box-shadow: 4px 4px 0 #A7C957">Suivre</button>
+<button type="button" style="height: 48px; padding: 0 18px; border-radius: 14px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-weight: 700; font-size: 15px">Partager</button>
+</div>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 8px">
+<span style="padding: 6px 12px; border-radius: 999px; border: 2px solid #1F3A26; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 13px">Curateur Football</span>
+<span style="padding: 6px 12px; border-radius: 999px; border: 2px solid #1F3A26; background: #A7C957; color: #1F3A26; font-weight: 700; font-size: 13px">Créateur de marché</span>
+<span style="padding: 6px 12px; border-radius: 999px; border: 2px solid #1F3A26; background: #BC4749; color: #FFFFFF; font-weight: 700; font-size: 13px">Série de 14 jours</span>
+<span style="padding: 6px 12px; border-radius: 999px; border: 2px solid #1F3A26; background: #F1F5E8; color: #1F3A26; font-weight: 700; font-size: 13px">Top 10 du mois</span>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px">
+<div style="padding: 16px; border-radius: 16px; background: #F1F5E8; border: 2px solid #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px">74 %</div><div style="font-size: 13px; color: #4B5A44; margin-top: 2px">Score Mayele</div></div>
+<div style="padding: 16px; border-radius: 16px; background: #F1F5E8; border: 2px solid #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px">48 920</div><div style="font-size: 13px; color: #4B5A44; margin-top: 2px">pièces</div></div>
+<div style="padding: 16px; border-radius: 16px; background: #F1F5E8; border: 2px solid #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px">312</div><div style="font-size: 13px; color: #4B5A44; margin-top: 2px">prédictions</div></div>
+<div style="padding: 16px; border-radius: 16px; background: #F1F5E8; border: 2px solid #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 30px">1 204</div><div style="font-size: 13px; color: #4B5A44; margin-top: 2px">abonnés</div></div>
+</div>
+</section>
+
+<section aria-label="Prédictions récentes" style="display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 28px">Prédictions récentes</h2>
+<div role="group" aria-label="Filtrer" style="display: flex; gap: 6px">
+<button type="button" aria-pressed="true" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 2px solid #1F3A26; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 13px">Toutes</button>
+<button type="button" aria-pressed="false" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-weight: 700; font-size: 13px">En cours</button>
+<button type="button" aria-pressed="false" style="height: 40px; padding: 0 14px; border-radius: 999px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-weight: 700; font-size: 13px">Terminées</button>
+</div>
+</div>
+<ul style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 2px solid #1F3A26; background: #FFFFFF">
+<span style="padding: 4px 9px; border-radius: 999px; background: #D8E8C0; color: #2B4F33; font-weight: 700; font-size: 11px">Football</span>
+<span style="flex: 1 1 300px; min-width: 0; font-weight: 600; font-size: 15px">Arsenal gagnera-t-il contre Chelsea ?</span>
+<span style="font-size: 14px; color: #4B5A44">1 · Arsenal · 300 pièces</span>
+<span style="padding: 5px 11px; border-radius: 999px; border: 2px solid #1F3A26; font-weight: 700; font-size: 12px; background:#A7C957;color:#1F3A26">Gagné</span>
+<span style="font-weight: 700; font-size: 15px; min-width: 64px; text-align: right">+540</span>
+</li>
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 2px solid #1F3A26; background: #FFFFFF">
+<span style="padding: 4px 9px; border-radius: 999px; background: #F6D9D5; color: #8E2F31; font-weight: 700; font-size: 11px">Musique</span>
+<span style="flex: 1 1 300px; min-width: 0; font-weight: 600; font-size: 15px">Le prochain clip de Ferre Gola dépassera-t-il 5 millions de vues en 30 jours ?</span>
+<span style="font-size: 14px; color: #4B5A44">OUI · 200 pièces</span>
+<span style="padding: 5px 11px; border-radius: 999px; border: 2px solid #1F3A26; font-weight: 700; font-size: 12px; background:#F1F5E8;color:#1F3A26">En cours</span>
+<span style="min-width: 64px"></span>
+</li>
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 2px solid #1F3A26; background: #FFFFFF">
+<span style="padding: 4px 9px; border-radius: 999px; background: #EAF2DA; color: #386641; font-weight: 700; font-size: 11px">Vie quotidienne</span>
+<span style="flex: 1 1 300px; min-width: 0; font-weight: 600; font-size: 15px">Y aura-t-il plus de 3 coupures de courant à Limete cette semaine ?</span>
+<span style="font-size: 14px; color: #4B5A44">OUI · 150 pièces</span>
+<span style="padding: 5px 11px; border-radius: 999px; border: 2px solid #1F3A26; font-weight: 700; font-size: 12px; background:#A7C957;color:#1F3A26">Gagné</span>
+<span style="font-weight: 700; font-size: 15px; min-width: 64px; text-align: right">+183</span>
+</li>
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 2px solid #1F3A26; background: #FFFFFF">
+<span style="padding: 4px 9px; border-radius: 999px; background: #E4DCC4; color: #4A3F1E; font-weight: 700; font-size: 11px">Politique</span>
+<span style="flex: 1 1 300px; min-width: 0; font-weight: 600; font-size: 15px">Le gouvernement annoncera-t-il une baisse du prix du carburant avant mars ?</span>
+<span style="font-size: 14px; color: #4B5A44">NON · 250 pièces</span>
+<span style="padding: 5px 11px; border-radius: 999px; border: 2px solid #1F3A26; font-weight: 700; font-size: 12px; background:#F1F5E8;color:#1F3A26">En cours</span>
+<span style="min-width: 64px"></span>
+</li>
+<li style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 14px; border: 2px solid #1F3A26; background: #FFFFFF">
+<span style="padding: 4px 9px; border-radius: 999px; background: #D8E8C0; color: #2B4F33; font-weight: 700; font-size: 11px">Football</span>
+<span style="flex: 1 1 300px; min-width: 0; font-weight: 600; font-size: 15px">AS V.Club battra-t-il DCMP dimanche ?</span>
+<span style="font-size: 14px; color: #4B5A44">2 · DCMP · 100 pièces</span>
+<span style="padding: 5px 11px; border-radius: 999px; border: 2px solid #1F3A26; font-weight: 700; font-size: 12px; background:#BC4749;color:#FFFFFF">Perdu</span>
+<span style="font-weight: 700; font-size: 15px; min-width: 64px; text-align: right">-100</span>
+</li>
+</ul>
+</section>
+</div>
+
+<aside style="flex: 1 1 320px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<section style="background: #386641; color: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; padding: 22px; box-shadow: 6px 6px 0 #BC4749">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 21px">Reçois tes cadeaux</h2>
+<p style="margin: 8px 0 0; font-size: 14px; line-height: 1.5; color: #E4EAD3">Ajoute ton numéro pour recevoir du crédit ou un forfait internet quand tu gagnes. C'est facultatif.</p>
+<label for="tel" style="display: block; margin-top: 14px; font-weight: 700; font-size: 13px">Numéro de téléphone</label>
+<input id="tel" type="tel" placeholder="+243 8…" style="margin-top: 6px; width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border-radius: 12px; border: 2px solid #1F3A26; font-family: inherit; font-size: 15px">
+<button type="button" style="margin-top: 12px; width: 100%; height: 48px; border-radius: 12px; border: 2px solid #1F3A26; background: #A7C957; color: #1F3A26; font-weight: 700; font-size: 15px">Enregistrer</button>
+</section>
+
+<section style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; box-shadow: 6px 6px 0 #6A994E; padding: 22px">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 21px">Ses communautés</h2>
+<ul style="margin: 14px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px">
+<li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; background: #F1F5E8"><span style="font-weight: 700">Premier League Kin</span><span style="font-size: 13px; color: #4B5A44">Curateur</span></li>
+<li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; background: #F1F5E8"><span style="font-weight: 700">Supporters Léopards</span><span style="font-size: 13px; color: #4B5A44">Membre</span></li>
+<li style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; background: #F1F5E8"><span style="font-weight: 700">Étudiants UNIKIN</span><span style="font-size: 13px; color: #4B5A44">Membre</span></li>
+</ul>
+</section>
+
+<section style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; box-shadow: 6px 6px 0 #6A994E; padding: 22px">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 21px">Mes infos</h2>
+<p style="margin: 8px 0 0; font-size: 14px; color: #4B5A44; line-height: 1.5">E-mail : non renseigné · Téléphone : non renseigné</p>
+<a href="#" style="display: inline-block; margin-top: 10px; font-weight: 700; font-size: 14px; text-decoration: underline">Modifier mon profil</a>
+</section>
+</aside>
+</main>
+<footer style="border-top: 2px solid #1F3A26; margin-top: 56px">
+<div style="max-width: 1280px; margin: 0 auto; padding: 28px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; color: #4B5A44; font-size: 14px">
+<span><strong style="color: #1F3A26; font-family: 'Space Grotesk', sans-serif">KongoX</strong> — Reality. Probability. Insight.</span>
+<span>Jeu gratuit. Aucune mise en argent réel.</span>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1600}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

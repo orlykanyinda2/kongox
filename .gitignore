@@ -1,0 +1,30 @@
+# Dépendances
+node_modules/
+
+# Next.js
+.next/
+out/
+build/
+
+# Clés et secrets
+.env
+.env.local
+.env.*.local
+
+# Supabase local
+supabase/.temp/
+supabase/.branches/
+
+# Système et éditeur
+.DS_Store
+Thumbs.db
+*.log
+.vercel/
+
+# Next.js et TypeScript (fichiers générés)
+next-env.d.ts
+*.tsbuildinfo
+/coverage
+
+# Certificats locaux
+*.pem

@@ -1,0 +1,22 @@
+{
+  "meta": {
+    "titre": "KongoX — Reality. Probability. Insight.",
+    "description": "Le marché des prédictions du Congo. Foot, musique, politique, vie de tous les jours : mise tes pièces gratuites et prouve que tu as raison."
+  },
+  "commun": {
+    "jamaisArgentReel": "Jamais d'argent réel.",
+    "accueilLogo": "KongoX, accueil"
+  },
+  "theme": {
+    "passerSombre": "Passer en mode sombre",
+    "passerClair": "Passer en mode clair"
+  },
+  "attente": {
+    "titre": "Le Congo a un avis.",
+    "pastille": "Prouve-le.",
+    "texte": "Le projet est prêt. Les pages arrivent à l'étape 1."
+  },
+  "notifications": {
+    "titreParDefaut": "KongoX"
+  }
+}

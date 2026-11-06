@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>KongoX — Proposer une question</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:#386641;text-decoration:none}a:hover{color:#1F3A26}
+button{font-family:inherit;cursor:pointer}
+@keyframes kxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes kxSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes kxPop{0%{transform:rotate(-2deg) scale(.6);opacity:0}60%{transform:rotate(-5deg) scale(1.06);opacity:1}100%{transform:rotate(-2deg) scale(1);opacity:1}}
+@keyframes kxUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kxGrow{from{width:0}to{width:78%}}
+@keyframes kxPulse{0%{box-shadow:0 0 0 0 rgba(188,71,73,.7)}100%{box-shadow:0 0 0 12px rgba(188,71,73,0)}}
+@keyframes kxMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes kxBubble{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kxDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.kx-float{animation:kxFloat 6s ease-in-out infinite}
+.kx-float-slow{animation:kxFloat 9s ease-in-out infinite}
+.kx-spin{animation:kxSpin 18s linear infinite}
+.kx-pop{display:inline-block;animation:kxPop .9s cubic-bezier(.2,.9,.3,1.3) .35s both}
+.kx-up{animation:kxUp .8s ease-out both}
+.kx-up-2{animation:kxUp .8s ease-out .2s both}
+.kx-up-3{animation:kxUp .8s ease-out .4s both}
+.kx-up-4{animation:kxUp .9s ease-out .6s both}
+.kx-grow{animation:kxGrow 1.6s ease-out 1s both}
+.kx-pulse{animation:kxPulse 1.6s ease-out infinite}
+.kx-marquee{animation:kxMarquee 38s linear infinite}
+.kx-b1{animation:kxBubble .5s ease-out 1.2s both}
+.kx-b2{animation:kxBubble .5s ease-out 2.2s both}
+.kx-b3{animation:kxBubble .5s ease-out 3.2s both}
+.kx-dot{animation:kxDot 1.2s infinite}
+.kx-dot2{animation:kxDot 1.2s .2s infinite}
+.kx-dot3{animation:kxDot 1.2s .4s infinite}
+@media (prefers-reduced-motion: reduce){.kx-float,.kx-float-slow,.kx-spin,.kx-pop,.kx-up,.kx-up-2,.kx-up-3,.kx-up-4,.kx-grow,.kx-pulse,.kx-marquee,.kx-b1,.kx-b2,.kx-b3,.kx-dot,.kx-dot2,.kx-dot3{animation:none}}
+</style>
+</helmet>
+<div style="width: 390px; height: 1360px; box-sizing: border-box; background: #FFFFFF; color: #1F3A26">
+<header style="padding: 14px 16px; display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #1F3A26">
+<a href="Mobile.dc.html" aria-label="Retour" style="width: 44px; height: 44px; border-radius: 12px; border: 2px solid #1F3A26; color: #1F3A26; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"></path></svg>
+</a>
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px">Proposer une question</span>
+<span style="width: 44px"></span>
+</header>
+
+<div style="padding: 18px; display: flex; flex-direction: column; gap: 18px">
+<div class="kx-up" style="display: flex; gap: 10px; align-items: center; padding: 12px 14px; border-radius: 14px; background: #A7C957; border: 2px solid #1F3A26; box-shadow: 4px 4px 0 #1F3A26">
+<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#A7C957"></circle><circle cx="12" cy="12" r="6" fill="none" stroke="#1F3A26" stroke-width="2"></circle></svg>
+<span style="font-size: 14px; font-weight: 700">+50 pièces et le badge « Créateur de marché » si ta question est approuvée.</span>
+</div>
+
+<div>
+<span style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px">Catégorie</span>
+<div role="group" aria-label="Catégorie" style="display: flex; flex-wrap: wrap; gap: 8px">
+<sc-for list="{{cats}}" as="c" hint-placeholder-count="4">
+<button type="button" onClick="{{c.pick}}" aria-pressed="{{c.pressed}}" style="{{c.style}}">{{c.label}}</button>
+</sc-for>
+</div>
+</div>
+
+<div>
+<label for="q" style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px">Ta question</label>
+<textarea id="q" rows="3" onInput="{{setQ}}" style="width: 100%; box-sizing: border-box; padding: 12px 14px; border-radius: 12px; border: 2px solid #1F3A26; font-family: inherit; font-size: 15px; color: #1F3A26; resize: none">{{q}}</textarea>
+<p style="margin: 6px 0 0; font-size: 12px; color: #4B5A44">Une question claire, avec une réponse OUI ou NON qu'on peut vérifier.</p>
+</div>
+
+<div>
+<span style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px">Type de réponse</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<button type="button" aria-pressed="true" style="height: 46px; border-radius: 12px; border: 2px solid #1F3A26; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 14px">OUI / NON</button>
+<button type="button" aria-pressed="false" style="height: 46px; border-radius: 12px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-weight: 700; font-size: 14px">Choix multiples</button>
+</div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div><label for="fin" style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px">Date de fin</label><input id="fin" type="text" value="12/12/2026" readonly style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border-radius: 12px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-family: inherit; font-size: 15px"></div>
+<div><label for="heure" style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px">Heure</label><input id="heure" type="text" value="20:00" readonly style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border-radius: 12px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-family: inherit; font-size: 15px"></div>
+</div>
+<div><label for="src" style="display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px">Source de la réponse</label><input id="src" type="text" value="Site officiel de la CAF" readonly style="width: 100%; box-sizing: border-box; height: 48px; padding: 0 14px; border-radius: 12px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-family: inherit; font-size: 15px"></div>
+
+<section aria-label="Aperçu" style="display: flex; flex-direction: column; gap: 8px">
+<span style="font-weight: 700; font-size: 14px">Aperçu</span>
+<article style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; box-shadow: 6px 6px 0 #6A994E; padding: 16px; display: flex; flex-direction: column; gap: 12px; box-shadow: 4px 4px 0 #6A994E">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="{{tagStyle}}">{{catLabel}}</span>
+<span style="font-size: 12px; font-weight: 600; color: #4B5A44">Ferme le 12 déc.</span>
+</div>
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 17px; line-height: 1.25">{{q}}</span>
+<div style="height: 10px; border-radius: 999px; background: #BC4749; border: 2px solid #1F3A26; overflow: hidden"><div style="width: 50%; height: 100%; background: #A7C957"></div></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<span style="height: 42px; border-radius: 12px; border: 2px solid #1F3A26; background: #A7C957; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center">OUI · 50 %</span>
+<span style="height: 42px; border-radius: 12px; border: 2px solid #1F3A26; background: #BC4749; color: #FFFFFF; font-weight: 700; font-size: 14px; display: flex; align-items: center; justify-content: center">NON · 50 %</span>
+</div>
+</article>
+</section>
+
+<section aria-label="Règles" style="padding: 14px; border-radius: 14px; background: #F1F5E8; border: 2px solid #1F3A26">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 16px">Les règles</h2>
+<ul style="margin: 8px 0 0; padding-left: 18px; font-size: 13px; line-height: 1.6">
+<li>Tous les sujets sont acceptés : foot, musique, politique, vie quotidienne.</li>
+<li>La réponse doit être vérifiable, avec une source et une date de fin.</li>
+<li style="color: #8E2F31; font-weight: 600">Refusé : la mort, les blessures ou une attaque contre quelqu'un, et les questions qui visent un particulier.</li>
+</ul>
+</section>
+
+<button type="button" style="height: 56px; border-radius: 14px; border: 2px solid #1F3A26; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 16px; box-shadow: 4px 4px 0 #A7C957">Envoyer pour approbation</button>
+<p style="margin: 0; text-align: center; font-size: 13px; color: #4B5A44">Un curateur ou un admin examine ta question sous 12 à 24 h.</p>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1360}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { cat: 'foot', q: 'Les Léopards gagneront-ils leur prochain match à domicile ?' };
+  }
+  renderVals() {
+    var self = this;
+    var tags = { foot: ['Football', '#D8E8C0', '#2B4F33'], musique: ['Musique', '#F6D9D5', '#8E2F31'], politique: ['Politique', '#E4DCC4', '#4A3F1E'], vie: ['Vie quotidienne', '#EAF2DA', '#386641'] };
+    var cur = this.state.cat;
+    var cats = Object.keys(tags).map(function (k) {
+      var on = k === cur;
+      return {
+        label: tags[k][0],
+        pressed: on ? 'true' : 'false',
+        style: 'height:44px;padding:0 14px;border-radius:999px;border:2px solid #1F3A26;font-weight:700;font-size:14px;background:' + (on ? '#1F3A26' : '#FFFFFF') + ';color:' + (on ? '#FFFFFF' : '#1F3A26'),
+        pick: function () { self.setState({ cat: k }); }
+      };
+    });
+    return {
+      cats: cats,
+      q: this.state.q,
+      setQ: function (e) { self.setState({ q: e.target.value }); },
+      catLabel: tags[cur][0],
+      tagStyle: 'padding:4px 9px;border-radius:999px;font-weight:700;font-size:11px;background:' + tags[cur][1] + ';color:' + tags[cur][2]
+    };
+  }
+}
+</script>
+</body>
+</html>

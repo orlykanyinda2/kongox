@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>KongoX — Admin</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif}
+a{color:#386641;text-decoration:none}a:hover{color:#1F3A26}
+button{font-family:inherit;cursor:pointer}
+@keyframes kxFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-18px)}}
+@keyframes kxSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes kxPop{0%{transform:rotate(-2deg) scale(.6);opacity:0}60%{transform:rotate(-5deg) scale(1.06);opacity:1}100%{transform:rotate(-2deg) scale(1);opacity:1}}
+@keyframes kxUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes kxGrow{from{width:0}to{width:78%}}
+@keyframes kxPulse{0%{box-shadow:0 0 0 0 rgba(188,71,73,.7)}100%{box-shadow:0 0 0 12px rgba(188,71,73,0)}}
+@keyframes kxMarquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes kxBubble{from{opacity:0;transform:translateY(12px) scale(.96)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes kxDot{0%,80%,100%{opacity:.25}40%{opacity:1}}
+.kx-float{animation:kxFloat 6s ease-in-out infinite}
+.kx-float-slow{animation:kxFloat 9s ease-in-out infinite}
+.kx-spin{animation:kxSpin 18s linear infinite}
+.kx-pop{display:inline-block;animation:kxPop .9s cubic-bezier(.2,.9,.3,1.3) .35s both}
+.kx-up{animation:kxUp .8s ease-out both}
+.kx-up-2{animation:kxUp .8s ease-out .2s both}
+.kx-up-3{animation:kxUp .8s ease-out .4s both}
+.kx-up-4{animation:kxUp .9s ease-out .6s both}
+.kx-grow{animation:kxGrow 1.6s ease-out 1s both}
+.kx-pulse{animation:kxPulse 1.6s ease-out infinite}
+.kx-marquee{animation:kxMarquee 38s linear infinite}
+.kx-b1{animation:kxBubble .5s ease-out 1.2s both}
+.kx-b2{animation:kxBubble .5s ease-out 2.2s both}
+.kx-b3{animation:kxBubble .5s ease-out 3.2s both}
+.kx-dot{animation:kxDot 1.2s infinite}
+.kx-dot2{animation:kxDot 1.2s .2s infinite}
+.kx-dot3{animation:kxDot 1.2s .4s infinite}
+@media (prefers-reduced-motion: reduce){.kx-float,.kx-float-slow,.kx-spin,.kx-pop,.kx-up,.kx-up-2,.kx-up-3,.kx-up-4,.kx-grow,.kx-pulse,.kx-marquee,.kx-b1,.kx-b2,.kx-b3,.kx-dot,.kx-dot2,.kx-dot3{animation:none}}
+</style>
+</helmet>
+<div style="min-height: 100vh; background: #FFFFFF; color: #1F3A26">
+<header style="background: #386641; color: #FFFFFF; border-bottom: 2px solid #1F3A26">
+<div style="max-width: 1360px; margin: 0 auto; padding: 14px 24px; display: flex; flex-wrap: wrap; align-items: center; gap: 16px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 24px">Kongo<span style="margin-left: 2px; padding: 0 6px; border-radius: 8px; background: #A7C957; color: #1F3A26">X</span></span>
+<span style="padding: 5px 11px; border-radius: 999px; background: #BC4749; font-weight: 700; font-size: 12px; border: 2px solid #1F3A26">ADMIN</span>
+<span style="flex: 1"></span>
+<span style="font-size: 14px; color: #E4EAD3">Connecté : <strong style="color: #FFFFFF">@orly_admin</strong></span>
+</div>
+</header>
+
+<div style="max-width: 1360px; margin: 0 auto; padding: 28px 24px; display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start">
+<nav aria-label="Menu admin" style="flex: 1 1 230px; max-width: 280px; min-width: 0; display: flex; flex-direction: column; gap: 4px; padding: 12px; border-radius: 20px; border: 2px solid #1F3A26; background: #F1F5E8">
+<a href="#" aria-current="page" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; background: #1F3A26; color: #FFFFFF; font-weight: 600; font-size: 15px">File d'approbation<span style="padding: 2px 8px; border-radius: 999px; background: #A7C957; color: #1F3A26; font-size: 12px; font-weight: 700">{{nb}}</span></a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Résultats à régler<span style="padding: 2px 8px; border-radius: 999px; background: #BC4749; color: #FFFFFF; font-size: 12px; font-weight: 700">5</span></a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Utilisateurs</a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Mots de passe</a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Cadeaux<span style="padding: 2px 8px; border-radius: 999px; background: #BC4749; color: #FFFFFF; font-size: 12px; font-weight: 700">3</span></a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Signalements<span style="padding: 2px 8px; border-radius: 999px; background: #BC4749; color: #FFFFFF; font-size: 12px; font-weight: 700">3</span></a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Curateurs<span style="padding: 2px 8px; border-radius: 999px; background: #BC4749; color: #FFFFFF; font-size: 12px; font-weight: 700">2</span></a>
+<a href="#" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-radius: 12px; color: #1F3A26; font-weight: 600; font-size: 15px">Matchs</a>
+</nav>
+
+<main style="flex: 999 1 560px; min-width: 0; display: flex; flex-direction: column; gap: 22px">
+<div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px">
+<div>
+<h1 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 36px; letter-spacing: -1px">File d'approbation</h1>
+<p style="margin: 6px 0 0; color: #4B5A44; font-size: 15px">Objectif : chaque question examinée sous 12 à 24 h.</p>
+</div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px">
+<div style="padding: 18px; border-radius: 18px; border: 2px solid #1F3A26; background: #A7C957; color: #1F3A26; box-shadow: 4px 4px 0 #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px">{{nb}}</div><div style="font-size: 13px; font-weight: 600; margin-top: 2px">en attente</div></div>
+<div style="padding: 18px; border-radius: 18px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; box-shadow: 4px 4px 0 #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px">9 h</div><div style="font-size: 13px; font-weight: 600; margin-top: 2px">délai moyen d'examen</div></div>
+<div style="padding: 18px; border-radius: 18px; border: 2px solid #1F3A26; background: #BC4749; color: #FFFFFF; box-shadow: 4px 4px 0 #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px">{{retard}}</div><div style="font-size: 13px; font-weight: 600; margin-top: 2px">au-delà de 12 h</div></div>
+<div style="padding: 18px; border-radius: 18px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; box-shadow: 4px 4px 0 #1F3A26"><div style="font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 34px">5</div><div style="font-size: 13px; font-weight: 600; margin-top: 2px">résultats à régler</div></div>
+</div>
+
+<sc-if value="{{vide}}" hint-placeholder-val="{{false}}">
+<div style="padding: 32px; border-radius: 20px; border: 2px dashed #6A994E; text-align: center; font-weight: 700">Tout est à jour. Aucune question en attente.</div>
+</sc-if>
+<sc-for list="{{file}}" as="m" hint-placeholder-count="4">
+<article style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; padding: 20px; box-shadow: 6px 6px 0 #6A994E; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px">
+<span style="{{m.tagStyle}}">{{m.cat}}</span>
+<span style="font-size: 13px; color: #4B5A44">Proposée par <strong style="color: #1F3A26">@{{m.auteur}}</strong></span>
+<span style="flex: 1"></span>
+<span style="{{m.timeStyle}}">Reçue il y a {{m.age}} h</span>
+</div>
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 21px; line-height: 1.25">{{m.q}}</h2>
+<div style="display: flex; flex-wrap: wrap; gap: 18px; font-size: 14px; color: #4B5A44">
+<span>Fin : <strong style="color: #1F3A26">{{m.fin}}</strong></span>
+<span>Source : <strong style="color: #1F3A26">{{m.source}}</strong></span>
+<span>Type : <strong style="color: #1F3A26">OUI / NON</strong></span>
+</div>
+<div style="display: flex; flex-wrap: wrap; gap: 10px">
+<button type="button" onClick="{{m.approuver}}" style="height: 46px; padding: 0 20px; border-radius: 12px; border: 2px solid #1F3A26; background: #A7C957; color: #1F3A26; font-weight: 700; font-size: 15px">Approuver</button>
+<button type="button" style="height: 46px; padding: 0 20px; border-radius: 12px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-weight: 700; font-size: 15px">Modifier le texte</button>
+<button type="button" onClick="{{m.refuser}}" style="height: 46px; padding: 0 20px; border-radius: 12px; border: 2px solid #1F3A26; background: #BC4749; color: #FFFFFF; font-weight: 700; font-size: 15px">Refuser</button>
+</div>
+</article>
+</sc-for>
+</main>
+
+<aside style="flex: 1 1 300px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 20px">
+<section style="background: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; padding: 20px; box-shadow: 6px 6px 0 #BC4749">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px">Réinitialiser un mot de passe</h2>
+<p style="margin: 6px 0 0; font-size: 13px; color: #4B5A44; line-height: 1.45">L'utilisateur t'a envoyé son nom d'utilisateur sur WhatsApp ? Entre-le ici.</p>
+<label for="pseudo-reset" style="display: block; margin-top: 12px; font-weight: 700; font-size: 13px">Nom d'utilisateur</label>
+<input id="pseudo-reset" type="text" placeholder="ex. Kin_la_Belle" style="margin-top: 6px; width: 100%; box-sizing: border-box; height: 46px; padding: 0 14px; border-radius: 12px; border: 2px solid #1F3A26; background: #FFFFFF; color: #1F3A26; font-family: inherit; font-size: 15px">
+<button type="button" style="margin-top: 10px; width: 100%; height: 46px; border-radius: 12px; border: 2px solid #1F3A26; background: #1F3A26; color: #FFFFFF; font-weight: 700; font-size: 15px">Générer un mot de passe temporaire</button>
+</section>
+<section style="background: #386641; color: #FFFFFF; border: 2px solid #1F3A26; border-radius: 20px; padding: 20px; box-shadow: 6px 6px 0 #A7C957">
+<h2 style="margin: 0; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 20px">Cadeaux à envoyer</h2>
+<ul style="margin: 12px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px">
+<li style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #FFFFFF; color: #1F3A26; font-size: 14px"><span><strong>@Prono_King243</strong><br>Crédit · +243 81 ••• 42</span><button type="button" style="height: 36px; padding: 0 10px; border-radius: 10px; border: 2px solid #1F3A26; background: #A7C957; font-weight: 700; font-size: 12px">Envoyé</button></li>
+<li style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #FFFFFF; color: #1F3A26; font-size: 14px"><span><strong>@Mama_Pronostic</strong><br>Forfait internet · +243 99 ••• 17</span><button type="button" style="height: 36px; padding: 0 10px; border-radius: 10px; border: 2px solid #1F3A26; background: #A7C957; font-weight: 700; font-size: 12px">Envoyé</button></li>
+<li style="display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; background: #FFFFFF; color: #1F3A26; font-size: 14px"><span><strong>@Leopard_Fidele</strong><br>Numéro manquant</span><span style="padding: 4px 8px; border-radius: 999px; background: #BC4749; color: #FFFFFF; font-weight: 700; font-size: 11px">En attente</span></li>
+</ul>
+</section>
+</aside>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":1400}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { faits: {} };
+  }
+  renderVals() {
+    var self = this;
+    var tags = { 'Football': 'background:#D8E8C0;color:#2B4F33', 'Musique': 'background:#F6D9D5;color:#8E2F31', 'Politique': 'background:#E4DCC4;color:#4A3F1E', 'Vie quotidienne': 'background:#EAF2DA;color:#386641' };
+    var data = [
+      { id: 1, cat: 'Musique', auteur: 'Rumba_Prono', age: 15, q: 'Innoss\u2019B fera-t-il un concert au stade des Martyrs avant juillet 2027 ?', fin: '30/06/2027', source: 'Annonce officielle de l\u2019artiste' },
+      { id: 2, cat: 'Vie quotidienne', auteur: 'Kin_la_Belle', age: 9, q: 'Le prix du transport Victoire–Gare centrale passera-t-il à 1 500 FC ce mois-ci ?', fin: '30/11/2026', source: 'Constat des membres + médias locaux' },
+      { id: 3, cat: 'Politique', auteur: 'Bana_Mboka', age: 6, q: 'Le Sénat adoptera-t-il la loi sur le numérique avant la fin de la session ?', fin: '15/12/2026', source: 'Journal officiel' },
+      { id: 4, cat: 'Football', auteur: 'Leopard_Fidele', age: 2, q: 'Les Léopards marqueront-ils plus de 2 buts lors de leur prochain match ?', fin: '18/11/2026', source: 'Site officiel de la CAF' }
+    ];
+    var faits = this.state.faits;
+    var file = data.filter(function (m) { return !faits[m.id]; }).map(function (m) {
+      var late = m.age >= 12;
+      return Object.assign({}, m, {
+        tagStyle: 'padding:4px 9px;border-radius:999px;font-weight:700;font-size:11px;' + tags[m.cat],
+        timeStyle: 'padding:5px 10px;border-radius:999px;border:2px solid #1F3A26;font-weight:700;font-size:12px;' + (late ? 'background:#BC4749;color:#FFFFFF' : 'background:#F1F5E8;color:#1F3A26'),
+        approuver: function () { var f = Object.assign({}, self.state.faits); f[m.id] = 'ok'; self.setState({ faits: f }); },
+        refuser: function () { var f = Object.assign({}, self.state.faits); f[m.id] = 'non'; self.setState({ faits: f }); }
+      });
+    });
+    return {
+      file: file,
+      nb: String(file.length),
+      retard: String(file.filter(function (m) { return m.age >= 12; }).length),
+      vide: file.length === 0
+    };
+  }
+}
+</script>
+</body>
+</html>
