@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { useTranslations } from "next-intl";
-import { Logo } from "@/components/Logo";
-import { BoutonTheme } from "@/components/BoutonTheme";
+import Link from "next/link";
+import { EnTete } from "@/components/mise-en-page/EnTete";
+import { PiedDePage } from "@/components/mise-en-page/PiedDePage";
+import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
+import { LIBELLES_CATEGORIES, type Categorie } from "@/lib/marches/categories";
 import { IconePiece } from "@/components/IconePiece";
 import { BonusQuotidien } from "@/components/compte/BonusQuotidien";
 import { FormulaireCoordonnee } from "@/components/compte/FormulaireCoordonnee";
@@ -31,33 +33,23 @@ type Transaction = {
   cree_le: string;
 };
 
+type Question = { id: number; question: string; categorie: Categorie; statut: string; motif: string | null };
+
 const carte = "rounded-carte border-2 border-contour bg-surface p-[22px] shadow-decale-md";
 
 // Page « Mon profil » de l'étape 1 : solde, série, coordonnées facultatives, historique des pièces.
 // Le profil public complet (score Mayele, abonnés, prédictions) arrive à l'étape 4.
 export default function PageProfil() {
-  const tc = useTranslations("commun");
   return (
     <div className="flex flex-1 flex-col">
-      <header className="sticky top-0 z-10 border-b-2 border-contour bg-entete">
-        <div className="mx-auto flex max-w-contenu items-center justify-between gap-4 px-[18px] py-3 md:px-6">
-          <Logo libelle={tc("accueilLogo")} />
-          <BoutonTheme />
-        </div>
-      </header>
+      <EnTete />
 
       <Suspense fallback={<ChargementProfil />}>
         <ContenuProfil />
       </Suspense>
 
-      <footer className="mt-14 border-t-2 border-contour">
-        <div className="mx-auto flex max-w-contenu flex-wrap justify-between gap-4 px-[18px] py-7 text-sm text-texte-secondaire md:px-6">
-          <span>
-            <strong className="font-titre text-texte">KongoX</strong> — Reality. Probability. Insight.
-          </span>
-          <span>{tc("jeuGratuit")}</span>
-        </div>
-      </footer>
+      <PiedDePage />
+      <BarreNavigation />
     </div>
   );
 }
@@ -78,10 +70,11 @@ async function ContenuProfil() {
   const id = session?.claims?.sub;
   if (!id) redirect("/connexion");
 
-  const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }] = await Promise.all([
+  const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }, { data: questions }] = await Promise.all([
     supabase.from("utilisateurs").select("id, nom_utilisateur, role, solde_pieces, serie_jours, badges, cree_le").eq("id", id).single<Utilisateur>(),
     supabase.from("coordonnees_utilisateurs").select("email_contact, telephone").eq("utilisateur_id", id).maybeSingle<{ email_contact: string | null; telephone: string | null }>(),
     supabase.from("transactions_pieces").select("id, montant, type, description, cree_le").order("cree_le", { ascending: false }).limit(10).returns<Transaction[]>(),
+    supabase.from("marches").select("id, question, categorie, statut, motif").eq("auteur_id", id).order("cree_le", { ascending: false }).limit(10).returns<Question[]>(),
   ]);
 
   if (!utilisateur) {
@@ -172,6 +165,38 @@ async function ContenuProfil() {
               </ul>
             ) : (
               <p className="mt-3 text-sm text-texte-secondaire">{t("aucuneTransaction")}</p>
+            )}
+          </section>
+
+          {/* Questions proposées et leur statut */}
+          <section className={carte}>
+            <h2 className="text-[21px]">{t("mesQuestions")}</h2>
+            {questions && questions.length > 0 ? (
+              <ul className="mt-3.5 flex flex-col">
+                {questions.map((q) => (
+                  <li key={q.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-separateur py-3 last:border-b-0">
+                    <span className="text-xs font-bold text-texte-secondaire">{LIBELLES_CATEGORIES[q.categorie]}</span>
+                    <span className="min-w-0 flex-[1_1_240px] text-[15px] font-semibold">
+                      {q.statut === "en_attente" || q.statut === "refuse" ? (
+                        q.question
+                      ) : (
+                        <Link href={`/marches/${q.id}`} className="underline">
+                          {q.question}
+                        </Link>
+                      )}
+                    </span>
+                    <span className="rounded-full border-2 border-contour px-2.5 py-1 text-xs font-bold">{t(`statutQuestion.${q.statut}`)}</span>
+                    {q.statut === "refuse" && q.motif && <span className="w-full text-xs text-texte-secondaire">{t("motif", { motif: q.motif })}</span>}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="mt-3 text-sm text-texte-secondaire">
+                {t("aucuneQuestion")}{" "}
+                <Link href="/proposer" className="font-bold underline">
+                  {t("proposerQuestion")}
+                </Link>
+              </p>
             )}
           </section>
         </div>

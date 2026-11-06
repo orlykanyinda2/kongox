@@ -2,6 +2,26 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.3.0] — 2026-11-07 — Étape 2 : marchés et prédictions
+
+### Ajouté
+- Tables `marches`, `options_marche`, `predictions` avec Row Level Security ; statuts `en_attente` → `approuve` / `refuse` → `ferme` → `regle`
+- Système de cagnotte : mise, règlement avec partage exact de la cagnotte (aucune pièce perdue ni créée), remboursement si personne n'a gagné, annulation
+- Limite de 2 000 pièces misées par jour (jour de Kinshasa) et mise minimum de 10 pièces
+- +50 pièces et badge « Créateur de marché » quand une question est approuvée (fonction `approuver_marche`, écran admin à l'étape 3)
+- Fermeture automatique des marchés échus toutes les 5 minutes (pg_cron)
+- Page d'accueil ordinateur et mobile (hero, Soki du jour, bandeau défilant, marchés tendance filtrables, recherche, « Ce que pense Kinshasa », comment ça marche, partenaires), en-tête commun, barre du bas sur mobile
+- Page d'un marché : graphique d'évolution du OUI (24 h / 14 j / tout), panneau de prédiction avec gain estimé, mes mises, partage WhatsApp
+- Message « Fais une pause, reviens demain » après 3 pertes de suite
+- Page « Proposer une question » avec aperçu en direct ; « Mes questions proposées » dans le profil
+- Marchés d'exemple dans `supabase/seed.sql`
+- Page « Cette page arrive bientôt » pour les liens des étapes suivantes
+- Variable `NEXT_PUBLIC_SITE_URL`
+
+### Modifié
+- Les données publiques sont mises en cache 30 secondes et rafraîchies après chaque mise
+- Seuls les textes utiles aux composants navigateur sont envoyés au téléphone
+
 ## [0.2.0] — 2026-11-06 — Étape 1 : connexion et pièces
 
 ### Ajouté

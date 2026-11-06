@@ -1,6 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 import { configSupabaseObligatoire } from "./config";
 
 // Client Supabase pour les composants serveur, Server Actions et routes API.
@@ -8,6 +9,8 @@ import { configSupabaseObligatoire } from "./config";
 // Créer un nouveau client à chaque requête.
 export async function creerClientServeur() {
   const { url, cleAnon } = configSupabaseObligatoire();
+  // Une session est propre à chaque visite : jamais de pré-rendu (le client Auth lit l'heure)
+  await connection();
   const magasinCookies = await cookies();
 
   return createServerClient(url, cleAnon, {
