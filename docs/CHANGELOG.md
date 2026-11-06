@@ -2,6 +2,15 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.2.0] — 2026-11-06 — Étape 1 : connexion et pièces
+
+### Ajouté
+- Inscription et connexion par nom d'utilisateur + mot de passe (adresse cachée `nom@kongox.local`, jamais affichée), suggestions de noms drôles
+- Pages `/inscription`, `/connexion` et `/profil` (solde, série, historique des pièces, téléphone et e-mail de contact facultatifs, déconnexion)
+- Tables `utilisateurs`, `coordonnees_utilisateurs`, `transactions_pieces` avec Row Level Security
+- Fonctions SQL : `mouvement_pieces()` (seul chemin des pièces), 1 000 pièces à l'inscription, bonus quotidien de 100 pièces, série de connexion (+200 pièces tous les 7 jours)
+- Variable `NEXT_PUBLIC_WHATSAPP_EQUIPE` pour « Mot de passe oublié ? »
+
 ## [0.1.0] — 2026-11-06 — Étape 0 : création du projet
 
 ### Ajouté
