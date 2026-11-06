@@ -76,6 +76,7 @@ Voir `.env.example`. Ne jamais envoyer `.env.local` sur GitHub (il est dans `.gi
 | `SUPABASE_SERVICE_ROLE_KEY` | Clé secrète Supabase (serveur uniquement) |
 | `API_FOOTBALL_KEY` | Clé API-Football |
 | `AI_API_KEY` | Clé de l'API de l'assistant IA |
+| `NEXT_PUBLIC_WHATSAPP_EQUIPE` | Numéro WhatsApp de l'équipe (ex. `243812345678`), pour « Mot de passe oublié ? » |
 
 ## Structure du projet
 

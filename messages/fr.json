@@ -5,6 +5,7 @@
   },
   "commun": {
     "jamaisArgentReel": "Jamais d'argent réel.",
+    "jeuGratuit": "Jeu gratuit. Aucune mise en argent réel.",
     "accueilLogo": "KongoX, accueil"
   },
   "theme": {
@@ -14,7 +15,83 @@
   "attente": {
     "titre": "Le Congo a un avis.",
     "pastille": "Prouve-le.",
-    "texte": "Le projet est prêt. Les pages arrivent à l'étape 1."
+    "texte": "Crée ton compte et reçois 1 000 pièces. Les marchés arrivent à l'étape 2.",
+    "commencer": "Commencer — 1 000 pièces offertes",
+    "seConnecter": "Se connecter",
+    "monProfil": "Mon profil"
+  },
+  "compte": {
+    "titre": "Rejoins KongoX.",
+    "piecesOffertes": "1 000 pièces offertes.",
+    "ongletsLibelle": "Inscription ou connexion",
+    "creerCompte": "Créer un compte",
+    "seConnecter": "Se connecter",
+    "nomUtilisateur": "Nom d'utilisateur",
+    "suggererNom": "Suggérer un nom drôle",
+    "aideNomInscription": "Touche la flèche pour un nom drôle, ou écris le tien.",
+    "aideNomConnexion": "Le nom choisi à l'inscription.",
+    "motDePasse": "Mot de passe",
+    "aideMotDePasse": "Au moins {min} caractères.",
+    "confirmation": "Confirme le mot de passe",
+    "boutonInscription": "Créer mon compte — 1 000 pièces",
+    "boutonConnexion": "Me connecter",
+    "patiente": "Un instant…",
+    "pasBesoinEmail": "Pas besoin d'e-mail ni de téléphone. Tu pourras les ajouter plus tard dans ton profil pour recevoir des cadeaux.",
+    "mdpOublie": "Mot de passe oublié ?",
+    "mdpOublieTexte": "Envoie ton nom d'utilisateur à l'équipe sur <whatsapp>WhatsApp</whatsapp>, on le réinitialise pour toi.",
+    "jamaisArgentReel": "Jamais d'argent réel. Que des pièces gratuites."
+  },
+  "erreurs": {
+    "nomFormat": "Le nom d'utilisateur doit faire 3 à 24 caractères : lettres sans accent, chiffres et « _ » seulement.",
+    "nomPris": "Ce nom d'utilisateur est déjà pris. Touche la flèche pour une autre idée.",
+    "mdpLongueur": "Le mot de passe doit faire au moins {min} caractères.",
+    "mdpDifferents": "Les deux mots de passe ne sont pas pareils.",
+    "identifiants": "Nom d'utilisateur ou mot de passe incorrect.",
+    "connexionApresInscription": "Ton compte est créé, mais la connexion a échoué. Essaie de te connecter.",
+    "connexionRequise": "Connecte-toi d'abord.",
+    "telephoneFormat": "Numéro invalide. Exemple : +243 81 234 5678.",
+    "telephonePris": "Ce numéro est déjà lié à un autre compte (un cadeau par numéro).",
+    "emailFormat": "Adresse e-mail invalide.",
+    "serveur": "Un problème est survenu. Réessaie dans un instant."
+  },
+  "bonus": {
+    "recu": "+{bonus} pièces : bonus du jour !",
+    "serie": "Série de {jours, plural, one {# jour} other {# jours}}. Reviens demain.",
+    "serieBonus": "Série de {jours} jours : +{bonus} pièces bonus !",
+    "fermer": "Fermer le message"
+  },
+  "profil": {
+    "membreDepuis": "Membre depuis {date}",
+    "badges": "Badges",
+    "serieBadge": "Série de {jours, plural, one {# jour} other {# jours}}",
+    "pieces": "pièces",
+    "joursDeSuite": "jours de connexion de suite",
+    "regleSerie": "Chaque jour : +100 pièces. Tous les 7 jours de suite : +200 pièces bonus. Si tu rates un jour, la série repart à zéro.",
+    "historique": "Historique des pièces",
+    "aucuneTransaction": "Aucun mouvement pour l'instant.",
+    "cadeauxTitre": "Reçois tes cadeaux",
+    "cadeauxTexte": "Ajoute ton numéro pour recevoir du crédit ou un forfait internet quand tu gagnes. C'est facultatif.",
+    "telephone": "Numéro de téléphone",
+    "mesInfos": "Mes infos",
+    "resume": "E-mail : {email} · Téléphone : {telephone}",
+    "nonRenseigne": "non renseigné",
+    "emailContact": "E-mail de contact",
+    "emailFacultatif": "Facultatif. Sert seulement à te contacter. Laisse vide pour le retirer.",
+    "enregistrer": "Enregistrer",
+    "enregistrement": "Enregistrement…",
+    "enregistre": "Enregistré.",
+    "deconnexion": "Me déconnecter",
+    "introuvable": "Profil introuvable. Déconnecte-toi puis reconnecte-toi.",
+    "jamaisArgentReel": "Pièces gratuites. Jamais d'argent réel.",
+    "role": {
+      "curateur": "Curateur",
+      "admin": "Admin"
+    },
+    "type": {
+      "inscription": "Pièces de bienvenue",
+      "bonus_quotidien": "Bonus de connexion",
+      "bonus_serie": "Bonus de série"
+    }
   },
   "notifications": {
     "titreParDefaut": "KongoX"
