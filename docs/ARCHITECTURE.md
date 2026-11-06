@@ -84,16 +84,70 @@ Exemple testé : OUI 100 + 200, NON 101 → cagnotte 401 ; gains 134 et 267.
 | `reclamer_bonus_quotidien()` | Bonus du jour et série (voir « Parcours des pièces ») ; verrouille la ligne pour éviter un double bonus | Utilisateur connecté |
 | `nom_utilisateur_disponible(nom)` | Le nom est-il libre ? | Tout le monde |
 
+## Tables créées (étape 3)
+
+Migration : `supabase/migrations/20261108090000_admin_et_curateurs.sql`.
+
+| Table | Rôle | Qui peut lire | Qui peut écrire |
+| --- | --- | --- | --- |
+| `curateurs` | Un curateur par thème : `utilisateur_id`, `categorie`, `statut` (`essai` / `autonome`), `decisions_validees` | Tout le monde | Fonctions SQL (admin) |
+| `candidatures_curateur` | Candidatures : thème, motivation (20 à 1 000 caractères), statut (`en_attente`, `acceptee`, `refusee`) | Le candidat et les admins | `postuler_curateur()`, `traiter_candidature()` |
+| `decisions_curateur` | Décisions d'un curateur en essai (`approuve` / `refuse`), à valider par un admin (`a_valider`, `validee`, `annulee`) | Le curateur concerné et les admins | Fonctions SQL |
+| `cadeaux` | Gagnants marqués par un admin : type (`credit`, `forfait_internet`, `produit`), statut (`a_envoyer`, `envoye`, `annule`), numéro gardé au moment de l'envoi | Le gagnant et les admins | Fonctions SQL (admin) |
+| `journal_admin` | Qui a fait quoi : approbations, refus, règlements, annulations, cadeaux, rôles, mots de passe, suspensions | Admins | Fonctions SQL (et un déclencheur sur le règlement) |
+
+Les admins peuvent aussi lire (RLS) les coordonnées, les transactions et les prédictions de tout le monde. Les curateurs voient les questions en attente de leurs thèmes.
+
+## Fonctions SQL (étape 3)
+
+| Fonction | Rôle | Appelable par |
+| --- | --- | --- |
+| `approuver_marche(marche)` / `refuser_marche(marche, motif)` | **Remplacent celles de l'étape 2.** Admin ou curateur autonome du thème → appliqué tout de suite (renvoie `approuve` / `refuse`). Curateur en essai → décision enregistrée pour un admin (renvoie `en_validation`) | Admin, curateur du thème |
+| `valider_decision_curateur(decision, accepter)` | L'admin valide (la décision s'applique et compte pour l'essai) ou rejette | Admin |
+| `modifier_marche(marche, question, categorie, date_fin, source)` | Corriger une question en attente | Admin, curateur du thème |
+| `definir_soki_du_jour(marche)` | Une seule question « Soki du jour » à la fois | Admin |
+| `postuler_curateur(categorie, motivation)` | Candidature (une seule en attente par thème) | Utilisateur connecté |
+| `traiter_candidature(candidature, accepter, motif)` | Accepter → curateur en essai, rôle `curateur`, badge « Curateur Football »… | Admin |
+| `changer_statut_curateur(utilisateur, categorie, statut)` | `essai`, `autonome` ou `retirer` (badge et rôle retirés) | Admin |
+| `changer_role(utilisateur, role)` | `utilisateur`, `curateur`, `admin` (un admin ne peut pas se retirer son propre rôle) | Admin |
+| `creer_cadeau(nom, type, description)`, `marquer_cadeau_envoye(cadeau)`, `annuler_cadeau(cadeau)` | Cadeaux manuels. « Envoyé » exige un numéro dans le profil du gagnant | Admin |
+| `statistiques_admin()` | Chiffres du tableau de bord | Admin |
+| `journaliser_action_admin(action, utilisateur, details)` | Journal des actions faites avec la clé service role (mot de passe, suspension) | Admin |
+| `appliquer_approbation()`, `appliquer_refus()`, `clore_decision_curateur()`, `droit_decision()`, `journaliser()` | Fonctions internes | Personne depuis l'API |
+
+### Curateurs : période d'essai
+
+1. L'utilisateur postule sur `/curateur` pour un thème.
+2. Un admin accepte : le curateur est **en essai**. Ses approbations et refus deviennent des décisions « à valider ».
+3. Quand un admin valide une décision (ou prend la même décision lui-même), elle compte. Une décision contraire de l'admin est annulée et ne compte pas.
+4. Après **10 décisions validées** (`seuil_essai_curateur()`), le curateur devient **autonome** : ses décisions s'appliquent directement dans son thème.
+5. Les admins gardent le dernier mot : ils peuvent remettre en essai, retirer un curateur, ou annuler un marché.
+
+### Actions faites côté serveur avec la clé service role
+
+- **Réinitialiser un mot de passe** : l'admin entre le nom d'utilisateur, le serveur génère un mot de passe temporaire (ex. `Kitoko-4821-Mbote`) et le change dans Supabase Auth. L'utilisateur le change ensuite dans « Mon profil ».
+- **Suspendre / réactiver un compte** : suspension Supabase Auth (la session déjà ouverte expire en moins d'une heure).
+
+Ces deux actions vérifient d'abord `est_admin()` et sont écrites dans `journal_admin`.
+
+### Premier admin
+
+Un compte devient admin avec cette requête dans le SQL Editor de Supabase (remplacer le nom) :
+
+```sql
+update public.utilisateurs set role = 'admin' where lower(nom_utilisateur) = lower('Mon_Nom');
+```
+
+Ensuite, les autres admins se nomment depuis le panneau (Utilisateurs → Rôle).
+
 ## Tables prévues (étapes suivantes)
 
 | Table | Rôle |
 | --- | --- |
 | `matchs` | Matchs importés d'API-Football |
-| `communautes` | Communautés et leurs curateurs |
 | `membres_communaute` | Qui appartient à quelle communauté |
 | `messages` | Messages du chat (match, marché, communauté) |
 | `signalements` | Messages ou marchés signalés |
-| `cadeaux` | Gagnants choisis par les admins, statut d'envoi |
 | `abonnements` | Qui suit quel pronostiqueur |
 
 ## Connexion (Supabase Auth)
@@ -112,8 +166,8 @@ Exemple testé : OUI 100 + 200, NON 101 → cagnotte 401 ; gains 134 et 267.
 | Rôle | Peut faire |
 | --- | --- |
 | `utilisateur` | Prédire, proposer, commenter, chatter |
-| `curateur` | En plus : approuver ou refuser les marchés de son thème (après période d'essai) |
-| `admin` | Tout : approuver, régler, réinitialiser les mots de passe, gérer les cadeaux, modérer |
+| `curateur` | En plus : approuver, refuser ou corriger les questions de son thème (validées par un admin pendant l'essai, puis autonome) |
+| `admin` | Tout : approuver, régler, annuler, Soki du jour, réinitialiser les mots de passe, suspendre, rôles, curateurs, cadeaux (modération du chat à l'étape 5) |
 
 ## Statuts d'un marché
 

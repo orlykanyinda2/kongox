@@ -85,10 +85,18 @@ async function BoutonCompte() {
   const u = await utilisateurConnecte();
   const t = await getTranslations("entete");
   if (u) {
+    const admin = u.role === "admin" || u.role === "curateur";
     return (
+      <>
+        {admin && (
+          <Link href="/admin" className="hidden h-11 items-center rounded-bouton border-2 border-foret bg-brique px-3.5 text-sm font-bold text-white md:flex">
+            {t("admin")}
+          </Link>
+        )}
       <Link href="/profil" className="hidden h-11 items-center rounded-bouton border-2 border-contour bg-surface px-4 text-[15px] font-bold text-texte md:flex">
         {t("monProfil")}
       </Link>
+      </>
     );
   }
   return (

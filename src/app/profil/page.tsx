@@ -9,6 +9,7 @@ import { LIBELLES_CATEGORIES, type Categorie } from "@/lib/marches/categories";
 import { IconePiece } from "@/components/IconePiece";
 import { BonusQuotidien } from "@/components/compte/BonusQuotidien";
 import { FormulaireCoordonnee } from "@/components/compte/FormulaireCoordonnee";
+import { FormulaireNouveauMotDePasse } from "@/components/compte/FormulaireNouveauMotDePasse";
 import { deconnecter } from "@/app/actions/compte";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterDate, formaterNombre, formaterPieces } from "@/lib/format";
@@ -220,6 +221,24 @@ async function ContenuProfil() {
             </p>
             <FormulaireCoordonnee champ="email_contact" valeur={coordonnees?.email_contact ?? null} libelle={t("emailContact")} placeholder="nom@exemple.com" />
             <p className="text-xs text-texte-secondaire">{t("emailFacultatif")}</p>
+          </section>
+
+          {/* Mot de passe */}
+          <section className={carte}>
+            <h2 className="text-[21px]">{t("motDePasse")}</h2>
+            <FormulaireNouveauMotDePasse />
+          </section>
+
+          {/* Panneau admin, ou candidature curateur */}
+          <section className={`${carte} flex flex-col gap-2`}>
+            {utilisateur.role === "admin" || utilisateur.role === "curateur" ? (
+              <Link href="/admin" className="flex h-12 items-center justify-center rounded-bouton border-2 border-foret bg-vert-jaune font-bold text-foret">
+                {t("ouvrirAdmin")}
+              </Link>
+            ) : null}
+            <Link href="/curateur" className="text-center text-sm font-bold underline">
+              {t("devenirCurateur")}
+            </Link>
           </section>
 
           <form action={deconnecter}>

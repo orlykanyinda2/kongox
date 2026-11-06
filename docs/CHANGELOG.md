@@ -2,6 +2,21 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.4.0] — 2026-11-08 — Étape 3 : admin et curateurs
+
+### Ajouté
+- Panneau admin `/admin` (maquette Admin) : file d'approbation avec délai et retard (12 h), approuver / modifier le texte / refuser avec motif ; résultats à régler avec lien source ; annulation avec remboursement ; Soki du jour
+- Réinitialisation des mots de passe par nom d'utilisateur (mot de passe temporaire, clé service role côté serveur)
+- Utilisateurs : recherche, fiche (solde, série, taux de réussite, coordonnées, transactions), rôle, suspension
+- Cadeaux manuels : marquer un gagnant, « Envoyé » (numéro obligatoire), annuler, historique
+- Curateurs : candidature sur `/curateur`, période d'essai avec validation des décisions par un admin, autonomie après 10 décisions validées, retrait
+- Journal des actions admin (`journal_admin`)
+- « Changer mon mot de passe » et lien vers le panneau dans le profil ; lien « Admin » dans l'en-tête
+- Tables `curateurs`, `candidatures_curateur`, `decisions_curateur`, `cadeaux`, `journal_admin` avec RLS
+
+### Modifié
+- `approuver_marche` et `refuser_marche` gèrent maintenant les curateurs (essai / autonome)
+
 ## [0.3.0] — 2026-11-07 — Étape 2 : marchés et prédictions
 
 ### Ajouté
