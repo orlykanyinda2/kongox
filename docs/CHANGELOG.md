@@ -2,6 +2,20 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.8.0] — 2026-11-07 — Étape 5 (troisième partie) : chat et signalements
+
+### Ajouté
+- Salons de discussion en direct (Supabase Realtime) : un par marché (« Commentaires » sous le marché, badge OUI / NON de l'auteur), un par match (« Chat du match », badge 1 / N / 2), un par communauté (nouvelle page `/communautes/[id]`)
+- Onglet Chat : l'assistant IA et la liste des salons (communautés, matchs à venir, marchés où ça discute)
+- Envoi protégé : compte obligatoire, compte suspendu ou bloqué refusé, 500 caractères, un message toutes les 5 secondes et 20 en 10 minutes (réglables), liens retirés, mots interdits remplacés par des étoiles (sans accents ni majuscules)
+- Bouton « Signaler » sur chaque message et « Signaler ce marché » ; masquage automatique après 3 signalements de personnes différentes
+- Admin › Signalements : signalements ouverts, messages masqués (texte d'origine visible par les admins seulement), blocage du chat 24 h ou 7 jours, liste des mots interdits ; compteur dans le menu
+- Les commentaires comptent dans le score de tendance (poids B) et le tri « plus commentés » de `/marches`
+
+### Modifié
+- Page introuvable : nouveau texte (« Page introuvable. »), bouton vers `/marches`
+- Les noms des communautés (profil, profil public) mènent à leur page
+
 ## [0.7.0] — 2026-11-07 — Étape 5 (deuxième partie) : fil de marchés
 
 ### Ajouté

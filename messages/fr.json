@@ -198,8 +198,6 @@
     "bouton14j": "14 j",
     "boutonTout": "Tout",
     "partagerWhatsApp": "Partager sur WhatsApp",
-    "bientotTitre": "Bientôt :",
-    "bientotTexte": "les commentaires et le chat arrivent sur chaque marché.",
     "regleTitre": "Marché réglé",
     "fermeTitre": "Mises fermées",
     "resultat": "Résultat :",
@@ -281,9 +279,9 @@
     "voirMesQuestions": "Voir mes questions"
   },
   "introuvable": {
-    "bientot": "Bientôt",
-    "titre": "Cette page arrive bientôt.",
-    "texte": "Le foot, le classement, le chat et la page partenaires arrivent dans les prochaines étapes. En attendant, prédis sur les marchés !",
+    "bientot": "Oups",
+    "titre": "Page introuvable.",
+    "texte": "Ce marché, ce profil ou cette page n'existe pas (ou plus). La page partenaires arrive bientôt. En attendant, prédis sur les marchés !",
     "accueil": "Voir les marchés"
   },
   "curateur": {
@@ -399,5 +397,50 @@
     "chargement": "Chargement…",
     "fin": "Tu as tout vu.",
     "erreurChargement": "Le chargement a échoué. Réessaie."
+  },
+  "chat": {
+    "commentaires": "Commentaires · {nombre}",
+    "chatMatch": "Chat du match · {nombre}",
+    "salonCommunaute": "Salon de la communauté · {nombre}",
+    "enDirect": "En direct",
+    "libelleChamp": "Ton message",
+    "placeholder": "Écris en lingala, swahili, français…",
+    "regles": "Reste respectueux. Pas de liens, jamais d'argent réel.",
+    "envoyer": "Envoyer",
+    "envoi": "Envoi…",
+    "connexion": "<lien>Connecte-toi</lien> pour écrire et signaler.",
+    "membres": "Rejoins cette communauté pour écrire dans son salon.",
+    "bloque": "Tu ne peux pas écrire dans le chat pour l'instant (modération).",
+    "vide": "Pas encore de message. Lance la discussion !",
+    "plusAnciens": "Voir les messages plus anciens",
+    "masque": "Message masqué par la modération.",
+    "signaler": "Signaler",
+    "signalerTitre": "Pourquoi ?",
+    "motif_insulte": "Insulte ou harcèlement",
+    "motif_arnaque": "Arnaque ou argent réel",
+    "motif_spam": "Pub ou spam",
+    "motif_ligne_rouge": "Mort, blessure, attaque, particulier visé",
+    "motif_autre": "Autre",
+    "annuler": "Annuler",
+    "signale": "Merci, l'équipe va regarder.",
+    "dejaSignale": "Tu as déjà signalé ce message.",
+    "erreurs": {
+      "connexion_requise": "Connecte-toi d'abord.",
+      "compte_suspendu": "Ton compte est suspendu.",
+      "chat_bloque": "Tu ne peux pas écrire dans le chat pour l'instant (modération).",
+      "salon_invalide": "Ce salon n'est plus disponible.",
+      "reserve_membres": "Rejoins cette communauté pour écrire dans son salon.",
+      "chat_longueur": "Ton message doit faire entre 1 et {max} caractères.",
+      "chat_trop_vite": "Doucement ! Attends quelques secondes entre deux messages.",
+      "chat_limite": "Tu as envoyé beaucoup de messages. Fais une pause de quelques minutes.",
+      "signalement_limite": "Tu as fait beaucoup de signalements aujourd'hui. Réessaie demain.",
+      "soi_meme": "Tu ne peux pas signaler ton propre message.",
+      "signalement_invalide": "Ce message n'existe plus.",
+      "serveur": "Un problème est survenu. Réessaie dans un instant."
+    },
+    "signalerMarche": "Signaler ce marché",
+    "signalerMarcheTitre": "Qu'est-ce qui ne va pas avec ce marché ?",
+    "marcheSignale": "Merci, l'équipe va regarder ce marché.",
+    "marcheDejaSignale": "Tu as déjà signalé ce marché."
   }
 }

@@ -40,7 +40,7 @@ score_tendance = activite ÷ (heures_depuis_publication + 2) ^ G
 | H | 6 h | Durée du bonus pour les nouveaux marchés |
 | bonus_nouveau | 2 | Points ajoutés au score pendant les H premières heures (un marché tout neuf, sans mise, passe devant les marchés endormis) |
 
-`heures_depuis_publication` part de la date de publication (ou d'approbation). Les commentaires comptent dès que le chat existe ; d'ici là, B n'a pas d'effet.
+`heures_depuis_publication` part de la date de publication (ou d'approbation). Les commentaires sont les messages non masqués du salon du marché (`commentaires_marche()`).
 
 ### Bientôt fermés
 Marchés en ligne qui se ferment dans moins de 24 h, du plus proche au plus lointain.

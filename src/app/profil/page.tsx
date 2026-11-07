@@ -241,7 +241,9 @@ async function ContenuProfil() {
               <ul className="mt-3 flex flex-col gap-2">
                 {communautes!.map((c) => (
                   <li key={c.id} className="flex items-center justify-between gap-2 rounded-bouton bg-doux px-3 py-2">
-                    <span className="text-[15px] font-semibold">{c.nom}</span>
+                    <Link href={`/communautes/${c.id}`} className="text-[15px] font-semibold underline-offset-2 hover:underline">
+                      {c.nom}
+                    </Link>
                     <BoutonSocial action={rejoindreCommunaute.bind(null, c.id)} actif={mesCommunautes.has(c.id)} libelleActif="Quitter" libelleInactif="Rejoindre" petit />
                   </li>
                 ))}

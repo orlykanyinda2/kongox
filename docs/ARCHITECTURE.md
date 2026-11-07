@@ -312,12 +312,47 @@ Colonne ajoutée : `marches.sponsor` (nom du partenaire ; la carte affiche alors
 
 `SuiviFil` (monté une fois dans la mise en page, pas sur `/admin`) observe les cartes qui portent `data-fil-marche`, `data-fil-section` et `data-fil-position` : affichage quand la carte est visible à moitié (une fois par page), clic n'importe où sur la carte, une visite par onglet, et la prédiction réussie (rattachée à la section d'où venait le clic). Les événements sont groupés (toutes les 5 s ou par 30) et envoyés avec `navigator.sendBeacon` à `POST /api/evenements`, qui répond tout de suite (204) et enregistre après la réponse (`after()`). **Aucune donnée personnelle** : le visiteur est un identifiant aléatoire gardé dans le navigateur (`localStorage`), la visite un autre (`sessionStorage`). Les événements de plus de 180 jours sont effacés chaque nuit (`kongox-purge-evenements`).
 
-## Tables prévues (étapes suivantes)
+## Chat, commentaires et signalements (étape 5, troisième partie)
 
-| Table | Rôle |
-| --- | --- |
-| `messages` | Messages du chat (match, marché, communauté) |
-| `signalements` | Messages ou marchés signalés |
+Migration : `supabase/migrations/20261107150000_chat.sql`. Code : `src/components/chat/` (`Salon.tsx`, `SalonServeur.tsx`, `SignalerMarche.tsx`), `src/lib/chat/donnees.ts`, `src/app/communautes/[id]/page.tsx`, `src/app/chat/page.tsx`, `src/app/admin/signalements/page.tsx`, `src/app/actions/moderation.ts`.
+
+### Salons
+
+- **Marché** : le salon s'affiche sous le marché, titré « Commentaires · N » (maquette Marche : cartes avec le badge OUI / NON de l'auteur).
+- **Match** : chaque match a son marché 1 N 2, donc son salon (« Chat du match », badge 1 / N / 2).
+- **Communauté** : page `/communautes/[id]` (présentation, Rejoindre / Quitter, salon). Tout le monde lit ; seuls les membres écrivent.
+- L'onglet **Chat** (`/chat`) garde l'assistant IA et liste les salons : communautés (les miennes d'abord), matchs à venir, marchés où ça discute le plus (24 h).
+- Les salons sont publics en lecture (visiteurs compris). Écrire et signaler demandent un compte.
+
+### En direct (Supabase Realtime)
+
+La table `messages_chat` est dans la publication `supabase_realtime` ; la Row Level Security s'applique aussi aux événements. Le navigateur s'abonne aux `INSERT` et `UPDATE` du salon (filtre `marche_id` ou `communaute_id`). Un masquage arrive comme un `UPDATE` sans texte. Pour garder les pages légères, le client Supabase n'est chargé (import dynamique) que lorsque le salon approche de l'écran. Les 30 derniers messages viennent du serveur ; « Voir les messages plus anciens » charge 30 de plus.
+
+### Tables
+
+| Table | Rôle | Accès |
+| --- | --- | --- |
+| `messages_chat` | Message d'un salon (un marché **ou** une communauté) : auteur, nom de l'auteur et badge copiés à l'envoi, texte (null si masqué), `masque` | Lecture pour tous ; écriture seulement par `envoyer_message()` |
+| `messages_masques` | Texte d'origine d'un message masqué, motif, qui l'a masqué (null = automatique) | Admins |
+| `signalements` | Signalement d'un message **ou** d'un marché : motif (`insulte`, `arnaque`, `spam`, `ligne_rouge`, `autre`), détail, statut `ouvert` → `traite` / `rejete` ; un par personne et par cible | La personne voit les siens, les admins tout |
+| `mots_interdits` | Mots ou expressions remplacés par des étoiles (stockés sans accents ni majuscules) | Admins |
+| `blocages_chat` | Personne bloquée du chat jusqu'à une date | La personne voit le sien, les admins tout |
+
+### Fonctions
+
+| Fonction | Rôle | Accès |
+| --- | --- | --- |
+| `envoyer_message(marche, communaute, texte)` | Vérifie : connexion, compte non suspendu (`auth.users.banned_until`), pas de blocage du chat, salon visible (marché en ligne, fermé ou réglé ; communauté active et membre), longueur ; limites de vitesse ; filtre ; badge | Comptes connectés |
+| `filtrer_texte(texte)` | Retire les liens (`[lien retiré]`) et remplace les mots interdits par des étoiles (mot entier, sans accents ni majuscules) | Interne |
+| `signaler(message, marche, motif, detail)` | Enregistre un signalement (20 par personne et par jour au maximum) ; masque le message automatiquement au N-ième signalement | Comptes connectés |
+| `masquer_message()`, `retablir_message()`, `traiter_signalement()`, `bloquer_chat()`, `ajouter_mot_interdit()`, `retirer_mot_interdit()` | Modération, journalisée | Admins |
+| `commentaires_marche(marche, depuis)` | Nombre de messages non masqués : compte maintenant dans le score de tendance (poids B) et le tri « plus commentés » | Interne |
+
+Nouveaux réglages : `chat_longueur_max` (500), `chat_intervalle_secondes` (5), `chat_messages_10min` (20), `chat_signalements_masquage` (3).
+
+### Modération (Admin › Signalements)
+
+Trois vues : **signalements ouverts** (un bloc par message ou par marché, avec tous les motifs ; masquer, rejeter, garder masqué, rétablir, bloquer l'auteur 24 h ou 7 jours, ouvrir le marché), **messages masqués** (texte d'origine, rétablir, bloquer ou débloquer l'auteur), **mots interdits** (ajouter, retirer). Le menu affiche le nombre de signalements ouverts.
 
 ## Connexion (Supabase Auth)
 
@@ -364,3 +399,4 @@ Chaque étape passe par une **fonction SQL en transaction**, qui écrit une lign
 - La clé `SUPABASE_SERVICE_ROLE_KEY` n'est utilisée que côté serveur.
 - Les mots de passe sont réinitialisés par un admin, après une demande par WhatsApp avec le nom d'utilisateur.
 - Les numéros de téléphone ne sont visibles que par leur propriétaire et les admins.
+- Chat : écriture seulement par `envoyer_message()` (limites de vitesse avec verrou par personne, filtre de mots, liens retirés) ; texte des messages masqués hors de la table publique.

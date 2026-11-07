@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-11-07
 | [x] | 2 — Marchés et prédictions | Tables `marches`, `options_marche`, `predictions`, statuts, cagnotte, gains, bonus +50 pièces pour une question approuvée, accueil + page d'un marché + « Proposer une question », seed, limite de 2 000 pièces par jour | terminé |
 | [x] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | terminé |
 | [x] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | terminé |
-| [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | en cours (assistant IA et fil de marchés faits ; chat à suivre) |
+| [x] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue (+ fil de marchés) | terminé |
 | [ ] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | à faire |
 
 Après l'étape 6 : vérification de sécurité et déploiement (section « Avant la mise en ligne » de `PROMPTS.md`).
@@ -69,3 +69,10 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - 64 tests SQL (formule du score, bonus nouveau, controverse, variation, sections sans doublon, diversité, épinglé, sections cachées, phase 2, Pour toi, recherche, filtres, tris, pagination, événements, indicateurs, droits) et 29 vérifications des pages (accueil, `/marches`, `/api/evenements`, Admin › Réglages et Tableau de bord) passent ; non-régression des pages (étape 4, back-office, étape 2) ; suivi vérifié depuis un vrai navigateur.
   - Choix : bonus nouveau = 2 points (modifiable) ; sans Soki du jour, le premier marché du fil prend l'encadré ; « plus commentés » et le poids B restent à 0 jusqu'au chat (`commentaires_marche()` à remplacer dans `feat/chat`).
   - Reporté : saisie du sponsor d'un marché (étape 6, partenaires) ; tests A/B (phase 3).
+- 2026-11-07 : `feat/fil-marches` fusionnée (pull request n° 6, vérifié). `feat/chat` prête : l'étape 5 est terminée.
+  - Migration `20261107150000_chat.sql` exécutée sur Supabase (table `messages_chat` ajoutée à la publication Realtime).
+  - 52 tests SQL / REST du chat (envoi, badge, filtre, limites, suspension, blocage, signalements, masquage automatique, modération, droits, RLS), test Realtime de bout en bout (message reçu en direct par un visiteur en moins d'une seconde), 22 vérifications des pages (marché, match, communauté, `/chat`, Admin › Signalements) ; non-régression : fil (64), étapes 2, 3, back-office, 4, pages des étapes précédentes.
+  - Choix : les salons sont publics en lecture ; un salon par marché sert aussi de chat du match ; liens retirés des messages (anti-arnaque) ; texte d'un message masqué déplacé dans une table réservée aux admins.
+  - À faire par Jonathan : ajouter les insultes courantes en lingala et en swahili dans Admin › Signalements › Mots interdits (la liste de départ est en français).
+  - Reporté : pourcentages OUI / NON en direct avec Realtime (prévu à l'étape 2 ; aujourd'hui ils se mettent à jour à chaque visite) ; « en train d'écrire ».
+  - Remarque pour « Avant la mise en ligne » : sur les pages en streaming (marché, profil, communauté), une adresse inconnue renvoie la page « introuvable » avec `noindex`, mais un code HTTP 200 (le 404 est dans le flux). Comportement de Next.js, à vérifier lors de l'audit.
