@@ -13,6 +13,8 @@ import { historiqueMarche, obtenirMarche, type Marche } from "@/lib/marches/donn
 import { matchDuMarche } from "@/lib/football/donnees";
 import { RepartitionMatch } from "@/components/football/RepartitionMatch";
 import { AssistantServeur } from "@/components/ia/AssistantServeur";
+import { SalonServeur } from "@/components/chat/SalonServeur";
+import { SignalerMarche } from "@/components/chat/SignalerMarche";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre, formaterPieces } from "@/lib/format";
@@ -20,7 +22,7 @@ import { lienWhatsApp, texteMarche } from "@/lib/partage";
 import { lireReglages } from "@/lib/reglages";
 
 // Page d'un marché (maquettes/Marche.dc.html).
-// L'assistant IA et les commentaires arrivent à l'étape 5.
+// L'assistant IA et le salon du marché (commentaires en direct) sont sous le graphique.
 export default function PageMarche({ params }: PageProps<"/marches/[id]">) {
   return (
     <div className="flex flex-1 flex-col">
@@ -109,9 +111,15 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
             <AssistantServeur marche={marche.id} />
           </Suspense>
 
-          <section className="rounded-[18px] border-2 border-dashed border-sauge bg-doux p-4 text-sm leading-normal">
-            <strong>{t("bientotTitre")}</strong> {t("bientotTexte")}
-          </section>
+          <Suspense fallback={<div className="h-48 animate-pulse rounded-[18px] bg-doux" />}>
+            <SalonServeur cible={{ marche: marche.id }} type={match ? "match" : "marche"} />
+          </Suspense>
+
+          {!match && (
+            <Suspense fallback={null}>
+              <SignalerMarcheSiConnecte marche={marche.id} />
+            </Suspense>
+          )}
         </div>
       </div>
     </main>
@@ -225,4 +233,10 @@ async function MesPredictions({ marche, libelles }: { marche: Marche; libelles: 
       </ul>
     </section>
   );
+}
+
+// « Signaler ce marché » (question floue, ligne rouge…) : pour les personnes connectées
+async function SignalerMarcheSiConnecte({ marche }: { marche: number }) {
+  const u = await utilisateurConnecte();
+  return u ? <SignalerMarche marche={marche} /> : null;
 }

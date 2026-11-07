@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export type Compteurs = Partial<Record<"approbation" | "resultats" | "cadeaux" | "curateurs" | "programmation", number>>;
+export type Compteurs = Partial<Record<"approbation" | "resultats" | "cadeaux" | "curateurs" | "programmation" | "signalements", number>>;
 
 const LIENS = [
   { href: "/admin", libelle: "Tableau de bord", admin: true },
@@ -18,7 +18,7 @@ const LIENS = [
   { href: "/admin/cadeaux", libelle: "Cadeaux", admin: true, compteur: "cadeaux" },
   { href: "/admin/curateurs", libelle: "Curateurs", admin: true, compteur: "curateurs" },
   { href: "/admin/communautes", libelle: "Communautés", admin: true },
-  { href: "/admin/signalements", libelle: "Signalements", admin: true },
+  { href: "/admin/signalements", libelle: "Signalements", admin: true, compteur: "signalements", alerte: true },
   { href: "/admin/journal", libelle: "Journal", admin: true },
   { href: "/admin/reglages", libelle: "Réglages", admin: true },
 ] as const;

@@ -207,7 +207,9 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
             <ul className="mt-3.5 flex flex-col gap-2.5">
               {p.communautes.map((c) => (
                 <li key={c.id} className="flex items-center justify-between rounded-bouton bg-doux px-3.5 py-3">
-                  <span className="font-bold">{c.nom}</span>
+                  <Link href={`/communautes/${c.id}`} className="font-bold underline-offset-2 hover:underline">
+                    {c.nom}
+                  </Link>
                   <span className="text-[13px] text-texte-secondaire">{TYPES_COMMUNAUTE[c.type] ?? "Communauté"}</span>
                 </li>
               ))}
