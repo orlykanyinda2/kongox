@@ -2,7 +2,24 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
-## [0.4.0] — 2026-11-08 — Étape 3 : admin et curateurs
+## [0.5.0] — 2026-11-07 — Étape 4 : football, classements et profils
+
+### Ajouté
+- Import des matchs API-Football (Premier League, Ligue des champions, Liga, Serie A, Bundesliga, Ligue 1, **Linafoot**) : code indépendant du fournisseur, budget de requêtes par jour avec arrêt avant la limite, imports concurrents bloqués, site utilisable si l'API ne répond pas
+- Mode test : saison 2024 (offre gratuite) rejouée avec un décalage de 728 jours ; saison et décalage dans Admin › Réglages ; bandeau « Données de test 2024 » dans l'admin
+- Marché 1 N 2 automatique pour chaque match, réglé automatiquement après la fin estimée (score à 90 minutes) ; match annulé ou reporté = remboursement
+- Page `/football` (par championnat et par jour), section « Matchs à venir » sur l'accueil, page d'un match (1 · équipe, N · nul, 2 · équipe, répartition des prédictions)
+- Classements semaine / mois / depuis le début et entre amis, score Mayele, podium, « Toi », communauté contre communauté (`/classement`, section « Classement de la semaine » sur l'accueil)
+- Profils publics `/u/[nom]` : badges, score Mayele, pièces, prédictions, abonnés, bouton Suivre, partage WhatsApp, prédictions récentes (toutes / en cours / terminées), communautés
+- Communautés (3 par personne, à rejoindre dans le profil) et duels choisis par l'admin
+- Admin › Matchs (ligues, « Importer maintenant », compteur de requêtes, journal des imports, saisie manuelle d'un score ou annulation), Admin › Communautés, compteur de requêtes sur le tableau de bord
+- Bonus en masse : cibles « une communauté » et « les N premiers du classement »
+- Variable `CRON_SECRET` et `vercel.json` (import quotidien en production)
+
+### Corrigé
+- Dates des entrées des étapes 3 et 4 et noms de trois migrations (avancés par erreur au 8, 9 et 10 novembre)
+
+## [0.4.0] — 2026-11-07 — Étape 3 : admin et curateurs
 
 ### Ajouté
 - Panneau admin `/admin` (maquette Admin) : file d'approbation avec délai et retard (12 h), approuver / modifier le texte / refuser avec motif ; résultats à régler avec lien source ; annulation avec remboursement ; Soki du jour

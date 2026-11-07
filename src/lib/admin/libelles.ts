@@ -41,6 +41,11 @@ export const ACTIONS_JOURNAL: Record<string, string> = {
   modele_cree: "Modèle récurrent créé",
   modele_active: "Modèle activé",
   modele_desactive: "Modèle en pause",
+  match_corrige: "Score de match corrigé",
+  ligue_activee: "Ligue activée",
+  ligue_desactivee: "Ligue désactivée",
+  communaute_creee: "Communauté créée",
+  duel_cree: "Duel de communautés créé",
 };
 
 export function libelleAction(action: string) {

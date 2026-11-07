@@ -13,10 +13,9 @@ export async function CeQuePenseKinshasa() {
   const t = await getTranslations("accueil");
 
   return (
-    <section className="mx-auto hidden max-w-contenu px-6 pb-6 pt-14 md:block">
-      <div className="flex flex-col gap-4 rounded-[24px] border-2 border-foret bg-vert-jaune p-7 text-foret shadow-[8px_8px_0_#BC4749]">
+    <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-4 rounded-[24px] border-2 border-foret bg-vert-jaune p-5 text-foret shadow-[8px_8px_0_#BC4749] md:p-7">
         <span className="text-sm font-bold tracking-[1px]">{t("kinshasaSurtitre")}</span>
-        <h2 className="text-4xl leading-[1.1] tracking-[-1px]">« {t("kinshasaCitation", { pct: m.pourcentageOui })} »</h2>
+        <h2 className="text-[28px] leading-[1.1] tracking-[-1px] md:text-4xl">« {t("kinshasaCitation", { pct: m.pourcentageOui })} »</h2>
         <p className="font-titre text-xl font-bold">
           <Link href={`/marches/${m.id}`} className="underline decoration-2 underline-offset-4">
             {m.question}
@@ -34,8 +33,7 @@ export async function CeQuePenseKinshasa() {
             {t("partagerWhatsApp")}
           </a>
         </div>
-      </div>
-    </section>
+    </div>
   );
 }
 

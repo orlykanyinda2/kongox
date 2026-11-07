@@ -13,6 +13,7 @@ const CONNUS = [
   "motivation_invalide", "deja_curateur", "candidature_en_attente", "connexion_requise",
   "verrouille_mises", "date_publication_invalide", "motif_obligatoire", "frequence_invalide", "montant_ajustement_invalide",
   "raison_obligatoire", "solde_negatif", "montant_masse_invalide", "aucun_compte", "trop_de_comptes", "hors_limites",
+  "deja_regle", "score_invalide", "nom_pris",
 ];
 
 // Traduit le « hint » renvoyé par les fonctions SQL en message français

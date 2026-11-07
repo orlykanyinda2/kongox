@@ -10,6 +10,8 @@ import { GraphiqueMarche } from "@/components/marches/GraphiqueMarche";
 import { FormulairePrediction } from "@/components/marches/FormulairePrediction";
 import { IconeRetour, IconeWhatsApp } from "@/components/icones";
 import { historiqueMarche, obtenirMarche, type Marche } from "@/lib/marches/donnees";
+import { matchDuMarche } from "@/lib/football/donnees";
+import { RepartitionMatch } from "@/components/football/RepartitionMatch";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre, formaterPieces } from "@/lib/format";
@@ -47,8 +49,11 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
   const numero = Number(id);
   if (!Number.isInteger(numero) || numero <= 0) notFound();
 
-  const [marche, historique] = await Promise.all([obtenirMarche(numero), historiqueMarche(numero)]);
+  const [marche, historique, match] = await Promise.all([obtenirMarche(numero), historiqueMarche(numero), matchDuMarche(numero)]);
   if (!marche) notFound();
+  // Marché d'un match (1 N 2) : boutons « 1 · Équipe », « N · Nul », « 2 · Équipe »
+  const libelles = match ? [`1 · ${match.dom}`, "N · Nul", `2 · ${match.ext}`] : marche.options.map((o) => o.libelle);
+  const pourcentages = match ? match.pourcentages : [marche.pourcentageOui, 100 - marche.pourcentageOui];
   const t = await getTranslations("marche");
 
   return (
@@ -68,18 +73,18 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
               {t("fermeLe", { date: dateFin.format(new Date(marche.date_fin)), source: marche.source })}
             </span>
           </div>
-          <h1 className="text-[26px] leading-[1.15] md:text-[40px] md:tracking-[-1px]">{marche.question}</h1>
+          <h1 className="text-[26px] leading-[1.15] md:text-[40px] md:tracking-[-1px]">{match ? `${match.dom} – ${match.ext}` : marche.question}</h1>
           <p className="text-[13px] text-texte-secondaire">
             {t("volume", { pieces: formaterNombre(marche.volume) })}
             {marche.auteur && <> · {t("proposePar", { nom: marche.auteur })}</>}
           </p>
-          <GraphiqueMarche historique={historique} pourcentage={marche.pourcentageOui} />
+          {match ? <RepartitionMatch m={match} libelles={libelles} /> : <GraphiqueMarche historique={historique} pourcentage={marche.pourcentageOui} />}
         </div>
 
         <aside className="md:col-start-2 md:row-span-2 md:row-start-1">
           <div className="md:sticky md:top-24">
             <Suspense fallback={<div className="h-[460px] animate-pulse rounded-carte bg-hunter" />}>
-              <PanneauPrediction marche={marche} />
+              <PanneauPrediction marche={marche} libelles={libelles} pourcentages={pourcentages} />
             </Suspense>
           </div>
         </aside>
@@ -96,7 +101,7 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
           </a>
 
           <Suspense fallback={null}>
-            <MesPredictions marche={marche} />
+            <MesPredictions marche={marche} libelles={libelles} />
           </Suspense>
 
           <section className="rounded-[18px] border-2 border-dashed border-sauge bg-doux p-4 text-sm leading-normal">
@@ -109,7 +114,7 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
 }
 
 // Panneau de prédiction : formulaire si connecté et marché ouvert, sinon message adapté
-async function PanneauPrediction({ marche }: { marche: Marche }) {
+async function PanneauPrediction({ marche, libelles, pourcentages }: { marche: Marche; libelles: string[]; pourcentages: number[] }) {
   const t = await getTranslations("marche");
 
   if (!marche.ouvert) {
@@ -120,7 +125,7 @@ async function PanneauPrediction({ marche }: { marche: Marche }) {
         {marche.statut === "regle" ? (
           gagnante ? (
             <p className="text-[15px]">
-              {t("resultat")} <strong className="text-vert-jaune">{gagnante.libelle}</strong>
+              {t("resultat")} <strong className="text-vert-jaune">{libelles[marche.options.indexOf(gagnante)] ?? gagnante.libelle}</strong>
             </p>
           ) : (
             <p className="text-[15px]">{t("annule", { motif: marche.motif ?? "" })}</p>
@@ -172,7 +177,8 @@ async function PanneauPrediction({ marche }: { marche: Marche }) {
       <FormulairePrediction
         marcheId={marche.id}
         options={marche.options}
-        pourcentageOui={marche.pourcentageOui}
+        pourcentages={pourcentages}
+        libelles={libelles}
         solde={u.solde_pieces}
         restant={Number(restant ?? 0)}
         miseMinimum={Number(reglages.mise_minimum)}
@@ -182,7 +188,7 @@ async function PanneauPrediction({ marche }: { marche: Marche }) {
 }
 
 // Mes mises sur ce marché
-async function MesPredictions({ marche }: { marche: Marche }) {
+async function MesPredictions({ marche, libelles }: { marche: Marche; libelles: string[] }) {
   const u = await utilisateurConnecte();
   if (!u) return null;
   const supabase = await creerClientServeur();
@@ -200,11 +206,12 @@ async function MesPredictions({ marche }: { marche: Marche }) {
       <h2 className="text-lg">{t("mesMises")}</h2>
       <ul className="mt-2">
         {data.map((p) => {
-          const libelle = marche.options.find((o) => o.id === p.option_id)?.libelle ?? "";
+          const i = marche.options.findIndex((o) => o.id === p.option_id);
+          const libelle = libelles[i] ?? "";
           return (
             <li key={p.id} className="flex items-center justify-between gap-3 border-b border-separateur py-2.5 text-[15px] last:border-b-0">
               <span>
-                <strong className={libelle === "OUI" ? "text-hunter dark:text-vert-jaune" : "text-brique"}>{libelle}</strong> · {formaterPieces(p.montant)}
+                <strong className={i === 0 ? "text-hunter dark:text-vert-jaune" : "text-brique"}>{libelle}</strong> · {formaterPieces(p.montant)}
               </span>
               <span className="text-sm text-texte-secondaire">{t(`statut.${p.statut}`, { gain: formaterNombre(p.gain) })}</span>
             </li>

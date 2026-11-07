@@ -10,8 +10,9 @@ import { formaterNombre } from "@/lib/format";
 
 type Props = {
   marcheId: number;
-  options: OptionMarche[]; // [OUI, NON]
-  pourcentageOui: number;
+  options: OptionMarche[]; // [OUI, NON] ou [1, N, 2]
+  pourcentages: number[]; // un par option, dans le même ordre
+  libelles?: string[]; // texte des boutons (ex. « 1 · Arsenal ») ; par défaut le libellé de l'option
   solde: number;
   restant: number; // pièces qu'on peut encore miser aujourd'hui
   miseMinimum: number; // réglage « mise_minimum »
@@ -21,10 +22,12 @@ const MONTANTS = [50, 100, 200, 500];
 
 // Panneau Hunter Green pour prédire (maquette Marche).
 // Le gain affiché est une estimation pour aider à choisir ; les pièces ne bougent que par la fonction SQL.
-export function FormulairePrediction({ marcheId, options, pourcentageOui, solde, restant, miseMinimum }: Props) {
+export function FormulairePrediction({ marcheId, options, pourcentages, libelles, solde, restant, miseMinimum }: Props) {
   const t = useTranslations("prediction");
   const choixUrl = useSearchParams().get("choix");
-  const [ordre, setOrdre] = useState(choixUrl === "non" ? 1 : 0);
+  // ?choix=oui|non (OUI / NON) ou ?choix=1|N|2 (match)
+  const depuisUrl = { oui: 0, non: 1, "1": 0, N: 1, n: 1, "2": 2 }[choixUrl ?? ""] ?? 0;
+  const [ordre, setOrdre] = useState(Math.min(depuisUrl, options.length - 1));
   const [saisie, setSaisie] = useState("200");
   const [etat, action, enCours] = useActionState<EtatPrediction, FormData>(predire, {});
 
@@ -41,19 +44,20 @@ export function FormulairePrediction({ marcheId, options, pourcentageOui, solde,
   else if (montant > solde) blocage = t("soldeInsuffisant", { solde: formaterNombre(solde) });
   else if (montant > restant) blocage = t("depasseLimite", { restant: formaterNombre(restant) });
 
-  const pcts = [pourcentageOui, 100 - pourcentageOui];
+  // OUI vert / NON rouge ; pour un match : 1 vert, N clair, 2 rouge (toujours avec le texte écrit)
+  const couleurs = options.length === 3 ? ["bg-vert-jaune text-foret", "bg-champagne text-foret", "bg-brique text-white"] : ["bg-vert-jaune text-foret", "bg-brique text-white"];
   const choix = (o: number) => {
     const actif = o === ordre;
-    const couleurs = o === 0 ? "bg-vert-jaune text-foret" : "bg-brique text-white";
     const etatVisuel = actif ? "border-[3px] border-champagne shadow-[4px_4px_0_#1F3A26]" : "border-[3px] border-transparent opacity-75";
     return (
       <button
+        key={o}
         type="button"
         aria-pressed={actif}
         onClick={() => setOrdre(o)}
-        className={`h-14 rounded-champ text-[17px] font-bold ${couleurs} ${etatVisuel}`}
+        className={`min-h-14 rounded-champ px-1.5 py-1 font-bold leading-tight ${options.length === 3 ? "text-[14px]" : "text-[17px]"} ${couleurs[o]} ${etatVisuel}`}
       >
-        {options[o].libelle} · {pcts[o]} %
+        {libelles?.[o] ?? options[o].libelle} · {pourcentages[o]} %
       </button>
     );
   };
@@ -66,11 +70,10 @@ export function FormulairePrediction({ marcheId, options, pourcentageOui, solde,
     >
       <input type="hidden" name="marche" value={marcheId} />
       <input type="hidden" name="option" value={option.id} />
-      <input type="hidden" name="libelle" value={option.libelle} />
+      <input type="hidden" name="libelle" value={libelles?.[ordre] ?? option.libelle} />
 
-      <div role="group" aria-label={t("choisirOuiNon")} className="grid grid-cols-2 gap-2">
-        {choix(0)}
-        {choix(1)}
+      <div role="group" aria-label={t("choisirOuiNon")} className={`grid gap-2 ${options.length === 3 ? "grid-cols-3" : "grid-cols-2"}`}>
+        {options.map((_, o) => choix(o))}
       </div>
 
       <div>

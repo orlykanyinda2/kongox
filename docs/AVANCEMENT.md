@@ -4,7 +4,7 @@ Ce fichier dit où en est la construction. Claude Code le lit au début de chaqu
 
 Statuts possibles : **à faire** · **en cours** · **terminé**
 
-Dernière mise à jour : 2026-11-09
+Dernière mise à jour : 2026-11-07
 
 | | Étape | Contenu | Statut |
 | --- | --- | --- | --- |
@@ -12,11 +12,18 @@ Dernière mise à jour : 2026-11-09
 | [x] | 1 — Connexion et pièces | Inscription / connexion par nom d'utilisateur, noms drôles, tables `utilisateurs` et `transactions_pieces`, 1 000 pièces à l'inscription, bonus quotidien de 100 pièces, série `serie_jours` (+200 pièces tous les 7 jours) | terminé |
 | [x] | 2 — Marchés et prédictions | Tables `marches`, `options_marche`, `predictions`, statuts, cagnotte, gains, bonus +50 pièces pour une question approuvée, accueil + page d'un marché + « Proposer une question », seed, limite de 2 000 pièces par jour | terminé |
 | [x] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | terminé |
-| [ ] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | à faire |
+| [x] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | terminé |
 | [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | à faire |
 | [ ] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | à faire |
 
 Après l'étape 6 : vérification de sécurité et déploiement (section « Avant la mise en ligne » de `PROMPTS.md`).
+
+## Avant la mise en ligne
+
+- [ ] Passer à l'**offre payante d'API-Football** (l'offre gratuite ne donne que les saisons 2022 à 2024).
+- [ ] **Basculer la saison** dans Admin › Réglages : `football_saison` = saison en cours, `football_decalage_jours` = 0. Le bandeau « Données de test 2024 » disparaît alors de l'admin.
+- [ ] Vérifier que la **Linafoot** (ligue n° 424) est bien importée avec la saison en cours.
+- [ ] Vérification de sécurité et déploiement sur Vercel (PROMPTS.md, « Avant la mise en ligne »).
 
 ## Notes
 
@@ -35,12 +42,20 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - 41 tests automatiques des fonctions SQL passent (mises, limite, approbation +50, règlement avec arrondi exact, remboursement, annulation, sécurité, conservation des pièces) ; pages vérifiées en visiteur et connecté.
   - Reporté : écran admin pour approuver / régler (étape 3) ; pourcentages en temps réel avec Supabase Realtime, assistant IA et commentaires sur la page d'un marché (étape 5) ; « Matchs à venir » et « Classement de la semaine » sur l'accueil (étape 4) ; cartes image et Open Graph (étape 6).
   - À vérifier par Jonathan : les phrases en lingala de la carte de l'assistant sur l'accueil (`messages/fr.json`, `accueil.assistant…`).
-- 2026-11-08 : `feat/connexion` et `feat/marches` fusionnées dans `main` (vérifié). Étape 3 terminée sur la branche `feat/admin`.
+- 2026-11-07 : `feat/connexion` et `feat/marches` fusionnées dans `main` (vérifié). Étape 3 terminée sur la branche `feat/admin`.
   - Migration de l'étape 3 exécutée sur Supabase. 42 tests SQL (curateurs, essai → autonome, cadeaux, rôles, RLS, journal) + 41 tests de l'étape 2 (non-régression) + 32 vérifications des pages admin (visiteur, utilisateur, curateur, admin) passent.
   - Aucun admin pour l'instant : voir « Premier admin » dans `docs/ARCHITECTURE.md`.
   - Reporté : signalements et modération du chat (étape 5), matchs (étape 4) — les écrans admin affichent « Cet écran arrive à l'étape… ».
-- 2026-11-09 : panneau admin refait en back-office sobre (demande d'Orly), toujours sur `feat/admin`, avant la pull request.
-  - Migration `20261109090000_backoffice_admin.sql` exécutée sur Supabase. 51 tests SQL du back-office + 42 (étape 3) + 41 (étape 2) passent ; 34 vérifications des écrans admin (admin, curateur, utilisateur, export CSV, textes réglés) + pages publiques passent.
+- 2026-11-07 : panneau admin refait en back-office sobre (demande d'Orly), toujours sur `feat/admin`, avant la pull request.
+  - Migration `20261107110000_backoffice_admin.sql` exécutée sur Supabase. 51 tests SQL du back-office + 42 (étape 3) + 41 (étape 2) passent ; 34 vérifications des écrans admin (admin, curateur, utilisateur, export CSV, textes réglés) + pages publiques passent.
   - Décisions validées par Orly : marché verrouillé après la première mise (sauf date de fin et mise en avant) ; bonus en masse par liste de noms ou comptes actifs (communauté et classement à l'étape 4) ; réglages des pièces modifiables.
-  - Premier admin : `ondiq` (créé le 2026-11-08).
+  - Premier admin : `ondiq` (créé le 2026-11-07).
   - Reporté : un marché par match d'un championnat (étape 4, avec l'import des matchs) ; signalements (étape 5).
+- 2026-11-07 : `feat/admin` (étape 3 + back-office) fusionnée dans `main` (pull request n° 3, vérifié). Étape 4 en cours sur `feat/football`.
+  - API-Football : offre gratuite active (100 requêtes / jour) mais limitée aux saisons 2022 à 2024. Choix d'Orly : développer avec la saison 2024 (option C), passer à l'offre payante juste avant le lancement. Linafoot couverte (ligue n° 424, « Ligue 1 », Congo-DR).
+  - Correction : les dates des entrées des étapes 3 et 4 (et les noms de trois migrations) avaient été avancées par erreur au 8, 9 et 10 novembre ; tout a été fait les 6 et 7 novembre 2026 (heure de Kinshasa). L'ordre des migrations est inchangé.
+- 2026-11-07 : étape 4 terminée sur `feat/football`.
+  - Migration exécutée sur Supabase. Premier import réel : 54 matchs (semaine du 9 au 16 novembre 2024, dont 12 de Linafoot ; pas de Ligue des champions cette semaine-là) pour 7 requêtes.
+  - 39 tests SQL de l'étape 4 + non-régression (41 étape 2, 42 étape 3, 51 back-office) ; vérifications des pages football, accueil, classement, profils publics, page d'un match, admin › Matchs et Communautés.
+  - À faire par Orly : créer les premières communautés et les duels dans Admin › Communautés.
+  - Reporté : un marché par match d'un championnat dans les modèles récurrents (les marchés de matchs sont déjà créés automatiquement à l'import) ; forme récente des équipes pour l'assistant IA (étape 5, calculée depuis la table `matchs`).

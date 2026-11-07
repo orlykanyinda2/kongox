@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Menu, type Compteurs } from "@/components/admin/Menu";
 import { lireAcces } from "@/lib/admin/acces";
 import { creerClientServeur } from "@/lib/supabase/serveur";
+import { lireReglages } from "@/lib/reglages";
 
 export const metadata = { title: "Administration — KongoX", robots: { index: false } };
 
@@ -56,6 +57,10 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
         </details>
       </header>
 
+      <Suspense fallback={null}>
+        <BandeauTest />
+      </Suspense>
+
       <div className="flex flex-1">
         <aside className="hidden w-56 flex-none border-r border-adm-bordure bg-adm-zone md:block">
           <div className="sticky top-14 max-h-[calc(100vh-3.5rem)] overflow-y-auto p-3">
@@ -66,6 +71,21 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
         </aside>
         <main className="min-w-0 flex-1 px-4 py-5 md:px-6">{children}</main>
       </div>
+    </div>
+  );
+}
+
+// Tant que la saison importée n'est pas la saison réelle, on le dit clairement
+async function BandeauTest() {
+  const acces = await lireAcces();
+  if (!acces?.admin) return null;
+  const r = await lireReglages();
+  const decalage = Number(r.football_decalage_jours);
+  if (decalage <= 0) return null;
+  return (
+    <div role="status" className="border-b border-[#eedfb8] bg-[#fbf4e4] px-4 py-2 text-[13px]">
+      <strong>Données de test {String(r.football_saison)}</strong> : les matchs de la saison {String(r.football_saison)} sont rejoués avec un décalage de {decalage} jours.
+      Avant la mise en ligne : offre payante d&apos;API-Football, puis <Link href="/admin/reglages" className="underline">saison en cours et décalage 0</Link>.
     </div>
   );
 }
