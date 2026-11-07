@@ -8,6 +8,9 @@ export type UtilisateurConnecte = {
   role: string;
   solde_pieces: number;
   serie_jours: number;
+  invite: boolean; // compte invité (pseudo seulement) : pas d'assistant, de commentaires, de bonus, de cadeaux…
+  icone: string | null;
+  photo: string | null;
 };
 
 // Utilisateur connecté (ou null). Une seule lecture par requête grâce à cache().
@@ -19,7 +22,7 @@ export const utilisateurConnecte = cache(async (): Promise<UtilisateurConnecte |
   if (!id) return null;
   const { data: u } = await supabase
     .from("utilisateurs")
-    .select("id, nom_utilisateur, role, solde_pieces, serie_jours")
+    .select("id, nom_utilisateur, role, solde_pieces, serie_jours, invite, icone, photo")
     .eq("id", id)
     .maybeSingle<UtilisateurConnecte>();
   return u ?? null;

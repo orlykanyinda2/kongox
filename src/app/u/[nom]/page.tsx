@@ -14,6 +14,10 @@ import { formaterNombre } from "@/lib/format";
 import { OPEN_GRAPH, urlSite } from "@/lib/partage";
 import { resumeProfil } from "@/lib/og/profil";
 import type { Metadata } from "next";
+import { utilisateurConnecte } from "@/lib/compte/session";
+import { SignalerPhoto } from "@/components/profil/SignalerPhoto";
+import { BadgeIcone, type Niveau } from "@/components/badges/BadgeIcone";
+import { Avatar } from "@/components/profil/Avatar";
 
 export async function generateMetadata({ params }: PageProps<"/u/[nom]">): Promise<Metadata> {
   const nom = decodeURIComponent((await params).nom).replace(/^@/, "");
@@ -45,7 +49,11 @@ type ProfilPublic = {
   id: string;
   nom: string;
   role: string;
-  badges: string[];
+  badges: { code: string; nom: string; glyphe: string; niveau: Niveau; vedette: boolean }[];
+  invite: boolean;
+  icone: string | null;
+  photo: string | null;
+  elite: boolean;
   cree_le: string;
   solde: number;
   serie: number;
@@ -90,7 +98,6 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
   if (!p) notFound();
   const predictions = (preds ?? []) as Prediction[];
 
-  const initiales = p.nom.split("_").filter(Boolean).slice(0, 2).map((m) => m[0]?.toUpperCase()).join("");
   const score = p.reglees ? Math.round((p.gagnees * 100) / p.reglees) : null;
   const specialite = p.themes.length ? `Curateur ${p.themes.map((t) => LIBELLES_CATEGORIES[t.categorie]).join(", ")}` : null;
   const lienProfil = `${urlSite()}/u/${p.nom}`;
@@ -106,11 +113,12 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
       <div className="flex min-w-0 flex-[999_1_640px] flex-col gap-6">
         <section className="flex animate-monte flex-col gap-5 rounded-carte border-2 border-contour bg-surface p-5 shadow-[8px_8px_0_var(--ombre)] md:p-7">
           <div className="flex flex-wrap items-center gap-5">
-            <span className="flex size-24 flex-none items-center justify-center rounded-[28px] border-[3px] border-foret bg-vert-jaune font-titre text-4xl font-bold text-foret shadow-[5px_5px_0_#1F3A26]">
-              {initiales}
-            </span>
+            <Avatar nom={p.nom} icone={p.icone} photo={p.photo} elite={p.elite} taille={96} />
             <div className="min-w-0 flex-[1_1_240px]">
-              <h1 className="truncate text-[28px] tracking-[-1px] md:text-4xl">@{p.nom}</h1>
+              <h1 className="truncate text-[28px] tracking-[-1px] md:text-4xl">
+                @{p.nom}
+                {p.invite && <span className="ml-2 align-middle text-base font-semibold text-texte-secondaire">invité</span>}
+              </h1>
               <p className="mt-1 text-[15px] text-texte-secondaire">
                 {[p.communautes.find((c) => c.type === "ville")?.nom, `Membre depuis ${moisAnnee.format(new Date(p.cree_le))}`, specialite].filter(Boolean).join(" · ")}
               </p>
@@ -126,11 +134,19 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
             </div>
           </div>
 
+          {p.photo && !p.soi_meme && (
+            <Suspense fallback={null}>
+              <SignalerPhotoSiCompte utilisateur={p.id} />
+            </Suspense>
+          )}
+
           {(p.badges.length > 0 || p.serie > 1) && (
             <ul className="flex flex-wrap gap-2" aria-label="Badges">
-              {p.badges.map((b, i) => (
-                <li key={b} className={`rounded-full border-2 border-foret px-3 py-1.5 text-[13px] font-bold ${i % 2 ? "bg-vert-jaune text-foret" : "bg-foret text-white"}`}>
-                  {b}
+              {/* Les badges mis en avant d'abord (4 au maximum), puis les plus récents */}
+              {p.badges.slice(0, 8).map((b) => (
+                <li key={b.code} className={`flex items-center gap-1.5 rounded-full border-2 border-foret py-1 pl-1 pr-3 text-[13px] font-bold ${b.vedette ? "bg-vert-jaune text-foret" : "bg-surface text-texte"}`}>
+                  <BadgeIcone glyphe={b.glyphe} niveau={b.niveau} taille={24} />
+                  {b.nom}
                 </li>
               ))}
               {p.serie > 1 && <li className="rounded-full border-2 border-foret bg-brique px-3 py-1.5 text-[13px] font-bold text-white">Série de {p.serie} jours</li>}
@@ -249,14 +265,19 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
 
 // Bouton « Suivre » (les visiteurs sont renvoyés vers la connexion)
 async function SuivreOuConnexion({ nom, actif }: { nom: string; actif: boolean }) {
-  const supabase = await creerClientServeur();
-  const { data } = await supabase.auth.getClaims();
-  if (!data?.claims?.sub) {
+  const u = await utilisateurConnecte();
+  if (!u || u.invite) {
     return (
-      <Link href="/connexion" className="flex h-12 items-center rounded-champ border-2 border-foret bg-foret px-[22px] text-[15px] font-bold text-white shadow-[4px_4px_0_#A7C957]">
+      <Link href={u ? "/inscription" : "/connexion"} className="flex h-12 items-center rounded-champ border-2 border-foret bg-foret px-[22px] text-[15px] font-bold text-white shadow-[4px_4px_0_#A7C957]">
         Suivre
       </Link>
     );
   }
   return <BoutonSocial action={suivre.bind(null, nom)} actif={actif} libelleActif="Abonné" libelleInactif="Suivre" />;
+}
+
+// « Signaler cette photo » : pour les comptes seulement
+async function SignalerPhotoSiCompte({ utilisateur }: { utilisateur: string }) {
+  const u = await utilisateurConnecte();
+  return u && !u.invite ? <SignalerPhoto utilisateur={utilisateur} /> : null;
 }

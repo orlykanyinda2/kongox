@@ -4,6 +4,8 @@ import { NextIntlClientProvider, useMessages } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { EnregistrementServiceWorker } from "@/components/EnregistrementServiceWorker";
 import { SuiviFil } from "@/components/marches/SuiviFil";
+import { NouveauBadgeServeur } from "@/components/badges/NouveauBadgeServeur";
+import { Suspense } from "react";
 import { scriptTheme } from "@/lib/theme";
 import { OPEN_GRAPH, urlSite } from "@/lib/partage";
 import "./globals.css";
@@ -47,7 +49,7 @@ export const viewport: Viewport = {
 
 // Textes envoyés au navigateur : seulement ceux des composants "use client" (pages plus légères).
 // Ajouter ici le nom d'une section de messages/fr.json si un nouveau composant client l'utilise.
-const TEXTES_NAVIGATEUR = ["assistant", "accueil", "bonus", "chat", "compte", "curateur", "marche", "navigation", "prediction", "profil", "proposer", "theme"] as const;
+const TEXTES_NAVIGATEUR = ["assistant", "accueil", "badges", "bonus", "chat", "invite", "compte", "curateur", "marche", "navigation", "prediction", "profil", "proposer", "theme"] as const;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const tous = useMessages();
@@ -63,7 +65,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: scriptTheme }} />
       </head>
       <body className="min-h-full flex flex-col">
-        <NextIntlClientProvider messages={textesNavigateur}>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider messages={textesNavigateur}>
+          {children}
+          {/* « Nouveau badge ! » (textes du navigateur : doit être dans le fournisseur) */}
+          <Suspense fallback={null}>
+            <NouveauBadgeServeur />
+          </Suspense>
+        </NextIntlClientProvider>
         <EnregistrementServiceWorker />
         <SuiviFil />
       </body>

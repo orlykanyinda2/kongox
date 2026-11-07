@@ -8,6 +8,7 @@ export type Reglages = Record<string, number | string>;
 
 export const REGLAGES_PAR_DEFAUT: Reglages = {
   bonus_inscription: 1000,
+  bonus_invite: 200,
   bonus_quotidien: 100,
   serie_longueur: 7,
   bonus_serie: 200,

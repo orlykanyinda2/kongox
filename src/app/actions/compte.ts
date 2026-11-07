@@ -5,7 +5,7 @@ import { refresh } from "next/cache";
 import { getTranslations } from "next-intl/server";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { creerClientAdmin } from "@/lib/supabase/admin";
-import { emailCache, nomValide, MDP_LONGUEUR_MAX, MDP_LONGUEUR_MIN } from "@/lib/compte/nomUtilisateur";
+import { emailCache, nomReserve, nomValide, MDP_LONGUEUR_MAX, MDP_LONGUEUR_MIN } from "@/lib/compte/nomUtilisateur";
 import { normaliserTelephone } from "@/lib/compte/telephone";
 
 export type EtatFormulaire = {
@@ -31,7 +31,7 @@ export async function inscrire(_etat: EtatFormulaire, donnees: FormData): Promis
   const motDePasse = String(donnees.get("mot_de_passe") ?? "");
   const confirmation = String(donnees.get("confirmation") ?? "");
 
-  if (!nomValide(nom)) return { erreur: t("nomFormat"), nom };
+  if (!nomValide(nom) || nomReserve(nom)) return { erreur: t("nomFormat"), nom };
   if (motDePasse.length < MDP_LONGUEUR_MIN || motDePasse.length > MDP_LONGUEUR_MAX) {
     return { erreur: t("mdpLongueur", { min: MDP_LONGUEUR_MIN }), nom };
   }

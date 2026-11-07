@@ -11,8 +11,16 @@ import { SectionPourToi, SectionsFil } from "@/components/accueil/Fil";
 import { BonusQuotidien } from "@/components/compte/BonusQuotidien";
 import { IconePlus } from "@/components/icones";
 import { utilisateurConnecte } from "@/lib/compte/session";
+import { ReserveAuxComptes } from "@/components/compte/ReserveAuxComptes";
+import { SuivisSurCartes } from "@/components/votes/SuivisSurCartes";
 
 // Page d'accueil (maquettes Main.dc.html et Mobile.dc.html).
+// Personnes suivies qui ont voté (seulement pour un compte qui suit quelqu'un)
+async function SuivisSiCompte() {
+  const u = await utilisateurConnecte();
+  return u && !u.invite ? <SuivisSurCartes /> : null;
+}
+
 export default function Accueil() {
   const t = useTranslations("accueil");
 
@@ -22,6 +30,9 @@ export default function Accueil() {
       <main className="flex-1">
         <Suspense fallback={null}>
           <BonusSiConnecte />
+        </Suspense>
+        <Suspense fallback={null}>
+          <SuivisSiCompte />
         </Suspense>
 
         <HeroMobile />
@@ -83,7 +94,7 @@ async function BonusSiConnecte() {
   if (!u) return null;
   return (
     <div className="mx-auto max-w-contenu px-[18px] pt-4 md:px-6">
-      <BonusQuotidien utilisateurId={u.id} />
+      {u.invite ? <ReserveAuxComptes fonction="bonus" compact /> : <BonusQuotidien utilisateurId={u.id} />}
     </div>
   );
 }

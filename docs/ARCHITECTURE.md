@@ -397,6 +397,56 @@ Admin › Partenaires liste les demandes (à traiter, toutes…), avec un lien d
 - **Profil** : « Mes cadeaux » (à envoyer / envoyé, sponsor) et, si un cadeau attend, un message pour ajouter son numéro.
 - **Derniers gagnants** sur `/classement` : `derniers_gagnants()` (public) donne le nom, le cadeau et le sponsor des 60 derniers jours, jamais le numéro.
 
+## Communauté : invités, votes publics, icônes, badges
+
+Migration : `supabase/migrations/20261107170000_communaute.sql`. Code : `src/app/actions/invite.ts`, `src/components/compte/` (`VoterEnInvite`, `CreerCompteInvite`, `ReserveAuxComptes`), `src/components/votes/`, `src/components/profil/` (`Avatar`, `ChoixIcone`), `src/components/badges/`, `src/app/badges/`, `src/app/profil/icone/`, `src/app/admin/badges/`, `public/avatars/`.
+
+### Invités (vote sans compte)
+
+- Sur un marché ouvert, un visiteur choisit un pseudo (un nom drôle est proposé) et vote tout de suite. L'invité est un **vrai compte Supabase marqué `invite`**, créé côté serveur (clé service role) avec un mot de passe technique jamais montré ; le déclencheur de création verse **200 pièces d'essai** (type `essai_invite`, réglage `bonus_invite`).
+- **Un invité par appareil** : cookie `kx_appareil` (aléatoire, httpOnly, 1 an). Si l'appareil a déjà un invité actif, le serveur le reconnecte. **Limite par adresse IP** : 3 invités par jour (`invites_par_ip_jour`). Appareil et IP ne sont gardés que **hachés** (HMAC), dans `appareils_invites`.
+- Le pseudo suit la même règle et la même unicité que les comptes (un invité ne peut pas prendre le nom d'un compte). `invite_…` est réservé.
+- **Réservé aux comptes** (`exiger_compte()`, indice `reserve_comptes`) : assistant IA, proposer une question, commenter, signaler, bonus quotidien, suivre, communautés, candidature curateur, cadeaux (`invite_sans_cadeau`), boutique d'icônes et photo. L'appli montre ce que l'invité rate avec « Crée ton compte » (`ReserveAuxComptes`) et un bandeau sous l'en-tête.
+- **Passage au compte** (`/inscription` ou `/profil` quand on est invité) : l'invité choisit un mot de passe. **Même identifiant** : ses votes, ses pièces et son pseudo restent, sans copie. `convertir_invite()` verse les pièces d'inscription (+1 000) et donne le badge Fidèle (`ancien_invite`).
+- Les invités ne sont **pas classés** (`classement_complet` les exclut) ; ils apparaissent dans « Qui a voté » avec la mention « invité ».
+- **Inactif 30 jours** (`invite_inactivite_jours`, tâche `kongox-fermer-invites`, chaque nuit) : le compte est **fermé, pas supprimé**, pour garder les mises dans les cagnottes. Connexion coupée (compte banni, sessions effacées, adresse changée), pseudo libéré (nom technique `invite_…`), profil public retiré ; dans « Qui a voté », le nom s'affiche « invité ». L'activité est notée à chaque mouvement de pièces (`derniere_activite`).
+
+### Votes publics
+
+- Les prédictions sont **publiques** : nouvelle politique RLS « Les prédictions sont publiques » (lecture pour tous). Attention : une requête sur `predictions` doit donc filtrer sur `utilisateur_id` pour « mes » prédictions.
+- **« Qui a voté »** sous chaque marché et chaque match : `votes_marche(marche, option, tri, décalage, limite)` donne l'icône, le pseudo (ou « invité »), le choix, les pièces et l'heure ; filtres OUI / NON / tous (ou 1 / N / 2), tri récents ou plus grosses mises, page suivante.
+- **« 12 personnes que tu suis ont voté »** : `suivis_ayant_vote(marches)`. Sur les cartes (qui restent en cache pour tout le monde), le chiffre arrive après l'affichage par une seule requête (`SuivisSurCartes`) ; sur la page d'un marché, il est dans « Qui a voté ».
+- **Marchés politiques** : avant de valider, « Ton nom et ton vote seront visibles par tous. » (deuxième clic pour confirmer).
+
+### Icônes de profil
+
+- 30 icônes SVG légères (≈ 630 octets) dans `public/avatars/`, aux couleurs de DESIGN.md : 16 gratuites, 8 en boutique (600 à 5 000 pièces), 6 élite. Une icône gratuite au hasard à la création du compte (et pour les comptes existants).
+- `Avatar` affiche la photo si elle existe, sinon l'icône ; **cadre spécial** (double anneau vert-jaune et or) pour les icônes élite. Partout : « Qui a voté », classement et podium, commentaires (icône copiée à l'envoi), profils.
+- **Élite** : débloquée par un badge (`icones.badge_requis`) : Trophée (top 10 semaine), Couronne (top 10 mois), Flamme (série de 30 jours), Léopard doré (série de 100), Hibou (Mayele 70 %), Étoile (10 questions approuvées).
+- **Boutique** : `acheter_icone()` débite par `mouvement_pieces()` (type `achat_icone`) ; la possession est écrite avant le débit, donc pas de double achat, même simultané.
+- **Photo perso** : le navigateur recadre en carré 512 × 512 et compresse (WebP ou JPEG) ; envoi dans le stockage `avatars` (public en lecture, **500 Ko maximum, jpg / png / webp**, chacun seulement dans son dossier `<id>/`, pas les invités) ; `definir_photo()` vérifie que le fichier existe dans son dossier. Bouton « Signaler cette photo » : retirée automatiquement au 3e signalement (`photo_signalements_masquage`). Admin › Signalements : retirer la photo (fichier effacé, icône remise).
+
+| Table | Rôle | Accès |
+| --- | --- | --- |
+| `icones` | code, nom, catégorie, niveau (`gratuite`, `elite`, `boutique`), prix, badge requis, disponible | Lecture pour tous |
+| `icones_possedees` | Icônes achetées ou offertes | La personne et les admins |
+| `appareils_invites` | Appareil et IP hachés de chaque invité | Serveur seulement |
+
+Colonnes de `utilisateurs` : `invite`, `ancien_invite`, `ferme_le`, `derniere_activite`, `icone`, `photo`, `badges_vedette`. Colonnes de `messages_chat` : `auteur_icone`, `auteur_photo`, `auteur_elite`. `signalements.utilisateur_cible` (photo signalée).
+
+### Badges
+
+| Table | Rôle | Accès |
+| --- | --- | --- |
+| `badges` | code, nom, description, dessin, niveau (`bronze`, `argent`, `or`), famille, condition, seuil, actif | Lecture pour tous |
+| `badges_gagnes` | Badge gagné, date, « vu », offert par | Lecture pour tous ; écrit seulement par les fonctions SQL |
+
+- 20 badges de départ : Premier vote ; séries de 7, 30, 100 jours ; 10, 100, 1 000 prédictions ; Mayele 60, 70, 80 % (20 prédictions réglées au moins, `badge_mayele_min`) ; Créateur (1, 10, 50 questions approuvées) ; Top 10 de la semaine et du mois ; Curateur ; Parrain (5, 20 amis : se gagne quand le parrainage existera, `nombre_parrainages()` renvoie 0 d'ici là) ; Bavard (100 commentaires) ; Fidèle (invité devenu membre). L'ancien badge texte « Créateur de marché » est repris.
+- **Attribution automatique** par `verifier_badges()`, appelée par des **déclencheurs** : prédiction placée ou réglée, série, invité devenu membre, curateur nommé, question approuvée, commentaire. Top 10 : tâche `kongox-badges-classement` à 23 h 55 (heure de Kinshasa), le dimanche pour la semaine et le dernier jour du mois pour le mois. Jamais depuis le navigateur.
+- « **Nouveau badge !** » : carte animée en bas de l'écran (`badges_a_montrer()`, puis `marquer_badges_vus()`).
+- Page **/badges** : tous les badges, gagnés (date) et à gagner (« 7/10 prédictions » et barre) ; choix des **4 badges mis en avant** sur le profil public (`choisir_badges_vedette()`).
+- **Admin › Badges et icônes** : créer ou modifier un badge (`enregistrer_badge`), en offrir un (`offrir_badge`), prix et disponibilité des icônes (`modifier_icone`), offrir ou changer l'icône d'une personne (`offrir_icone`). Tout est journalisé.
+
 ## Connexion (Supabase Auth)
 
 - L'utilisateur ne donne qu'un nom d'utilisateur et un mot de passe.

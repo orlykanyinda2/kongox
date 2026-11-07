@@ -18,7 +18,22 @@ export type LigneClassement = {
   predictions_reglees: number;
   predictions_gagnees: number;
   solde_pieces: number;
+  icone?: string | null;
+  photo?: string | null;
+  elite?: boolean;
 };
+
+// Ajoute l'icône (ou la photo) de chaque personne d'un classement, en une requête
+export async function avecIcones(lignes: LigneClassement[]): Promise<LigneClassement[]> {
+  if (lignes.length === 0) return lignes;
+  const db = creerClientPublic();
+  const { data } = await db.from("utilisateurs").select("id, icone, photo, icone_info:icones!utilisateurs_icone_fk(niveau)").in("id", lignes.map((l) => l.utilisateur_id));
+  const parId = new Map(((data ?? []) as unknown as { id: string; icone: string | null; photo: string | null; icone_info: { niveau: string } | null }[]).map((u) => [u.id, u]));
+  return lignes.map((l) => {
+    const u = parId.get(l.utilisateur_id);
+    return { ...l, icone: u?.icone ?? null, photo: u?.photo ?? null, elite: !u?.photo && u?.icone_info?.niveau === "elite" };
+  });
+}
 
 export type Duel = { id: number; titre: string; nom_a: string; score_a: number; nom_b: string; score_b: number; part_a: number };
 
@@ -35,7 +50,7 @@ export async function classementPublic(periode: Periode, limite = 50): Promise<L
     console.error("[classement]", error.message);
     return [];
   }
-  return (data as LigneClassement[]).map((l) => ({ ...l, rang: Number(l.rang), score_mayele: Number(l.score_mayele), solde_pieces: Number(l.solde_pieces) }));
+  return avecIcones((data as LigneClassement[]).map((l) => ({ ...l, rang: Number(l.rang), score_mayele: Number(l.score_mayele), solde_pieces: Number(l.solde_pieces) })));
 }
 
 export async function duelsPublics(periode: Periode): Promise<Duel[]> {

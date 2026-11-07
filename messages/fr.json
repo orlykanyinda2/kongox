@@ -240,7 +240,9 @@
     "succes": "C'est fait ! {montant} pièces sur {libelle}. Encore {restant} à miser aujourd'hui.",
     "envoi": "Un instant…",
     "valider": "Valider : {libelle} avec {montant} pièces",
-    "mention": "Pièces gratuites. Jamais d'argent réel. Limite : [[limite_mise_quotidienne]] pièces par jour."
+    "mention": "Pièces gratuites. Jamais d'argent réel. Limite : [[limite_mise_quotidienne]] pièces par jour.",
+    "avertissementPublic": "Ton nom et ton vote seront visibles par tous.",
+    "validerQuandMeme": "J'ai compris, valider"
   },
   "erreursMarche": {
     "connexion_requise": "Connecte-toi d'abord.",
@@ -347,7 +349,9 @@
     "deja_regle": "Le marché de ce match est déjà réglé : le score ne peut plus changer.",
     "score_invalide": "Score invalide.",
     "nom_pris": "Ce nom existe déjà.",
-    "numero_deja_recompense": "Ce numéro a déjà reçu un cadeau pour un autre compte (un cadeau par numéro)."
+    "numero_deja_recompense": "Ce numéro a déjà reçu un cadeau pour un autre compte (un cadeau par numéro).",
+    "deja_gagne": "Cette personne a déjà ce badge.",
+    "invite_sans_cadeau": "Les invités ne reçoivent pas de cadeaux : il faut d'abord qu'ils créent un compte."
   },
   "assistant": {
     "titre": "Demande à l'assistant",
@@ -446,11 +450,52 @@
       "signalement_limite": "Tu as fait beaucoup de signalements aujourd'hui. Réessaie demain.",
       "soi_meme": "Tu ne peux pas signaler ton propre message.",
       "signalement_invalide": "Ce message n'existe plus.",
-      "serveur": "Un problème est survenu. Réessaie dans un instant."
+      "serveur": "Un problème est survenu. Réessaie dans un instant.",
+      "reserve_comptes": "Crée ton compte pour écrire et signaler."
     },
     "signalerMarche": "Signaler ce marché",
     "signalerMarcheTitre": "Qu'est-ce qui ne va pas avec ce marché ?",
     "marcheSignale": "Merci, l'équipe va regarder ce marché.",
-    "marcheDejaSignale": "Tu as déjà signalé ce marché."
+    "marcheDejaSignale": "Tu as déjà signalé ce marché.",
+    "invite": "Les invités ne peuvent pas commenter. <lien>Crée ton compte</lien> pour discuter avec la communauté."
+  },
+  "invite": {
+    "titre": "Vote tout de suite",
+    "texte": "Pas besoin de compte : choisis un pseudo et reçois {pieces} pièces d'essai.",
+    "pseudo": "Ton pseudo",
+    "autreNom": "Un autre nom drôle",
+    "voter": "Voter en invité — {pieces} pièces d'essai",
+    "patiente": "Un instant…",
+    "public": "Ton pseudo et tes votes sont visibles par tous, avec la mention « invité ».",
+    "ouCompte": "Ou crée ton compte — {pieces} pièces offertes",
+    "dejaCompte": "J'ai déjà un compte",
+    "nomFormat": "Le pseudo doit faire 3 à 24 caractères : lettres sans accent, chiffres et « _ » seulement.",
+    "nomPris": "Ce pseudo est déjà pris. Touche la flèche pour une autre idée.",
+    "limite": "Trop d'invités ont été créés depuis cette connexion aujourd'hui. Crée un compte, ou réessaie demain.",
+    "serveur": "Un problème est survenu. Réessaie dans un instant.",
+    "dejaCompte2": "Tu as déjà un compte.",
+    "mention": "invité",
+    "bandeau": "Tu joues en invité (@{nom}). Crée ton compte pour garder tes votes et recevoir {pieces} pièces de plus.",
+    "creerMonCompte": "Crée ton compte",
+    "conversionTitre": "Garde tes votes : crée ton compte",
+    "conversionTexte": "Tu gardes ton pseudo @{nom}, tes votes et tes pièces, et tu reçois {pieces} pièces de plus. Il suffit d'un mot de passe.",
+    "motDePasse": "Mot de passe",
+    "confirmation": "Confirme le mot de passe",
+    "valider": "Créer mon compte — +{pieces} pièces",
+    "bienvenue": "Bienvenue @{nom} ! Ton compte est créé et tes pièces sont arrivées.",
+    "reserve_bonus": "Crée ton compte pour recevoir {pieces} pièces chaque jour.",
+    "reserve_assistant": "Crée ton compte pour poser tes questions à l'assistant KongoX.",
+    "reserve_commentaires": "Crée ton compte pour commenter et discuter avec la communauté.",
+    "reserve_proposer": "Crée ton compte pour proposer tes questions (et gagner des pièces si elles sont approuvées).",
+    "reserve_suivre": "Crée ton compte pour suivre les meilleurs pronostiqueurs.",
+    "reserve_communautes": "Crée ton compte pour rejoindre ta communauté et son salon.",
+    "reserve_cadeaux": "Crée ton compte pour recevoir des cadeaux (crédit, forfait internet).",
+    "reserve_icones": "Crée ton compte pour acheter des icônes ou mettre ta photo."
+  },
+  "badges": {
+    "nouveau": "Nouveau badge !",
+    "etAutres": "Et {nombre, plural, one {# autre badge} other {# autres badges}} !",
+    "voirMesBadges": "Voir mes badges",
+    "fermer": "Fermer"
   }
 }

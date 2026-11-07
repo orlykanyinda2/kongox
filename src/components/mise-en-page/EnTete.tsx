@@ -6,6 +6,7 @@ import { BoutonTheme } from "@/components/BoutonTheme";
 import { IconePiece } from "@/components/IconePiece";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { formaterNombre } from "@/lib/format";
+import { lireReglages } from "@/lib/reglages";
 import { getTranslations } from "next-intl/server";
 
 // En-tête collant (maquettes Main et Mobile) : logo, liens, recherche, solde, mode sombre, compte.
@@ -56,7 +57,28 @@ export function EnTete() {
           </Suspense>
         </div>
       </div>
+      <Suspense fallback={null}>
+        <BandeauInvite />
+      </Suspense>
     </header>
+  );
+}
+
+// Invité : rappel discret qu'un compte garde ses votes et donne des pièces en plus
+async function BandeauInvite() {
+  const u = await utilisateurConnecte();
+  if (!u?.invite) return null;
+  const t = await getTranslations("invite");
+  const r = await lireReglages();
+  return (
+    <div className="border-t-2 border-contour bg-vert-jaune text-foret">
+      <div className="mx-auto flex max-w-contenu flex-wrap items-center justify-between gap-x-4 gap-y-1.5 px-[18px] py-2 md:px-6">
+        <p className="text-[13px] font-semibold md:text-sm">{t("bandeau", { nom: u.nom_utilisateur, pieces: formaterNombre(Number(r.bonus_inscription ?? 1000)) })}</p>
+        <Link href="/inscription" className="flex h-9 items-center rounded-bouton bg-foret px-3.5 text-[13px] font-bold text-white">
+          {t("creerMonCompte")}
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -84,6 +106,13 @@ async function ZoneCompte() {
 async function BoutonCompte() {
   const u = await utilisateurConnecte();
   const t = await getTranslations("entete");
+  if (u?.invite) {
+    return (
+      <Link href="/inscription" className="hidden h-11 items-center rounded-bouton bg-foret px-[18px] text-[15px] font-bold text-white shadow-[3px_3px_0_#A7C957] md:flex dark:border-2 dark:border-vert-jaune">
+        {t("creerCompte")}
+      </Link>
+    );
+  }
   if (u) {
     const admin = u.role === "admin" || u.role === "curateur";
     return (
