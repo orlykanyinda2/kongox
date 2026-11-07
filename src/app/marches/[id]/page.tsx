@@ -14,6 +14,7 @@ import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre, formaterPieces } from "@/lib/format";
 import { lienWhatsApp, texteMarche } from "@/lib/partage";
+import { lireReglages } from "@/lib/reglages";
 
 // Page d'un marché (maquettes/Marche.dc.html).
 // L'assistant IA et les commentaires arrivent à l'étape 5.
@@ -153,6 +154,7 @@ async function PanneauPrediction({ marche }: { marche: Marche }) {
   }
 
   const supabase = await creerClientServeur();
+  const reglages = await lireReglages();
   const [{ data: restant }, { data: dernieres }] = await Promise.all([
     supabase.rpc("mise_restante_aujourdhui"),
     supabase.from("predictions").select("statut").in("statut", ["gagnee", "perdue"]).order("cree_le", { ascending: false }).limit(3),
@@ -173,6 +175,7 @@ async function PanneauPrediction({ marche }: { marche: Marche }) {
         pourcentageOui={marche.pourcentageOui}
         solde={u.solde_pieces}
         restant={Number(restant ?? 0)}
+        miseMinimum={Number(reglages.mise_minimum)}
       />
     </div>
   );

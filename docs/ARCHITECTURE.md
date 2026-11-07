@@ -140,6 +140,60 @@ update public.utilisateurs set role = 'admin' where lower(nom_utilisateur) = low
 
 Ensuite, les autres admins se nomment depuis le panneau (Utilisateurs → Rôle).
 
+## Back-office admin (étape 3, suite)
+
+Migration : `supabase/migrations/20261109090000_backoffice_admin.sql`. Style des écrans : DESIGN.md, section « Panneau admin ».
+
+### Statuts d'un marché (complet)
+
+```
+Créé par l'admin :      brouillon ──► programme ──► approuve (« En ligne ») ──► ferme ──► regle
+                             └──────────────────────► approuve (publié tout de suite)
+Proposé par un membre : en_attente ──► approuve │ refuse
+À tout moment avant le règlement :  ──► supprime (toutes les mises en cours remboursées)
+```
+
+« En ligne » s'appelle toujours `approuve` dans la base (le nom n'a pas été changé pour ne pas casser les fonctions des étapes 2 et 3). Un marché n'est **jamais effacé** : « supprimer » le passe en `supprime`, il disparaît du site et les mises sont remboursées.
+
+Nouvelles colonnes de `marches` : `date_publication`, `soki_programme` (devient Soki du jour à la publication), `mis_en_avant` (en tête de liste sur l'accueil), `cree_par`, `modele_id`.
+
+### Nouvelles tables
+
+| Table | Rôle | Qui peut lire | Qui peut écrire |
+| --- | --- | --- | --- |
+| `reglages` | Règles du jeu modifiables, avec minimum et maximum : `bonus_inscription` (1 000), `bonus_quotidien` (100), `serie_longueur` (7), `bonus_serie` (200), `bonus_question_approuvee` (50), `limite_mise_quotidienne` (2 000), `mise_minimum` (10), `seuil_essai_curateur` (10), `propositions_en_attente_max` (5), `ajustement_max` (100 000), `whatsapp_equipe` | Tout le monde (règles publiques) | `modifier_reglage()` (admin) |
+| `modeles_recurrents` | Marchés récurrents : question (avec `{date}`), catégorie, source, chaque jour ou chaque semaine, heure de Kinshasa, durée d'ouverture, option Soki, actif, prochaine publication | Admins | Fonctions SQL (admin) |
+| `ajustements_pieces` | Historique des ajouts / retraits de pièces par un admin : compte, montant, raison, solde avant / après, lot (bonus en masse), auteur | Admins | `ajuster_pieces()` |
+
+`journal_admin` gagne `avant`, `apres` (JSON des valeurs modifiées) et `txid`.
+
+### Fonctions SQL
+
+| Fonction | Rôle |
+| --- | --- |
+| `reglage(cle)` | Valeur d'un réglage. **Toutes les fonctions des pièces lisent maintenant les réglages** (inscription, bonus, série, question approuvée, limite, mise minimum, seuil curateur, propositions en attente) |
+| `modifier_reglage(cle, valeur, texte)` | Dans les limites ; journalisé avec avant / après |
+| `creer_marche_admin(…, etat, date_publication, mis_en_avant, soki)` | `brouillon`, `programme` ou `en_ligne` ; pas de file d'approbation, pas de bonus de +50 |
+| `modifier_marche_admin(…)` | **Tant qu'il n'y a aucune mise : tout. Après la première mise : seulement la date de fin et la mise en avant** (`verrouille_mises`) |
+| `changer_etat_marche(marche, action)` | `publier`, `programmer`, `brouillon`, `fermer` |
+| `mettre_en_avant()`, `dupliquer_marche()` (copie en brouillon), `supprimer_marche(marche, motif)` (remboursement), `mises_en_cours()` (pour la confirmation) | |
+| `creer_modele_recurrent()`, `activer_modele()` | Modèles récurrents |
+| `generer_recurrences()`, `publier_marches_programmes()` | Lancées **chaque minute par pg_cron** (`kongox-publier-marches`) : crée les occurrences des 24 prochaines heures en `programme`, publie celles dont l'heure est arrivée ; un marché `soki_programme` devient le Soki du jour |
+| `ajuster_pieces(utilisateur, montant, raison)` | Type de transaction `ajustement_admin`, via `mouvement_pieces()`. Raison obligatoire, jamais sur soi-même, solde jamais négatif, plafond `ajustement_max` |
+| `bonus_en_masse(cible, noms, montant, raison)` | Cibles : `liste` de noms, `actifs_7j`, `actifs_30j` (jamais soi-même, 1 à 10 000 pièces, 5 000 comptes maximum). Communauté et classement : étape 4 |
+| `tableau_de_bord()`, `series_tableau_de_bord(jours)` | Chiffres du jour et séries par jour (7, 30 ou tout). **Compte actif** = a reçu le bonus de connexion ou a misé ce jour-là |
+| `journaliser()` (remplacée), `journaliser_detail()` | Journal avec avant / après. Des déclencheurs sur `marches` et sur le rôle / les badges d'un utilisateur enregistrent les valeurs modifiées ; `journaliser()` donne son nom à la ligne (ex. `marche_approuve`) au lieu d'en écrire une deuxième. Les actions de pg_cron ne sont pas journalisées |
+
+Toutes ces fonctions vérifient `est_admin()` (fonction interne `exiger_admin()`) et renvoient un code d'erreur dans `hint` (`verrouille_mises`, `solde_negatif`, `hors_limites`…).
+
+### Textes de l'application et réglages
+
+Les montants dans `messages/fr.json` s'écrivent avec des marqueurs : « [[bonus_inscription]] pièces offertes ». Au chargement des textes (`src/i18n/request.ts`), ils sont remplacés par la valeur du réglage (« 1 000 »). Les réglages sont mis en cache et rafraîchis dès qu'un admin en modifie un (`updateTag("reglages")`).
+
+### Écrans du back-office
+
+Les textes du panneau admin (outil interne, en français) sont écrits directement dans les composants `src/components/admin/` et les pages `src/app/admin/`, sans passer par `messages/fr.json` ; seuls les messages d'erreur des fonctions SQL y restent (`erreursAdmin`). Les tableaux trient, filtrent et paginent par l'adresse ; l'export CSV passe par `src/app/admin/export/[type]/route.ts` (vérifie `est_admin()`, séparateur `;`).
+
 ## Tables prévues (étapes suivantes)
 
 | Table | Rôle |
@@ -169,7 +223,7 @@ Ensuite, les autres admins se nomment depuis le panneau (Utilisateurs → Rôle)
 | `curateur` | En plus : approuver, refuser ou corriger les questions de son thème (validées par un admin pendant l'essai, puis autonome) |
 | `admin` | Tout : approuver, régler, annuler, Soki du jour, réinitialiser les mots de passe, suspendre, rôles, curateurs, cadeaux (modération du chat à l'étape 5) |
 
-## Statuts d'un marché
+## Statuts d'un marché (questions de la communauté — voir aussi « Back-office admin »)
 
 ```
 en_attente ──► approuve ──► ferme ──► regle

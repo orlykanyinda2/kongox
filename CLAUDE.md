@@ -18,7 +18,7 @@ Le cahier des charges complet (MVP) se trouve dans le document « KongoX MVP ».
 | `Profil.dc.html` | Profil d'un pronostiqueur |
 | `Classement.dc.html` | Classement + communauté contre communauté |
 | `Partenaires.dc.html` | Devenir partenaire |
-| `Admin.dc.html` | Panneau admin (file d'approbation, mots de passe, cadeaux) |
+| `Admin.dc.html` | Panneau admin : contenu seulement. Le style du back-office est sobre et différent de l'appli publique (DESIGN.md, « Panneau admin ») |
 
 Ce sont des maquettes : les données y sont fictives et en dur. Dans l'application, tout vient de Supabase.
 
