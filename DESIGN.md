@@ -111,6 +111,44 @@ Icône : cercle vert-jaune `#A7C957` avec un anneau intérieur `#1F3A26`. Toujou
 - Vrais éléments `<button>`, `<a>`, `<input>` avec `<label>`. `aria-label` sur les boutons icône seuls.
 - `aria-pressed` sur les puces et les choix OUI/NON.
 
+## Panneau admin
+
+Le panneau admin (`/admin`) ne suit **pas** le style ludique de l'application publique. C'est un back-office : sobre, professionnel et efficace. La maquette `maquettes/Admin.dc.html` donne le contenu (file d'approbation, mots de passe, cadeaux), pas le style.
+
+### Style
+
+| Élément | Règle |
+| --- | --- |
+| Fond | Blanc `#FFFFFF` ; zones (menu, en-têtes de tableau, filtres) en gris très clair `#F7F8F6` |
+| Texte | `#1F3A26` ; texte secondaire `#5B6B57` |
+| Bordures | Fines, 1 px `#E3E7DF` |
+| Accent | Une seule couleur pour les boutons principaux et les liens actifs : `#386641` |
+| Danger | Rouge `#BC4749` **seulement** pour les actions dangereuses (supprimer, suspendre, retirer des pièces, annuler) |
+| Police | Inter uniquement (pas de Space Grotesk), 13 à 15 px, texte dense et lisible ; titres de page 20–22 px |
+| Rayons | 6 à 8 px |
+| Interdit | Ombres décalées, cartes penchées, animations, formes décoratives, mode sombre |
+| Graphiques | Une série par graphique (petits multiples, jamais deux axes), ligne 2 px Sage `#6A994E` (validée : contraste et saturation suffisants ; `#386641` est trop gris pour une donnée), grille 1 px `#E3E7DF`, info-bulle au survol, tableau des valeurs disponible |
+
+Jetons Tailwind : `adm-fond`, `adm-zone`, `adm-texte`, `adm-secondaire`, `adm-bordure`, `adm-accent`, `adm-danger`, `adm-graphique`.
+
+### Structure
+
+- Menu latéral fixe à gauche ; barre du haut avec la recherche globale (utilisateur, marché) et le nom de l'admin connecté.
+- Sur tablette, tout fonctionne ; sur téléphone, le menu se replie derrière un bouton « Menu ».
+- Menu : Tableau de bord · Marchés · Programmation · File d'approbation · Résultats à régler · Utilisateurs · Pièces · Cadeaux · Curateurs · Signalements · Journal · Réglages. Un curateur ne voit que la file d'approbation de ses thèmes.
+
+### Données
+
+- Les listes sont des **tableaux** : tri par colonne, filtres, recherche, pagination, export CSV.
+- Tri, filtres et pages passent par l'adresse (`?tri=…&page=…`) : on peut partager un lien vers une vue, et la page reste légère.
+- Nombres alignés à droite, séparateur de milliers « 48 920 », dates à l'heure de Kinshasa.
+
+### Actions
+
+- **Confirmation obligatoire** avant toute action dangereuse, dans une fenêtre qui rappelle les conséquences (« 34 mises seront remboursées »).
+- Chaque action affiche un message court de réussite ou d'erreur, à côté du bouton.
+- Toutes les actions sont écrites dans le journal (qui, quoi, quand, avant / après).
+
 ## Données d'exemple pour le développement
 
 Pour la page d'accueil, utilise des marchés d'exemple dans chaque catégorie, par exemple :
