@@ -239,7 +239,7 @@ async function CarteSoki() {
   );
 }
 
-// Carte de présentation de l'assistant (il arrive à l'étape 5) : exemple de conversation en lingala
+// Carte de présentation de l'assistant : exemple de conversation en lingala, lien vers /chat
 async function CarteAssistant() {
   const m = await marcheDuJour();
   const t = await getTranslations("accueil");
@@ -259,10 +259,10 @@ async function CarteAssistant() {
             <div className="text-xs text-sauge">{t("assistantLangue")}</div>
           </div>
         </div>
-        <span className="flex items-center gap-1.5 rounded-full bg-[#2A4A31] px-2.5 py-[5px] text-xs font-bold text-champagne">
+        <Link href="/chat" className="flex items-center gap-1.5 rounded-full bg-[#2A4A31] px-2.5 py-[5px] text-xs font-bold text-champagne hover:underline">
           <span className="size-2 animate-pulse-direct rounded-full bg-[#FF6B6E]" />
-          {t("bientot")}
-        </span>
+          {t("assistantEnDirect")}
+        </Link>
       </div>
       <div className="mt-[18px] flex flex-col gap-2.5">
         <div className="max-w-[82%] animate-bulle self-end rounded-[16px_16px_4px_16px] bg-vert-jaune px-3.5 py-[11px] text-sm leading-[1.4] text-foret delai-1200">

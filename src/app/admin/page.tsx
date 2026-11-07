@@ -37,6 +37,7 @@ async function TableauDeBord({ searchParams }: { searchParams: Promise<Params> }
     supabase.from("imports_football").select("debut, type, statut").order("debut", { ascending: false }).limit(1).maybeSingle(),
     lireReglages(),
   ]);
+  const { data: ia } = await supabase.from("ia_usage_jour").select("*").eq("jour", aujourdhui).maybeSingle();
   const limiteApi = Number(reglages.api_football_limite_jour);
   const d = (jour ?? {}) as Record<string, number>;
   const points = ((serie ?? []) as Jour[]).map((p) => ({ ...p, inscrits: Number(p.inscrits), actifs: Number(p.actifs), predictions: Number(p.predictions), pieces_misees: Number(p.pieces_misees) }));
@@ -62,6 +63,23 @@ async function TableauDeBord({ searchParams }: { searchParams: Promise<Params> }
           alerte={(appels?.nombre ?? 0) >= limiteApi}
         />
       </div>
+      <Section titre="Assistant IA aujourd'hui">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+          <Chiffre
+            valeur={`${formaterNombre(ia?.questions ?? 0)} / ${formaterNombre(Number(reglages.ia_plafond_global_jour))}`}
+            libelle="Questions (plafond global)"
+            alerte={(ia?.questions ?? 0) >= Number(reglages.ia_plafond_global_jour)}
+          />
+          <Chiffre valeur={formaterNombre(ia?.requetes ?? 0)} libelle="Requêtes réussies" />
+          <Chiffre valeur={formaterNombre(ia?.erreurs ?? 0)} libelle="Erreurs (questions rendues)" alerte={(ia?.erreurs ?? 0) > 0} />
+          <Chiffre valeur={formaterNombre(ia?.jetons_entree ?? 0)} libelle="Jetons en entrée" />
+          <Chiffre valeur={formaterNombre(ia?.jetons_sortie ?? 0)} libelle="Jetons en sortie" />
+          <Chiffre valeur={formaterNombre(ia?.jetons_cache_lus ?? 0)} libelle={`Jetons lus en cache (${formaterNombre(ia?.jetons_cache_ecrits ?? 0)} écrits)`} />
+        </div>
+        <p className="mt-2 text-xs text-adm-secondaire">
+          Modèle : {String(reglages.ia_modele)} · {String(reglages.ia_questions_par_jour)} questions par personne et par jour · {Number(reglages.ia_active) ? "activé" : "désactivé"} (Réglages).
+        </p>
+      </Section>
       {dernierImport && (
         <p className="-mt-2 text-[13px] text-adm-secondaire">
           Dernier import : {dernierImport.type === "a_venir" ? "matchs à venir" : "résultats"}, {formaterDate(dernierImport.debut)} ({dernierImport.statut ?? "en cours"}).
