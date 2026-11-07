@@ -79,6 +79,16 @@ Voir `.env.example`. Ne jamais envoyer `.env.local` sur GitHub (il est dans `.gi
 | `ANTHROPIC_API_KEY` | Clé de l'API Claude (Anthropic) pour l'assistant IA, côté serveur uniquement |
 | `NEXT_PUBLIC_SITE_URL` | Adresse publique du site, pour les liens de partage (ex. `https://kongox.vercel.app`) |
 | `NEXT_PUBLIC_WHATSAPP_EQUIPE` | Numéro WhatsApp de l'équipe (ex. `243812345678`), pour « Mot de passe oublié ? » |
+| `KX_DB_URL` | Tests seulement (pas dans `.env.local`) : connexion PostgreSQL directe à la base de **développement**, voir `tests/README.md` |
+
+## Tests
+
+Les suites de tests (base de données, pages, code) sont dans `tests/`. Mode d'emploi : `tests/README.md`.
+
+```bash
+python tests/lancer.py            # code + base de données
+python tests/lancer.py --pages    # + pages (après npm run build)
+```
 
 ## Structure du projet
 

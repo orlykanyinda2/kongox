@@ -2,6 +2,16 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.10.1] — 2026-11-07 — Tests dans le dépôt
+
+### Ajouté
+- Dossier `tests/` : toutes les suites (base de données, temps réel, pages, code) et le lanceur `python tests/lancer.py` (nettoyage avant chaque suite, serveur démarré si besoin)
+- Garde-fous « mes prédictions » : vérification du code (filtre `utilisateur_id` obligatoire) et test des pages (chacun ne voit que ses mises)
+
+### Corrigé
+- Nettoyage de l'ancien test de l'étape 2 (comptes supprimés avant les marchés)
+- Anciens tests de pages mis à jour après le back-office et le fil de marchés
+
 ## [0.10.0] — 2026-11-07 — Communauté : invités, votes publics, icônes, badges
 
 ### Ajouté

@@ -67,6 +67,7 @@ async function FicheMarche({ params }: { params: Promise<{ id: string }> }) {
   if (!m) notFound();
 
   const enCours = (mises ?? { mises: 0, pieces: 0 }) as { mises: number; pieces: number };
+  // toutes-les-predictions : volontaire (admin : nombre de mises du marché, tous joueurs)
   const { count: totalMises } = await supabase.from("predictions").select("id", { count: "exact", head: true }).eq("marche_id", n);
   const verrouille = (totalMises ?? 0) > 0;
   const fin = partiesKinshasa(m.date_fin);

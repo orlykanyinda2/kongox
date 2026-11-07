@@ -92,3 +92,9 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - Attention (sécurité) : les prédictions sont maintenant publiques ; deux requêtes qui comptaient sur la RLS pour lire « mes » prédictions ont été corrigées (filtre sur `utilisateur_id`).
   - À faire par Jonathan : proposer des icônes ou des noms d'icônes en lingala si besoin (`public/avatars/`, table `icones`).
   - Reporté : badges Parrain (le parrainage arrive avec `feat/motivation`) ; les icônes sont des dessins simples, qu'un graphiste pourra remplacer (mêmes noms de fichiers).
+- 2026-11-07 : corrections sur `feat/communaute` (étape A du plan d'Orly) avant la fusion.
+  - Les suites de tests sont maintenant dans le dépôt (`tests/`, mode d'emploi dans `tests/README.md`), avec un lanceur : `python tests/lancer.py --pages`. Résultat : 20 suites sur 20 au vert, 652 vérifications.
+  - Ancien test de l'étape 2 : son nettoyage supprimait les marchés avant les comptes (interdit : les transactions de pièces ne se modifient jamais). Ordre corrigé.
+  - Anciens tests de pages des étapes 2 et 3 mis à jour (back-office refait, page introuvable, « Marchés en direct ») ; le test des pages du fil crée maintenant ses propres données.
+  - Garde-fou ajouté : `tests/code/test_requetes_predictions.py` refuse toute requête sur `predictions` sans filtre `utilisateur_id` (sauf commentaire `// toutes-les-predictions : raison`), et `tests/pages/test_pages_mes_predictions.py` vérifie que chacun ne voit que ses mises (et que « Fais une pause » ne dépend que de ses propres pertes).
+  - Nouvelle variable de test `KX_DB_URL` (jamais dans `.env.local`), dans `.env.example` et le README ; paquet `pg` ajouté en dépendance de développement.

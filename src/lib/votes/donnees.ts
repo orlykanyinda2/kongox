@@ -33,7 +33,18 @@ export async function votesMarche(marche: number, ordre: number | null, tri: Tri
   }
   const lignes = (data ?? []) as (Vote & { total: number })[];
   return {
-    votes: lignes.map(({ total: _t, ...v }) => ({ ...v, id: Number(v.id), montant: Number(v.montant), ordre: Number(v.ordre) })),
+    votes: lignes.map((v) => ({
+      id: Number(v.id),
+      nom: v.nom,
+      invite: v.invite,
+      icone: v.icone,
+      photo: v.photo,
+      elite: v.elite,
+      choix: v.choix,
+      ordre: Number(v.ordre),
+      montant: Number(v.montant),
+      cree_le: v.cree_le,
+    })),
     total: lignes.length ? Number(lignes[0].total) : 0,
   };
 }
