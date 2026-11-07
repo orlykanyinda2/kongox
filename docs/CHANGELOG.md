@@ -2,6 +2,19 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.6.0] — 2026-11-07 — Étape 5 (première partie) : assistant IA
+
+### Ajouté
+- Assistant KongoX avec l'API Claude (`@anthropic-ai/sdk`, côté serveur), modèle `claude-haiku-5-5` modifiable dans Admin › Réglages, réponses en streaming, prompt caching de la partie fixe du prompt système
+- Répond dans la langue de la question (lingala, swahili, français, anglais), réponses courtes, jamais d'encouragement à l'argent réel, rien d'inventé : contexte tiré de la base (marché ou match, pourcentages, forme récente des équipes)
+- Sur la page de chaque marché et de chaque match, et dans l'onglet « Chat » (`/chat`) ; exemple de réponse en lingala et en français pour les visiteurs, avec « Crée ton compte — 1 000 pièces offertes »
+- Limites : 20 questions par personne et par jour, plafond global par jour (réglables), messages polis au-delà ; question rendue si l'API ne répond pas
+- Compteurs du jour (questions, requêtes, erreurs, jetons, cache) dans Admin › Tableau de bord
+- Exemples de conversation en lingala et en swahili dans `src/lib/ia/exemples.ts` (à relire par Jonathan)
+
+### Modifié
+- Variable `AI_API_KEY` renommée `ANTHROPIC_API_KEY` (`.env.example`, README, CLAUDE.md)
+
 ## [0.5.0] — 2026-11-07 — Étape 4 : football, classements et profils
 
 ### Ajouté

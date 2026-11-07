@@ -185,7 +185,8 @@
     "partenairesTitre": "Marques, curateurs, influenceurs, médias : gagnez avec KongoX.",
     "partenairesTexte": "Sponsorise une question, anime ta communauté ou amène tes abonnés.",
     "voirOffres": "Voir toutes les offres",
-    "devenirCurateur": "Devenir curateur"
+    "devenirCurateur": "Devenir curateur",
+    "assistantEnDirect": "En direct"
   },
   "marche": {
     "retour": "Tous les marchés",
@@ -204,7 +205,7 @@
     "boutonTout": "Tout",
     "partagerWhatsApp": "Partager sur WhatsApp",
     "bientotTitre": "Bientôt :",
-    "bientotTexte": "l'assistant KongoX (lingala, swahili, français, anglais) et les commentaires arrivent sur chaque marché.",
+    "bientotTexte": "les commentaires et le chat arrivent sur chaque marché.",
     "regleTitre": "Marché réglé",
     "fermeTitre": "Mises fermées",
     "resultat": "Résultat :",
@@ -345,5 +346,19 @@
     "deja_regle": "Le marché de ce match est déjà réglé : le score ne peut plus changer.",
     "score_invalide": "Score invalide.",
     "nom_pris": "Ce nom existe déjà."
+  },
+  "assistant": {
+    "titre": "Demande à l'assistant",
+    "restantes": "{n, plural, =0 {plus de question aujourd'hui} one {# question restante} other {# questions restantes}}",
+    "invite": "Pose ta question en lingala, swahili, français ou anglais : le marché, le match, comment jouer…",
+    "placeholder": "Écris en lingala, swahili, français…",
+    "champ": "Ta question à l'assistant",
+    "envoyer": "Envoyer",
+    "ecrit": "L'assistant écrit",
+    "panne": "L'assistant ne répond pas pour l'instant. Réessaie dans un moment : ta question ne t'a pas été comptée.",
+    "plusDeQuestions": "Tu as posé toutes tes questions du jour. Reviens demain !",
+    "exempleNote": "Exemple de réponse. Crée ton compte pour poser tes propres questions.",
+    "creerCompte": "Crée ton compte — [[bonus_inscription]] pièces offertes",
+    "mention": "L'assistant peut se tromper. Pièces gratuites, jamais d'argent réel."
   }
 }

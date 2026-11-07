@@ -22,6 +22,10 @@ export const REGLAGES_PAR_DEFAUT: Reglages = {
   football_jours_a_venir: 7,
   api_football_limite_jour: 90,
   classement_min_predictions: 5,
+  ia_active: 1,
+  ia_questions_par_jour: 20,
+  ia_plafond_global_jour: 2000,
+  ia_modele: "claude-haiku-5-5",
   whatsapp_equipe: "",
 };
 

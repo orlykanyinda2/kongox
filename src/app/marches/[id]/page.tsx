@@ -12,6 +12,7 @@ import { IconeRetour, IconeWhatsApp } from "@/components/icones";
 import { historiqueMarche, obtenirMarche, type Marche } from "@/lib/marches/donnees";
 import { matchDuMarche } from "@/lib/football/donnees";
 import { RepartitionMatch } from "@/components/football/RepartitionMatch";
+import { AssistantServeur } from "@/components/ia/AssistantServeur";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre, formaterPieces } from "@/lib/format";
@@ -102,6 +103,10 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
 
           <Suspense fallback={null}>
             <MesPredictions marche={marche} libelles={libelles} />
+          </Suspense>
+
+          <Suspense fallback={<div className="h-64 animate-pulse rounded-[18px] bg-doux" />}>
+            <AssistantServeur marche={marche.id} />
           </Suspense>
 
           <section className="rounded-[18px] border-2 border-dashed border-sauge bg-doux p-4 text-sm leading-normal">

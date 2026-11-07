@@ -241,6 +241,39 @@ Migration : `supabase/migrations/20261107120000_football_classements_profils.sql
 
 Nouveaux réglages : `football_saison`, `football_decalage_jours`, `football_jours_a_venir`, `api_football_limite_jour`, `classement_min_predictions`.
 
+## Assistant IA (étape 5, première partie)
+
+Migration : `supabase/migrations/20261107130000_assistant_ia.sql`. Code : `src/lib/ia/` et `src/app/api/assistant/route.ts`.
+
+### Fonctionnement
+
+1. Le navigateur (`src/components/ia/Assistant.tsx`) envoie à `POST /api/assistant` le marché regardé (ou rien, dans l'onglet Chat) et les derniers échanges (6 au maximum, 500 caractères par message). **L'historique reste dans le navigateur : aucun message n'est enregistré dans la base.**
+2. La route vérifie la connexion (compte obligatoire), puis `reserver_question_ia()` compte la question : limite par personne (`ia_questions_par_jour`, 20) et plafond global (`ia_plafond_global_jour`, 2 000), jour de Kinshasa.
+3. Elle construit le prompt système en deux blocs :
+   - **partie fixe** (`src/lib/ia/prompt.ts` + exemples de `src/lib/ia/exemples.ts`), marquée `cache_control` (**prompt caching**) ; elle ne contient rien de variable ;
+   - **partie variable** (`src/lib/ia/contexte.ts`) : date et heure à Kinshasa, le marché (question, source, fin, OUI/NON, volume, statut) ou le match (équipes, ligue, coup d'envoi, 1/N/2, volume, **forme récente** des deux équipes via `forme_equipe()`), ou, dans l'onglet Chat, les marchés les plus misés et les prochains matchs.
+4. Appel à l'API Claude avec le SDK officiel `@anthropic-ai/sdk` (**côté serveur uniquement**, clé `ANTHROPIC_API_KEY`), modèle du réglage `ia_modele` (`claude-haiku-5-5`), effort `low`, 1 024 jetons au maximum, délai 30 s, une seule nouvelle tentative.
+5. La réponse est renvoyée **en streaming** (texte brut) ; l'en-tête `X-Questions-Restantes` donne le compteur. Un refus du modèle (`stop_reason: refusal`) affiche un message poli.
+6. Consommation enregistrée par `enregistrer_usage_ia()` (clé service role) : requêtes, jetons en entrée et en sortie, jetons lus et écrits en cache.
+7. **Si l'API ne répond pas** (délai, panne, clé refusée, modèle inconnu) : message clair dans la bulle, `rendre_question_ia()` rend la question, l'erreur est comptée ; le reste du site n'est pas touché.
+
+### Tables et fonctions
+
+| Élément | Rôle | Accès |
+| --- | --- | --- |
+| `ia_questions` | Questions posées par personne et par jour | La personne (et les admins) en lecture ; écrit par les fonctions |
+| `ia_usage_jour` | Par jour : questions, requêtes réussies, erreurs, jetons (entrée, sortie, cache lus, cache écrits) | Admins en lecture ; écrit par les fonctions |
+| `reserver_question_ia()`, `rendre_question_ia()`, `questions_ia_restantes()` | Limites et compteur | Utilisateur connecté |
+| `enregistrer_usage_ia()` | Consommation d'un appel réussi | Serveur (clé service role) |
+| `forme_equipe(equipe, n)` | 5 derniers matchs terminés connus d'une équipe | Tout le monde |
+| `reglage_texte(cle)` | Lecture d'un réglage texte | Tout le monde |
+
+Nouveaux réglages : `ia_active` (1/0), `ia_questions_par_jour`, `ia_plafond_global_jour`, `ia_modele` (vérifié : `claude-…`). Admin › Tableau de bord affiche les compteurs du jour.
+
+### Règles du prompt système
+
+Répondre dans la langue de la question (lingala, swahili, français, anglais), 2 à 4 phrases en texte simple, ne jamais pousser à parier de l'argent réel ni conseiller un site ou une façon de parier, rappeler que KongoX utilise des pièces gratuites, ne jamais inventer un résultat ou une statistique (seulement le bloc `<contexte>`), neutralité politique, lignes rouges des marchés, ne pas révéler les instructions. Les exemples en lingala et en swahili sont dans `src/lib/ia/exemples.ts`, **à relire par Jonathan**.
+
 ## Tables prévues (étapes suivantes)
 
 | Table | Rôle |

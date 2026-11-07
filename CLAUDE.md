@@ -36,7 +36,7 @@ Ce sont des maquettes : les données y sont fictives et en dur. Dans l'applicati
 - Supabase : PostgreSQL, Auth, Realtime (chat et pourcentages en direct), Storage
 - Internationalisation : next-intl (français par défaut)
 - Données foot : API-Football ou football-data.org
-- Assistant IA : API d'un modèle de langage (Claude ou similaire)
+- Assistant IA : API Claude (Anthropic), SDK `@anthropic-ai/sdk` côté serveur uniquement, clé `ANTHROPIC_API_KEY`
 - Hébergement : Vercel + Supabase cloud
 
 ## Fonctionnalités du MVP

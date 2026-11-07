@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-11-07
 | [x] | 2 — Marchés et prédictions | Tables `marches`, `options_marche`, `predictions`, statuts, cagnotte, gains, bonus +50 pièces pour une question approuvée, accueil + page d'un marché + « Proposer une question », seed, limite de 2 000 pièces par jour | terminé |
 | [x] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | terminé |
 | [x] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | terminé |
-| [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | à faire |
+| [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | en cours (assistant IA fait ; fil de marchés puis chat à suivre) |
 | [ ] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | à faire |
 
 Après l'étape 6 : vérification de sécurité et déploiement (section « Avant la mise en ligne » de `PROMPTS.md`).
@@ -59,3 +59,8 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - 39 tests SQL de l'étape 4 + non-régression (41 étape 2, 42 étape 3, 51 back-office) ; vérifications des pages football, accueil, classement, profils publics, page d'un match, admin › Matchs et Communautés.
   - À faire par Orly : créer les premières communautés et les duels dans Admin › Communautés.
   - Reporté : un marché par match d'un championnat dans les modèles récurrents (les marchés de matchs sont déjà créés automatiquement à l'import) ; forme récente des équipes pour l'assistant IA (étape 5, calculée depuis la table `matchs`).
+- 2026-11-07 : `feat/football` fusionnée (pull request n° 4, vérifié). Nouvel ordre de travail d'Orly : une branche à la fois depuis `main` à jour, attendre « fusionné » avant la suivante : `feat/assistant-ia` → `feat/fil-marches` → `feat/chat` → `feat/partage` → avant la mise en ligne.
+- 2026-11-07 : `feat/assistant-ia` prête.
+  - Clé Anthropic vérifiée par un appel de test (réponse 200 ; elle ne commence pas par `sk-ant-api` mais l'API l'accepte).
+  - Migration exécutée. Test de bout en bout avec de vrais appels : streaming, réponse en français avec les vrais pourcentages, réponse en lingala, refus de l'argent réel sans conseil de pari, prompt caching (jetons lus en cache), limite par personne, plafond global, panne simulée (clé invalide : message clair, question rendue, site intact), affichage visiteur / connecté / `/chat`. La clé n'est pas dans le code envoyé au navigateur.
+  - À faire par Jonathan : relire les phrases en lingala et en swahili de `src/lib/ia/exemples.ts` et la qualité du lingala des réponses (quelques mots français mêlés).
