@@ -52,3 +52,8 @@ export function heuresDepuis(iso: string) {
 export function estFutur(iso: string | null | undefined) {
   return Boolean(iso && new Date(iso).getTime() > Date.now());
 }
+
+// Date ISO dans n jours
+export function dansJours(n: number) {
+  return new Date(Date.now() + n * 86_400_000).toISOString();
+}

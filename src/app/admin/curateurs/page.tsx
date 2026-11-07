@@ -1,106 +1,134 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
-import { BoutonAction } from "@/components/admin/BoutonAction";
+import { EnTetePage, Pastille, Section, Vide } from "@/components/admin/ui";
+import { ActionConfirmee, BoutonAction } from "@/components/admin/Actions";
 import { changerStatutCurateur, traiterCandidature } from "@/app/actions/admin";
 import { exigerAdmin } from "@/lib/admin/acces";
 import { creerClientServeur } from "@/lib/supabase/serveur";
+import { lireReglages } from "@/lib/reglages";
+import { LIBELLES_CATEGORIES, type Categorie } from "@/lib/marches/categories";
 import { formaterDate } from "@/lib/format";
 
 export default function PageCurateurs() {
   return (
-    <Suspense fallback={<div className="h-[600px] animate-pulse rounded-carte bg-doux" />}>
+    <Suspense fallback={<div className="h-96 rounded-lg bg-adm-zone" />}>
       <Curateurs />
     </Suspense>
   );
 }
 
-const SEUIL = 10; // même valeur que seuil_essai_curateur() en SQL
-const carte = "rounded-carte border-2 border-contour bg-surface p-5 shadow-decale-md";
-
-// Candidatures, période d'essai (décisions validées par un admin) puis autonomie dans le thème.
+// Candidatures, période d'essai (décisions validées par un admin), puis autonomie dans le thème
 async function Curateurs() {
   await exigerAdmin();
-  const t = await getTranslations("admin");
   const supabase = await creerClientServeur();
-
-  const [{ data: candidatures }, { data: curateurs }, { count: decisions }] = await Promise.all([
+  const [{ data: candidatures }, { data: curateurs }, { count: decisions }, reglages] = await Promise.all([
     supabase
       .from("candidatures_curateur")
       .select("id, categorie, motivation, cree_le, candidat:utilisateurs!candidatures_curateur_utilisateur_id_fkey(id, nom_utilisateur)")
       .eq("statut", "en_attente")
       .order("cree_le")
-      .returns<{ id: number; categorie: string; motivation: string; cree_le: string; candidat: { id: string; nom_utilisateur: string } | null }[]>(),
+      .returns<{ id: number; categorie: Categorie; motivation: string; cree_le: string; candidat: { id: string; nom_utilisateur: string } | null }[]>(),
     supabase
       .from("curateurs")
-      .select("utilisateur_id, categorie, statut, decisions_validees, curateur:utilisateurs!curateurs_utilisateur_id_fkey(nom_utilisateur)")
+      .select("utilisateur_id, categorie, statut, decisions_validees, cree_le, curateur:utilisateurs!curateurs_utilisateur_id_fkey(nom_utilisateur)")
       .order("cree_le")
-      .returns<{ utilisateur_id: string; categorie: string; statut: string; decisions_validees: number; curateur: { nom_utilisateur: string } | null }[]>(),
+      .returns<{ utilisateur_id: string; categorie: Categorie; statut: string; decisions_validees: number; cree_le: string; curateur: { nom_utilisateur: string } | null }[]>(),
     supabase.from("decisions_curateur").select("id", { count: "exact", head: true }).eq("statut", "a_valider"),
+    lireReglages(),
   ]);
+  const seuil = Number(reglages.seuil_essai_curateur);
 
   return (
-    <main className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-[32px] tracking-[-1px] md:text-4xl">{t("menu.curateurs")}</h1>
-        <p className="mt-1.5 text-[15px] text-texte-secondaire">{t("curateursTexte", { seuil: SEUIL })}</p>
-      </div>
-
+    <div className="flex flex-col gap-5">
+      <EnTetePage
+        titre="Curateurs"
+        description={`Candidature → période d'essai (chaque décision est validée par un admin) → autonome après ${seuil} décisions validées. Les admins gardent le dernier mot.`}
+      />
       {(decisions ?? 0) > 0 && (
-        <Link href="/admin" className="rounded-carte border-2 border-foret bg-vert-jaune p-4 font-bold text-foret shadow-foret">
-          {t("decisionsAValider", { n: decisions ?? 0 })}
-        </Link>
+        <p className="rounded-md border border-[#eedfb8] bg-[#fbf4e4] px-3 py-2 text-[13px]">
+          {decisions} décision(s) de curateurs à valider dans la{" "}
+          <Link href="/admin/approbation" className="font-semibold underline">
+            file d&apos;approbation
+          </Link>
+          .
+        </p>
       )}
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-2xl">{t("candidatures")}</h2>
-        {(candidatures ?? []).length === 0 && <p className="rounded-carte border-2 border-dashed border-sauge p-6 text-center font-bold">{t("aucuneCandidature")}</p>}
+      <Section titre={`Candidatures en attente (${(candidatures ?? []).length})`} className="[&>div:last-child]:p-0">
+        {(candidatures ?? []).length === 0 && <Vide>Aucune candidature en attente.</Vide>}
         {(candidatures ?? []).map((c) => (
-          <article key={c.id} className={`${carte} flex flex-col gap-2`}>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <strong>@{c.candidat?.nom_utilisateur}</strong>
-              <span className="rounded-full bg-doux px-2.5 py-1 text-xs font-bold">{t(`categories.${c.categorie}`)}</span>
-              <span className="text-xs text-texte-secondaire">{formaterDate(c.cree_le)}</span>
+          <article key={c.id} className="flex flex-col gap-2 border-b border-adm-bordure px-4 py-3 last:border-b-0">
+            <div className="flex flex-wrap items-center gap-2 text-[13px]">
+              <Link href={`/admin/utilisateurs/${c.candidat?.id}`} className="font-semibold text-adm-accent hover:underline">
+                @{c.candidat?.nom_utilisateur}
+              </Link>
+              <Pastille>{LIBELLES_CATEGORIES[c.categorie]}</Pastille>
+              <span className="text-adm-secondaire">{formaterDate(c.cree_le)}</span>
             </div>
-            <p className="text-[15px] leading-normal">« {c.motivation} »</p>
-            <div className="flex flex-wrap gap-2.5">
-              <BoutonAction action={traiterCandidature.bind(null, c.id, true)} libelle={t("accepterEssai")} variante="oui" />
-              <BoutonAction action={traiterCandidature.bind(null, c.id, false)} libelle={t("refuser")} variante="non" />
+            <p className="text-sm">« {c.motivation} »</p>
+            <div className="flex flex-wrap gap-2">
+              <BoutonAction action={traiterCandidature.bind(null, c.id, true)} libelle="Accepter (période d'essai)" variante="principal" />
+              <ActionConfirmee
+                action={traiterCandidature.bind(null, c.id, false)}
+                libelle="Refuser"
+                titre="Refuser cette candidature ?"
+                message={`@${c.candidat?.nom_utilisateur} pourra postuler de nouveau plus tard.`}
+                confirmer="Refuser"
+              />
             </div>
           </article>
         ))}
-      </section>
+      </Section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="text-2xl">{t("curateursActuels")}</h2>
-        <ul className={`${carte} flex flex-col p-2`}>
-          {(curateurs ?? []).map((c) => (
-            <li key={`${c.utilisateur_id}-${c.categorie}`} className="flex flex-wrap items-center gap-3 border-b border-separateur px-2 py-3 last:border-b-0">
-              <Link href={`/admin/utilisateurs/${c.utilisateur_id}`} className="font-bold hover:underline">
-                @{c.curateur?.nom_utilisateur}
-              </Link>
-              <span className="rounded-full bg-doux px-2.5 py-1 text-xs font-bold">{t(`categories.${c.categorie}`)}</span>
-              <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${c.statut === "autonome" ? "bg-vert-jaune text-foret" : "bg-champagne text-foret"}`}>
-                {c.statut === "autonome" ? t("autonome") : t("enEssai", { n: c.decisions_validees, seuil: SEUIL })}
-              </span>
-              <span className="flex-1" />
-              {c.statut === "essai" ? (
-                <BoutonAction action={changerStatutCurateur.bind(null, c.utilisateur_id, c.categorie, "autonome")} libelle={t("rendreAutonome")} petit />
-              ) : (
-                <BoutonAction action={changerStatutCurateur.bind(null, c.utilisateur_id, c.categorie, "essai")} libelle={t("remettreEssai")} petit />
-              )}
-              <BoutonAction
-                action={changerStatutCurateur.bind(null, c.utilisateur_id, c.categorie, "retirer")}
-                libelle={t("retirer")}
-                variante="non"
-                petit
-                confirmation={t("confirmerRetrait", { nom: c.curateur?.nom_utilisateur ?? "" })}
-              />
-            </li>
-          ))}
-          {(curateurs ?? []).length === 0 && <li className="p-4 text-sm">{t("aucunCurateur")}</li>}
-        </ul>
-      </section>
-    </main>
+      <Section titre="Curateurs" className="[&>div:last-child]:p-0">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-adm-zone text-left text-[13px]">
+              <tr>
+                {["Curateur", "Thème", "Statut", "Décisions validées", "Depuis", ""].map((t) => (
+                  <th key={t} scope="col" className="border-b border-adm-bordure px-3 py-2 font-semibold">
+                    {t}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {(curateurs ?? []).map((c) => (
+                <tr key={`${c.utilisateur_id}-${c.categorie}`} className="border-b border-adm-bordure last:border-b-0">
+                  <td className="px-3 py-2">
+                    <Link href={`/admin/utilisateurs/${c.utilisateur_id}`} className="text-adm-accent hover:underline">
+                      @{c.curateur?.nom_utilisateur}
+                    </Link>
+                  </td>
+                  <td className="px-3 py-2">{LIBELLES_CATEGORIES[c.categorie]}</td>
+                  <td className="px-3 py-2">{c.statut === "autonome" ? <Pastille ton="accent">Autonome</Pastille> : <Pastille ton="attention">Essai</Pastille>}</td>
+                  <td className="px-3 py-2 tabular-nums">
+                    {c.decisions_validees} / {seuil}
+                  </td>
+                  <td className="px-3 py-2">{formaterDate(c.cree_le)}</td>
+                  <td className="px-3 py-2">
+                    <span className="flex flex-wrap gap-1.5">
+                      {c.statut === "essai" ? (
+                        <BoutonAction action={changerStatutCurateur.bind(null, c.utilisateur_id, c.categorie, "autonome")} libelle="Rendre autonome" />
+                      ) : (
+                        <BoutonAction action={changerStatutCurateur.bind(null, c.utilisateur_id, c.categorie, "essai")} libelle="Remettre en essai" />
+                      )}
+                      <ActionConfirmee
+                        action={changerStatutCurateur.bind(null, c.utilisateur_id, c.categorie, "retirer")}
+                        libelle="Retirer"
+                        titre="Retirer ce curateur ?"
+                        message={`@${c.curateur?.nom_utilisateur} perdra son badge et ses droits dans le thème ${LIBELLES_CATEGORIES[c.categorie]}.`}
+                        confirmer="Retirer"
+                      />
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {(curateurs ?? []).length === 0 && <Vide>Aucun curateur pour l&apos;instant.</Vide>}
+        </div>
+      </Section>
+    </div>
   );
 }

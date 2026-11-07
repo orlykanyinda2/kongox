@@ -14,8 +14,20 @@ Toutes les modifications importantes de KongoX sont notées ici, de la plus réc
 - « Changer mon mot de passe » et lien vers le panneau dans le profil ; lien « Admin » dans l'en-tête
 - Tables `curateurs`, `candidatures_curateur`, `decisions_curateur`, `cadeaux`, `journal_admin` avec RLS
 
+### Ajouté (back-office)
+- Nouveau style du panneau admin : sobre et dense (section « Panneau admin » de DESIGN.md), menu latéral, recherche globale, menu replié sur téléphone
+- Tableau de bord : chiffres du jour et graphiques sur 7 jours, 30 jours ou tout
+- Marchés : création directe par l'admin, modification (verrouillée après la première mise), publication, fermeture, mise en avant, Soki du jour, duplication, suppression avec remboursement automatique
+- Programmation : brouillon → programmé → en ligne, vue liste et calendrier, marchés récurrents (chaque jour / chaque semaine), publication automatique chaque minute (pg_cron)
+- Pièces : ajout / retrait avec raison obligatoire (`ajustement_admin`), bonus en masse (liste de noms, comptes actifs 7 / 30 jours), historique
+- Journal : qui, quoi, quand, avant / après, filtres et export CSV
+- Réglages : règles des pièces modifiables dans des limites ; les textes de l'application suivent les valeurs
+- Tableaux avec tri, filtres, pagination et export CSV ; confirmation obligatoire avant toute action dangereuse
+
 ### Modifié
 - `approuver_marche` et `refuser_marche` gèrent maintenant les curateurs (essai / autonome)
+- Les fonctions des pièces lisent les réglages au lieu de valeurs écrites en dur
+- « Mots de passe » est maintenant dans « Utilisateurs » (outil en haut de la liste et sur chaque fiche)
 
 ## [0.3.0] — 2026-11-07 — Étape 2 : marchés et prédictions
 

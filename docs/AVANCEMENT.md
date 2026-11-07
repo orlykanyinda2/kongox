@@ -4,7 +4,7 @@ Ce fichier dit où en est la construction. Claude Code le lit au début de chaqu
 
 Statuts possibles : **à faire** · **en cours** · **terminé**
 
-Dernière mise à jour : 2026-11-08
+Dernière mise à jour : 2026-11-09
 
 | | Étape | Contenu | Statut |
 | --- | --- | --- | --- |
@@ -39,3 +39,8 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - Migration de l'étape 3 exécutée sur Supabase. 42 tests SQL (curateurs, essai → autonome, cadeaux, rôles, RLS, journal) + 41 tests de l'étape 2 (non-régression) + 32 vérifications des pages admin (visiteur, utilisateur, curateur, admin) passent.
   - Aucun admin pour l'instant : voir « Premier admin » dans `docs/ARCHITECTURE.md`.
   - Reporté : signalements et modération du chat (étape 5), matchs (étape 4) — les écrans admin affichent « Cet écran arrive à l'étape… ».
+- 2026-11-09 : panneau admin refait en back-office sobre (demande d'Orly), toujours sur `feat/admin`, avant la pull request.
+  - Migration `20261109090000_backoffice_admin.sql` exécutée sur Supabase. 51 tests SQL du back-office + 42 (étape 3) + 41 (étape 2) passent ; 34 vérifications des écrans admin (admin, curateur, utilisateur, export CSV, textes réglés) + pages publiques passent.
+  - Décisions validées par Orly : marché verrouillé après la première mise (sauf date de fin et mise en avant) ; bonus en masse par liste de noms ou comptes actifs (communauté et classement à l'étape 4) ; réglages des pièces modifiables.
+  - Premier admin : `ondiq` (créé le 2026-11-08).
+  - Reporté : un marché par match d'un championnat (étape 4, avec l'import des matchs) ; signalements (étape 5).

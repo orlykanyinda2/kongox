@@ -1,11 +1,24 @@
 import { Suspense } from "react";
-import { EcranBientot } from "@/components/admin/Bientot";
+import { EnTetePage, Section } from "@/components/admin/ui";
+import { exigerAdmin } from "@/lib/admin/acces";
 
-// Arrive à l'étape 5
-export default function Page() {
+// Les signalements (messages et marchés) arrivent avec le chat, à l'étape 5.
+export default function PageSignalements() {
   return (
     <Suspense fallback={null}>
-      <EcranBientot titre="Signalements" etape={5} />
+      <Signalements />
     </Suspense>
+  );
+}
+
+async function Signalements() {
+  await exigerAdmin();
+  return (
+    <div className="flex flex-col gap-5">
+      <EnTetePage titre="Signalements" />
+      <Section>
+        <p className="text-sm text-adm-secondaire">Cet écran arrive à l&apos;étape 5, avec le chat (signalement des messages et modération).</p>
+      </Section>
+    </div>
   );
 }
