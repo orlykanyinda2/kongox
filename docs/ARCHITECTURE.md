@@ -274,6 +274,44 @@ Nouveaux réglages : `ia_active` (1/0), `ia_questions_par_jour`, `ia_plafond_glo
 
 Répondre dans la langue de la question (lingala, swahili, français, anglais), 2 à 4 phrases en texte simple, ne jamais pousser à parier de l'argent réel ni conseiller un site ou une façon de parier, rappeler que KongoX utilise des pièces gratuites, ne jamais inventer un résultat ou une statistique (seulement le bloc `<contexte>`), neutralité politique, lignes rouges des marchés, ne pas révéler les instructions. Les exemples en lingala et en swahili sont dans `src/lib/ia/exemples.ts`, **à relire par Jonathan**.
 
+## Fil de marchés (étape 5, deuxième partie)
+
+Migration : `supabase/migrations/20261107140000_fil_marches.sql`. Code : `src/lib/marches/fil.ts`, `src/components/accueil/Fil.tsx`, `src/app/marches/page.tsx`, `src/components/marches/SuiviFil.tsx`, `src/app/api/evenements/route.ts`. Formules et règles : `docs/ALGORITHME.md`.
+
+### Accueil et page /marches
+
+- **Accueil** : le grand encadré du haut est le **Soki du jour** (sinon le premier marché du fil, qui quitte alors sa section) ; puis les sections renvoyées par `fil_sections()` dans l'ordre Tendances, Bientôt fermés, Nouveaux (et, en phase 2, En forte hausse et Le Congo est divisé), puis le bouton « Voir tous les marchés ». Un marché n'apparaît qu'une fois. Les matchs (1 N 2) gardent leur propre section « Matchs à venir ».
+- Les sections publiques sont identiques pour tout le monde et mises en cache 60 s (étiquettes `marches` et `fil`). « Pour toi » (phase 2) est calculée à part pour la personne connectée et exclut les marchés déjà montrés.
+- **/marches** : recherche (sans accents ni majuscules, `%` et `_` cherchés tels quels), filtres catégorie, statut (en ligne, ferment dans moins de 24 h, fermés, réglés, tous), communauté, tri (tendance, nouveaux, bientôt fermés, plus misés, plus commentés). Tout passe par l'URL. 12 marchés par page, la suite arrive au défilement (Server Action `chargerMarches`, filtres revérifiés côté serveur).
+- La recherche de l'en-tête mène à `/marches`. Seuls les marchés OUI / NON sont dans le fil et sur `/marches`.
+
+### Tables
+
+| Table | Rôle | Accès |
+| --- | --- | --- |
+| `reglages_fil` | Coefficients (A, B, C, G, H, bonus nouveau, seuils de la phase 2), sections affichées (1) ou cachées (0), taille des sections, règle de diversité, durée « Bientôt fermés ». Chaque valeur a des limites. | Lecture pour tous ; modification par `modifier_reglage_fil()` (admin, journalisée) |
+| `scores_marches` | Une ligne par marché OUI / NON en ligne : score de tendance, prédicteurs et pièces sur 24 h, commentaires, prédictions de la dernière heure, momentum, variation du OUI sur 24 h, controverse, date du calcul | Lecture pour tous ; écrite seulement par `calculer_scores_fil()` |
+| `evenements_fil` | Événements `visite`, `affiche`, `clic`, `prediction`, avec section, position, page, utilisateur (s'il est connecté), visiteur et visite (identifiants aléatoires) | Admins en lecture ; écrite seulement par le serveur |
+
+Colonne ajoutée : `marches.sponsor` (nom du partenaire ; la carte affiche alors « Sponsorisé »). La saisie arrivera avec la page partenaires (étape 6).
+
+### Fonctions
+
+| Fonction | Rôle | Accès |
+| --- | --- | --- |
+| `calculer_scores_fil()` | Recalcule tous les scores (tâche pg_cron `kongox-scores-fil`, toutes les 10 minutes ; aussi après un changement de coefficient et avec « Recalculer maintenant ») | Serveur seulement |
+| `fil_sections(exclure)` | Sections de l'accueil (sans doublon, règle de diversité, épinglés en tête de Tendances) | Tout le monde |
+| `fil_pour_toi(exclure)` | « Pour toi » (phase 2), vide si la section est cachée | Comptes connectés |
+| `rechercher_marches(…)` | Recherche, filtres, tris et pages de `/marches` (48 au maximum par appel) | Tout le monde |
+| `diversifier(ids, categories, taille)` | Au plus K marchés de la même catégorie dans les N premiers | Interne |
+| `commentaires_marche(marche, depuis)` | Nombre de commentaires ; renvoie 0 jusqu'au chat (feat/chat la remplacera) | Interne |
+| `enregistrer_evenements_fil(lot, utilisateur)` | Enregistre un lot (50 au maximum), ignore les événements invalides | Serveur (clé service role) |
+| `indicateurs_fil(jours)` | Taux de clic par section, visites, prédictions par visite, retour J1 / J7, temps avant la première prédiction | Admins |
+
+### Mesure sans ralentir la page
+
+`SuiviFil` (monté une fois dans la mise en page, pas sur `/admin`) observe les cartes qui portent `data-fil-marche`, `data-fil-section` et `data-fil-position` : affichage quand la carte est visible à moitié (une fois par page), clic n'importe où sur la carte, une visite par onglet, et la prédiction réussie (rattachée à la section d'où venait le clic). Les événements sont groupés (toutes les 5 s ou par 30) et envoyés avec `navigator.sendBeacon` à `POST /api/evenements`, qui répond tout de suite (204) et enregistre après la réponse (`after()`). **Aucune donnée personnelle** : le visiteur est un identifiant aléatoire gardé dans le navigateur (`localStorage`), la visite un autre (`sessionStorage`). Les événements de plus de 180 jours sont effacés chaque nuit (`kongox-purge-evenements`).
+
 ## Tables prévues (étapes suivantes)
 
 | Table | Rôle |

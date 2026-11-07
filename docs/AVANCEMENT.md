@@ -13,7 +13,7 @@ Dernière mise à jour : 2026-11-07
 | [x] | 2 — Marchés et prédictions | Tables `marches`, `options_marche`, `predictions`, statuts, cagnotte, gains, bonus +50 pièces pour une question approuvée, accueil + page d'un marché + « Proposer une question », seed, limite de 2 000 pièces par jour | terminé |
 | [x] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | terminé |
 | [x] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | terminé |
-| [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | en cours (assistant IA fait ; fil de marchés puis chat à suivre) |
+| [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | en cours (assistant IA et fil de marchés faits ; chat à suivre) |
 | [ ] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | à faire |
 
 Après l'étape 6 : vérification de sécurité et déploiement (section « Avant la mise en ligne » de `PROMPTS.md`).
@@ -64,3 +64,8 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - Clé Anthropic vérifiée par un appel de test (réponse 200 ; elle ne commence pas par `sk-ant-api` mais l'API l'accepte).
   - Migration exécutée. Test de bout en bout avec de vrais appels : streaming, réponse en français avec les vrais pourcentages, réponse en lingala, refus de l'argent réel sans conseil de pari, prompt caching (jetons lus en cache), limite par personne, plafond global, panne simulée (clé invalide : message clair, question rendue, site intact), affichage visiteur / connecté / `/chat`. La clé n'est pas dans le code envoyé au navigateur.
   - À faire par Jonathan : relire les phrases en lingala et en swahili de `src/lib/ia/exemples.ts` et la qualité du lingala des réponses (quelques mots français mêlés).
+- 2026-11-07 : `feat/assistant-ia` fusionnée (pull request n° 5, vérifié). `feat/fil-marches` prête.
+  - Migration `20261107140000_fil_marches.sql` exécutée sur Supabase (tâches pg_cron `kongox-scores-fil` toutes les 10 minutes et `kongox-purge-evenements` chaque nuit).
+  - 64 tests SQL (formule du score, bonus nouveau, controverse, variation, sections sans doublon, diversité, épinglé, sections cachées, phase 2, Pour toi, recherche, filtres, tris, pagination, événements, indicateurs, droits) et 29 vérifications des pages (accueil, `/marches`, `/api/evenements`, Admin › Réglages et Tableau de bord) passent ; non-régression des pages (étape 4, back-office, étape 2) ; suivi vérifié depuis un vrai navigateur.
+  - Choix : bonus nouveau = 2 points (modifiable) ; sans Soki du jour, le premier marché du fil prend l'encadré ; « plus commentés » et le poids B restent à 0 jusqu'au chat (`commentaires_marche()` à remplacer dans `feat/chat`).
+  - Reporté : saisie du sponsor d'un marché (étape 6, partenaires) ; tests A/B (phase 3).

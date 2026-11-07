@@ -80,6 +80,7 @@ async function TableauDeBord({ searchParams }: { searchParams: Promise<Params> }
           Modèle : {String(reglages.ia_modele)} · {String(reglages.ia_questions_par_jour)} questions par personne et par jour · {Number(reglages.ia_active) ? "activé" : "désactivé"} (Réglages).
         </p>
       </Section>
+      <IndicateursFil jours={periode.jours ?? 3650} libelle={periode.libelle} />
       {dernierImport && (
         <p className="-mt-2 text-[13px] text-adm-secondaire">
           Dernier import : {dernierImport.type === "a_venir" ? "matchs à venir" : "résultats"}, {formaterDate(dernierImport.debut)} ({dernierImport.statut ?? "en cours"}).
@@ -141,5 +142,85 @@ async function TableauDeBord({ searchParams }: { searchParams: Promise<Params> }
         </details>
       </Section>
     </div>
+  );
+}
+
+type Indicateurs = {
+  sections: { section: string; affichages: number; clics: number; predictions: number; taux_clic: number }[];
+  visites: number;
+  predictions: number;
+  retour: { j1_base: number; j1: number; j7_base: number; j7: number };
+  minutes_premiere_prediction: number | null;
+};
+
+const NOMS_SECTIONS: Record<string, string> = {
+  soki: "Soki du jour",
+  pour_toi: "Pour toi",
+  tendances: "Tendances",
+  hausse: "En forte hausse",
+  bientot: "Bientôt fermés",
+  divise: "Le Congo est divisé",
+  nouveaux: "Nouveaux",
+  marches: "Page « Tous les marchés »",
+};
+
+const pourcent = (n: number, base: number) => (base > 0 ? `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format((100 * n) / base)} %` : "—");
+
+// Mesure du fil (docs/ALGORITHME.md) : taux de clic par section, prédictions par visite, retour J1 / J7
+async function IndicateursFil({ jours, libelle }: { jours: number; libelle: string }) {
+  const supabase = await creerClientServeur();
+  const { data, error } = await supabase.rpc("indicateurs_fil", { p_jours: jours });
+  if (error || !data) return null;
+  const d = data as Indicateurs;
+  const parVisite = d.visites > 0 ? new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 2 }).format(d.predictions / d.visites) : "—";
+  return (
+    <Section titre={`Fil de marchés — ${libelle}`}>
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-5">
+        <Chiffre valeur={formaterNombre(d.visites)} libelle="Visites" />
+        <Chiffre valeur={parVisite} libelle={`Prédictions par visite (${formaterNombre(d.predictions)})`} />
+        <Chiffre valeur={pourcent(d.retour.j1, d.retour.j1_base)} libelle={`Retour J1 (${formaterNombre(d.retour.j1)} / ${formaterNombre(d.retour.j1_base)})`} />
+        <Chiffre valeur={pourcent(d.retour.j7, d.retour.j7_base)} libelle={`Retour J7 (${formaterNombre(d.retour.j7)} / ${formaterNombre(d.retour.j7_base)})`} />
+        <Chiffre
+          valeur={d.minutes_premiere_prediction === null ? "—" : `${new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 1 }).format(Number(d.minutes_premiere_prediction))} min`}
+          libelle="Temps avant la 1re prédiction (médiane)"
+        />
+      </div>
+      <div className="mt-4 overflow-x-auto">
+        <table className="w-full text-sm">
+          <caption className="sr-only">Taux de clic par section</caption>
+          <thead className="bg-adm-zone text-left text-[13px]">
+            <tr>
+              {["Section", "Affichages", "Clics", "Taux de clic", "Prédictions"].map((t, i) => (
+                <th key={t} scope="col" className={`border-b border-adm-bordure px-3 py-2 font-semibold ${i > 0 ? "text-right" : ""}`}>
+                  {t}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {d.sections.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="px-3 py-4 text-center text-adm-secondaire">
+                  Aucun événement sur la période.
+                </td>
+              </tr>
+            ) : (
+              d.sections.map((s) => (
+                <tr key={s.section} className="border-b border-adm-bordure last:border-b-0">
+                  <td className="px-3 py-2 font-medium">{NOMS_SECTIONS[s.section] ?? s.section}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{formaterNombre(s.affichages)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{formaterNombre(s.clics)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{pourcent(s.clics, s.affichages)}</td>
+                  <td className="px-3 py-2 text-right tabular-nums">{formaterNombre(s.predictions)}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-xs text-adm-secondaire">
+        Visiteurs comptés avec un identifiant aléatoire du navigateur (sans données personnelles). Retour J1 / J7 : part des visiteurs revenus le lendemain / 7 jours après leur première visite. Événements gardés 180 jours.
+      </p>
+    </Section>
   );
 }

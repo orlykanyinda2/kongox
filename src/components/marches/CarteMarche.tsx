@@ -8,14 +8,34 @@ import { IconePartage } from "@/components/icones";
 
 // Carte d'un marché (maquettes Main et Mobile).
 // Mobile : carte entièrement cliquable avec « OUI xx % ». Ordinateur : boutons OUI / NON.
-export function CarteMarche({ marche, libelles }: { marche: Marche; libelles: { pieces: string; partager: string } }) {
+// suivi : section et position de la carte dans le fil (mesure des affichages et des clics, voir SuiviFil)
+export function CarteMarche({
+  marche,
+  libelles,
+  suivi,
+}: {
+  marche: Marche;
+  libelles: { pieces: string; partager: string; sponsorise?: string };
+  suivi?: { section: string; position: number };
+}) {
   const pct = marche.pourcentageOui;
   const lien = `/marches/${marche.id}`;
 
   return (
-    <article className="relative flex flex-col gap-3 rounded-[18px] border-2 border-contour bg-surface p-4 shadow-decale md:gap-3.5 md:rounded-carte md:p-[22px] md:shadow-decale-md">
+    <article
+      data-fil-marche={suivi ? marche.id : undefined}
+      data-fil-section={suivi?.section}
+      data-fil-position={suivi?.position}
+      className="relative flex flex-col gap-3 rounded-[18px] border-2 border-contour bg-surface p-4 shadow-decale md:gap-3.5 md:rounded-carte md:p-[22px] md:shadow-decale-md">
       <div className="flex items-center justify-between gap-2">
-        <EtiquetteCategorie categorie={marche.categorie} />
+        <span className="flex flex-wrap items-center gap-1.5">
+          <EtiquetteCategorie categorie={marche.categorie} />
+          {marche.sponsor && (
+            <span className="rounded-full border border-separateur px-2 py-0.5 text-[11px] font-bold text-texte-secondaire" title={marche.sponsor}>
+              {libelles.sponsorise ?? "Sponsorisé"}
+            </span>
+          )}
+        </span>
         <span className="text-xs font-semibold text-texte-secondaire md:text-[13px]">{marche.finLibelle}</span>
       </div>
 
