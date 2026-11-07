@@ -2,6 +2,7 @@
 
 import { updateTag } from "next/cache";
 import { appeler, dateKinshasa, erreur, idParNom, rafraichir, verifierAdmin, type EtatAction } from "@/lib/admin/rpc";
+import { creerClientAdmin } from "@/lib/supabase/admin";
 
 // Back-office : marchés, programmation, pièces, réglages.
 // Chaque fonction SQL vérifie elle-même que l'appelant est admin.
@@ -159,6 +160,31 @@ export async function modifierReglage(cle: string, numerique: boolean, _etat: Et
   updateTag("reglages");
   rafraichir(true);
   return { succes: "Enregistré." };
+}
+
+// Réglages du fil de marchés (coefficients décimaux, sections affichées ou cachées)
+export async function modifierReglageFil(cle: string, _etat: EtatAction, donnees: FormData): Promise<EtatAction> {
+  const brut = String(donnees.get("valeur") ?? "").trim().replace(/\s/g, "").replace(",", ".");
+  const valeur = Number(brut);
+  if (brut === "" || !Number.isFinite(valeur)) return erreur("hors_limites");
+  const { error } = await appeler("modifier_reglage_fil", { p_cle: cle, p_valeur: valeur });
+  if (error) return erreur(error.hint, error.message);
+  // Les nouveaux coefficients comptent tout de suite (sans attendre les 10 minutes)
+  if (cle.startsWith("coef_") || cle === "bonus_nouveau") await creerClientAdmin().rpc("calculer_scores_fil");
+  updateTag("reglages-fil");
+  updateTag("fil");
+  rafraichir(true);
+  return { succes: "Enregistré." };
+}
+
+// Recalcule les scores du fil tout de suite (normalement toutes les 10 minutes)
+export async function recalculerScoresFil(): Promise<EtatAction> {
+  if (!(await verifierAdmin())) return erreur("reserve_admin");
+  const { data, error } = await creerClientAdmin().rpc("calculer_scores_fil");
+  if (error) return erreur(null, error.message);
+  updateTag("fil");
+  rafraichir(true);
+  return { succes: `Scores recalculés (${data} marchés).` };
 }
 
 // ---------------------------------------------------------------------

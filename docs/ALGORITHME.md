@@ -38,6 +38,9 @@ score_tendance = activite ÷ (heures_depuis_publication + 2) ^ G
 | C | 100 | Pièces divisées par C |
 | G | 1,5 | Vitesse de vieillissement |
 | H | 6 h | Durée du bonus pour les nouveaux marchés |
+| bonus_nouveau | 2 | Points ajoutés au score pendant les H premières heures (un marché tout neuf, sans mise, passe devant les marchés endormis) |
+
+`heures_depuis_publication` part de la date de publication (ou d'approbation). Les commentaires comptent dès que le chat existe ; d'ici là, B n'a pas d'effet.
 
 ### Bientôt fermés
 Marchés en ligne qui se ferment dans moins de 24 h, du plus proche au plus lointain.
@@ -79,3 +82,12 @@ Indicateurs suivis dans Admin › Tableau de bord :
 | Temps avant la première prédiction | après l'inscription |
 
 Pour comparer deux réglages, on fera des tests A/B : chaque utilisateur est placé dans un groupe (A ou B) et on garde le réglage qui donne les meilleurs chiffres.
+
+## Dans le code
+
+- Calcul : `calculer_scores_fil()`, tâche pg_cron `kongox-scores-fil` (`*/10 * * * *`), résultats dans `scores_marches`.
+- Sections : `fil_sections()` (publiques, en cache 60 s) et `fil_pour_toi()` (personne connectée). Page `/marches` : `rechercher_marches()`.
+- Réglages : table `reglages_fil`, modifiables dans Admin › Réglages (bornes de sécurité, journal). Sections, coefficients, taille des sections (6), diversité (2 dans les 6 premiers), « Bientôt fermés » (24 h), seuils de la phase 2 (`momentum_seuil` 2, `momentum_min_1h` 3, `variation_seuil` 10 points, `controverse_min` 5 prédicteurs).
+- Momentum : la moyenne horaire est prise sur 7 jours, ou depuis la publication si le marché est plus jeune (au moins 1 heure). Variation du OUI : pourcentage actuel moins celui d'il y a 24 h (50 % s'il n'y avait pas de mise).
+- Sur l'accueil, le Soki du jour est le grand encadré du haut ; sans Soki du jour, le premier marché du fil prend sa place (et quitte sa section).
+- Mesure : `evenements_fil` (envoi groupé avec `sendBeacon`, enregistrement après la réponse), indicateurs `indicateurs_fil()`. Le visiteur anonyme est un identifiant aléatoire du navigateur ; les événements sont gardés 180 jours.

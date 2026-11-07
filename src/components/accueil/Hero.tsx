@@ -6,14 +6,14 @@ import { IconePiece } from "@/components/IconePiece";
 import { IconeEtincelle, IconeEtoile, IconeLecture } from "@/components/icones";
 import { BarrePourcentage } from "@/components/marches/BarrePourcentage";
 import { historiqueMarche, listerMarchesOuverts, type Marche } from "@/lib/marches/donnees";
+import { filAccueil } from "@/lib/marches/fil";
 import { POINTS_CATEGORIES } from "@/lib/marches/categories";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { formaterNombre } from "@/lib/format";
 
-// Marché mis en avant : celui marqué « Soki du jour », sinon le plus misé
+// Marché mis en avant : la section « Soki du jour » du fil (sinon le premier marché du fil)
 export async function marcheDuJour(): Promise<Marche | null> {
-  const marches = await listerMarchesOuverts();
-  return marches.find((m) => m.soki_du_jour) ?? marches[0] ?? null;
+  return (await filAccueil()).soki;
 }
 
 // Bouton principal : « Commencer » pour un visiteur, « Voir les marchés » si connecté
@@ -95,7 +95,7 @@ async function SokiMobile() {
   if (!m) return null;
   const t = await getTranslations("accueil");
   return (
-    <article className="rounded-[22px] border-2 border-foret bg-hunter p-5 text-white shadow-brique-md">
+    <article data-fil-marche={m.id} data-fil-section="soki" data-fil-position={1} className="rounded-[22px] border-2 border-foret bg-hunter p-5 text-white shadow-brique-md">
       <div className="flex items-center justify-between">
         <span className="rounded-full bg-brique px-2.5 py-[5px] text-xs font-bold">{t("sokiDuJour")}</span>
         <span className="text-xs font-semibold text-[#C9D4B8]">{m.finLibelle}</span>
@@ -201,7 +201,7 @@ async function CarteSoki() {
   const debut = historique[0] ?? m.pourcentageOui;
 
   return (
-    <article className="max-w-[470px] flex-[1_1_400px] -rotate-[2.5deg] rounded-[28px] border-2 border-foret bg-white p-[26px] text-left shadow-[12px_12px_0_#6A994E]">
+    <article data-fil-marche={m.id} data-fil-section="soki" data-fil-position={1} className="max-w-[470px] flex-[1_1_400px] -rotate-[2.5deg] rounded-[28px] border-2 border-foret bg-white p-[26px] text-left shadow-[12px_12px_0_#6A994E]">
       <div className="flex items-center justify-between gap-3">
         <span className="rounded-full border-2 border-foret bg-brique px-3 py-1.5 text-[13px] font-bold text-white">{t("sokiDuJour")}</span>
         <span className="text-[13px] font-semibold text-[#4B5A44]">{m.finLibelle}</span>

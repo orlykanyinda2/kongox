@@ -2,6 +2,20 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.7.0] — 2026-11-07 — Étape 5 (deuxième partie) : fil de marchés
+
+### Ajouté
+- Accueil en sections selon `docs/ALGORITHME.md` : Soki du jour (grand encadré), Tendances (6), Bientôt fermés (moins de 24 h), Nouveaux, puis « Voir tous les marchés » ; aucun marché en double ; les matchs gardent leur section
+- Score de tendance calculé dans la base toutes les 10 minutes (pg_cron) avec les coefficients A, B, C, G, H et le bonus des nouveaux marchés ; épinglés en tête ; diversité (2 marchés de la même catégorie au plus dans les 6 premiers)
+- Page `/marches` : recherche sans accents, filtres catégorie, statut et communauté, tris tendance, nouveaux, bientôt fermés, plus misés, plus commentés, chargement progressif au défilement
+- Réglages du fil dans Admin › Réglages (coefficients, sections affichées ou cachées, diversité), bouton « Recalculer maintenant »
+- Phase 2 préparée et cachée : momentum, variation du OUI et controverse calculés dès maintenant ; sections « Pour toi », « En forte hausse » et « Le Congo est divisé » prêtes à activer
+- Mesure : table `evenements_fil` (affichage, clic, prédiction, visite, avec section et position), envoyée en arrière-plan, visiteurs anonymes avec un identifiant aléatoire ; indicateurs dans Admin › Tableau de bord (taux de clic par section, prédictions par visite, retour J1 et J7, temps avant la première prédiction)
+- Mention « Sponsorisé » sur les cartes des marchés sponsorisés (colonne `marches.sponsor`)
+
+### Modifié
+- La recherche de l'en-tête et le lien « Marchés » mènent à `/marches` ; les puces de catégories de l'accueil sont remplacées par les filtres de `/marches`
+
 ## [0.6.0] — 2026-11-07 — Étape 5 (première partie) : assistant IA
 
 ### Ajouté

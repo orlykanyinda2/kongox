@@ -19,7 +19,7 @@ export function EnTete() {
         <Logo libelle={tc("accueilLogo")} />
 
         <nav aria-label={t("navigation")} className="hidden flex-wrap gap-1 lg:flex">
-          <Link href="/#marches" className="rounded-[10px] px-3.5 py-2.5 text-[15px] font-semibold text-texte hover:bg-doux">
+          <Link href="/marches" className="rounded-[10px] px-3.5 py-2.5 text-[15px] font-semibold text-texte hover:bg-doux">
             {t("marches")}
           </Link>
           <Link href="/football" className="rounded-[10px] px-3.5 py-2.5 text-[15px] font-semibold text-texte hover:bg-doux">
@@ -33,7 +33,7 @@ export function EnTete() {
           </Link>
         </nav>
 
-        <form action="/" method="get" role="search" className="hidden min-w-[180px] flex-[1_1_200px] md:block">
+        <form action="/marches" method="get" role="search" className="hidden min-w-[180px] flex-[1_1_200px] md:block">
           <label htmlFor="recherche" className="sr-only">
             {t("rechercher")}
           </label>

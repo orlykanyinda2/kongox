@@ -1,12 +1,13 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { predire, type EtatPrediction } from "@/app/actions/marches";
 import type { OptionMarche } from "@/lib/marches/donnees";
 import { IconePiece } from "@/components/IconePiece";
 import { formaterNombre } from "@/lib/format";
+import { signalerPrediction } from "./SuiviFil";
 
 type Props = {
   marcheId: number;
@@ -30,6 +31,10 @@ export function FormulairePrediction({ marcheId, options, pourcentages, libelles
   const [ordre, setOrdre] = useState(Math.min(depuisUrl, options.length - 1));
   const [saisie, setSaisie] = useState("200");
   const [etat, action, enCours] = useActionState<EtatPrediction, FormData>(predire, {});
+  // Mesure du fil : une prédiction réussie, rattachée à la section d'où venait le clic
+  useEffect(() => {
+    if (etat.succes) signalerPrediction(marcheId);
+  }, [etat.succes, marcheId]);
 
   const option = options[ordre];
   const montant = Number.parseInt(saisie, 10) || 0;

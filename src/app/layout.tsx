@@ -3,6 +3,7 @@ import { Inter, Space_Grotesk } from "next/font/google";
 import { NextIntlClientProvider, useMessages } from "next-intl";
 import { getTranslations } from "next-intl/server";
 import { EnregistrementServiceWorker } from "@/components/EnregistrementServiceWorker";
+import { SuiviFil } from "@/components/marches/SuiviFil";
 import { scriptTheme } from "@/lib/theme";
 import "./globals.css";
 
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full flex flex-col">
         <NextIntlClientProvider messages={textesNavigateur}>{children}</NextIntlClientProvider>
         <EnregistrementServiceWorker />
+        <SuiviFil />
       </body>
     </html>
   );

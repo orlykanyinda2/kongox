@@ -16,6 +16,7 @@ export type Marche = {
   statut: "en_attente" | "approuve" | "refuse" | "ferme" | "regle";
   soki_du_jour: boolean;
   mis_en_avant: boolean;
+  sponsor: string | null; // marché sponsorisé : affiché avec « Sponsorisé »
   type_reponse: "oui_non" | "choix_multiples" | "1n2";
   option_gagnante_id: number | null;
   lien_resultat: string | null;
@@ -31,7 +32,7 @@ export type Marche = {
 export type PointHistorique = { moment: string; pourcentage: number };
 
 const CHAMPS =
-  "id, question, categorie, type_reponse, date_fin, source, statut, soki_du_jour, mis_en_avant, option_gagnante_id, lien_resultat, motif, " +
+  "id, question, categorie, type_reponse, date_fin, source, statut, soki_du_jour, mis_en_avant, sponsor, option_gagnante_id, lien_resultat, motif, " +
   "auteur:utilisateurs!marches_auteur_id_fkey(nom_utilisateur), " +
   "options:options_marche!options_marche_marche_id_fkey(id, libelle, ordre, total_mise)";
 
@@ -92,6 +93,24 @@ export async function listerMarchesOuverts(): Promise<Marche[]> {
   return data
     .map((l) => enrichir(l, maintenant))
     .sort((a, b) => Number(b.mis_en_avant) - Number(a.mis_en_avant) || b.volume - a.volume || a.date_fin.localeCompare(b.date_fin));
+}
+
+// Plusieurs marchés par numéro, en une seule requête (ordre non garanti)
+export async function marchesParIds(ids: number[]): Promise<Marche[]> {
+  "use cache";
+  cacheTag("marches");
+  cacheLife({ stale: 30, revalidate: 30, expire: 3600 });
+
+  const uniques = [...new Set(ids)].filter((id) => Number.isInteger(id) && id > 0);
+  if (uniques.length === 0) return [];
+  const supabase = creerClientPublic();
+  const { data, error } = await supabase.from("marches").select(CHAMPS).in("id", uniques).returns<Ligne[]>();
+  if (error) {
+    console.error("[marchés] par numéros :", error.message);
+    return [];
+  }
+  const maintenant = Date.now();
+  return data.map((l) => enrichir(l, maintenant));
 }
 
 export async function obtenirMarche(id: number): Promise<Marche | null> {
