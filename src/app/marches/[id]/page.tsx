@@ -14,6 +14,9 @@ import { matchDuMarche } from "@/lib/football/donnees";
 import { RepartitionMatch } from "@/components/football/RepartitionMatch";
 import { AssistantServeur } from "@/components/ia/AssistantServeur";
 import { SalonServeur } from "@/components/chat/SalonServeur";
+import { VoterEnInvite } from "@/components/compte/VoterEnInvite";
+import { nomDrole } from "@/lib/compte/nomsDroles";
+import { QuiAVoteServeur } from "@/components/votes/QuiAVoteServeur";
 import { SignalerMarche } from "@/components/chat/SignalerMarche";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
@@ -133,6 +136,10 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
             <AssistantServeur marche={marche.id} />
           </Suspense>
 
+          <Suspense fallback={<div className="h-40 animate-pulse rounded-[18px] bg-doux" />}>
+            <QuiAVoteServeur marche={marche.id} options={marche.options.map((o) => ({ ordre: o.ordre, libelle: o.libelle }))} />
+          </Suspense>
+
           <Suspense fallback={<div className="h-48 animate-pulse rounded-[18px] bg-doux" />}>
             <SalonServeur cible={{ marche: marche.id }} type={match ? "match" : "marche"} />
           </Suspense>
@@ -146,6 +153,11 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
       </div>
     </main>
   );
+}
+
+// Pseudo proposé aux visiteurs (fonction à part : la règle « purity » interdit Math.random() dans un composant)
+function nomInviteAuHasard() {
+  return nomDrole(5 + Math.floor(Math.random() * 1000));
 }
 
 // Panneau de prédiction : formulaire si connecté et marché ouvert, sinon message adapté
@@ -179,25 +191,16 @@ async function PanneauPrediction({ marche, libelles, pourcentages }: { marche: M
 
   const u = await utilisateurConnecte();
   if (!u) {
-    return (
-      <section className="flex flex-col gap-3.5 rounded-carte border-2 border-foret bg-hunter p-5 text-white shadow-brique-md">
-        <h2 className="text-xl">{t("connexionTitre")}</h2>
-        <p className="text-[15px] text-[#E4EAD3]">{t("connexionTexte")}</p>
-        <Link href="/inscription" className="flex h-14 items-center justify-center rounded-champ bg-vert-jaune text-[17px] font-bold text-foret">
-          {t("creerCompte")}
-        </Link>
-        <Link href="/connexion" className="text-center text-sm font-bold underline">
-          {t("dejaCompte")}
-        </Link>
-      </section>
-    );
+    // Visiteur : voter tout de suite en invité (pièces d'essai), ou créer un compte
+    const r = await lireReglages();
+    return <VoterEnInvite piecesEssai={Number(r.bonus_invite ?? 200)} piecesCompte={Number(r.bonus_inscription ?? 1000)} suggestion={nomInviteAuHasard()} />;
   }
 
   const supabase = await creerClientServeur();
   const reglages = await lireReglages();
   const [{ data: restant }, { data: dernieres }] = await Promise.all([
     supabase.rpc("mise_restante_aujourdhui"),
-    supabase.from("predictions").select("statut").in("statut", ["gagnee", "perdue"]).order("cree_le", { ascending: false }).limit(3),
+    supabase.from("predictions").select("statut").eq("utilisateur_id", u.id).in("statut", ["gagnee", "perdue"]).order("cree_le", { ascending: false }).limit(3),
   ]);
   // Protection contre l'addiction : message bienveillant après 3 pertes de suite
   const seriePertes = (dernieres ?? []).length === 3 && (dernieres ?? []).every((p) => p.statut === "perdue");
@@ -210,6 +213,7 @@ async function PanneauPrediction({ marche, libelles, pourcentages }: { marche: M
         </p>
       )}
       <FormulairePrediction
+        avertissementPublic={marche.categorie === "politique"}
         marcheId={marche.id}
         options={marche.options}
         pourcentages={pourcentages}
@@ -231,6 +235,7 @@ async function MesPredictions({ marche, libelles }: { marche: Marche; libelles: 
     .from("predictions")
     .select("id, option_id, montant, statut, gain")
     .eq("marche_id", marche.id)
+    .eq("utilisateur_id", u.id) // les prédictions sont publiques : on filtre sur moi
     .order("cree_le", { ascending: false })
     .returns<{ id: number; option_id: number; montant: number; statut: string; gain: number }[]>();
   if (!data || data.length === 0) return null;

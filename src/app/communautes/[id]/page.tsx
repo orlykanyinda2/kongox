@@ -77,7 +77,7 @@ async function Contenu({ params }: { params: PageProps<"/communautes/[id]">["par
             {formaterNombre(count ?? 0)} membre{(count ?? 0) > 1 ? "s" : ""}
           </p>
         </div>
-        {u ? (
+        {u && !u.invite ? (
           <BoutonSocial action={rejoindreCommunaute.bind(null, c.id)} actif={membre} libelleActif="Quitter" libelleInactif="Rejoindre" />
         ) : (
           <Link href="/inscription" className="flex h-12 items-center rounded-champ border-2 border-foret bg-foret px-[22px] text-[15px] font-bold text-white">

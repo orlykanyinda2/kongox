@@ -4,6 +4,8 @@ import { EnTetePage, Section } from "@/components/admin/ui";
 import { ActionConfirmee, BoutonAction } from "@/components/admin/Actions";
 import { FormulaireMot } from "@/components/admin/FormulaireMot";
 import { bloquerChat, masquerMessage, retablirMessage, retirerMotInterdit, traiterSignalement } from "@/app/actions/moderation";
+import { retirerPhoto } from "@/app/actions/communauteAdmin";
+import { Avatar } from "@/components/profil/Avatar";
 import { exigerAdmin } from "@/lib/admin/acces";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterDate } from "@/lib/format";
@@ -25,6 +27,7 @@ const MOTIFS: Record<string, string> = {
   arnaque: "Arnaque ou argent réel",
   spam: "Pub ou spam",
   ligne_rouge: "Ligne rouge",
+  photo: "Photo inappropriée",
   autre: "Autre",
 };
 
@@ -52,6 +55,8 @@ type Ligne = {
   signaleur: { nom_utilisateur: string } | null;
   message: Message | null;
   marche: { id: number; question: string; statut: string } | null;
+  utilisateur_cible: string | null;
+  cible: { nom_utilisateur: string; photo: string | null; icone: string | null } | null;
 };
 
 const CHAMPS_MESSAGE =
@@ -131,7 +136,8 @@ async function Ouverts() {
     .from("signalements")
     .select(
       `id, motif, detail, cree_le, message_id, marche_id, signaleur:utilisateurs!signalements_auteur_id_fkey(nom_utilisateur), ` +
-        `message:messages_chat!signalements_message_id_fkey(${CHAMPS_MESSAGE}), marche:marches!signalements_marche_id_fkey(id, question, statut)`,
+        `message:messages_chat!signalements_message_id_fkey(${CHAMPS_MESSAGE}), marche:marches!signalements_marche_id_fkey(id, question, statut), ` +
+        `utilisateur_cible, cible:utilisateurs!signalements_utilisateur_cible_fkey(nom_utilisateur, photo, icone)`,
     )
     .eq("statut", "ouvert")
     .order("cree_le", { ascending: false })
@@ -141,7 +147,7 @@ async function Ouverts() {
   // Un bloc par cible (message ou marché), avec tous ses signalements
   const groupes = new Map<string, Ligne[]>();
   for (const l of data ?? []) {
-    const cle = l.message_id ? `m${l.message_id}` : `q${l.marche_id}`;
+    const cle = l.message_id ? `m${l.message_id}` : l.marche_id ? `q${l.marche_id}` : `p${l.utilisateur_cible}`;
     groupes.set(cle, [...(groupes.get(cle) ?? []), l]);
   }
 
@@ -164,8 +170,36 @@ async function Ouverts() {
           </p>
         );
         return (
-          <Section key={premier.id} titre={premier.message ? "Message signalé" : "Marché signalé"}>
-            {premier.message ? (
+          <Section key={premier.id} titre={premier.message ? "Message signalé" : premier.marche_id ? "Marché signalé" : "Photo de profil signalée"}>
+            {premier.utilisateur_cible ? (
+              <div className="flex flex-wrap items-start gap-4">
+                {premier.cible?.photo ? (
+                  <Avatar nom={premier.cible.nom_utilisateur} icone={null} photo={premier.cible.photo} taille={120} className="rounded-lg" />
+                ) : (
+                  <p className="text-sm text-adm-secondaire">La photo a déjà été retirée.</p>
+                )}
+                <div className="flex min-w-0 flex-1 flex-col gap-2">
+                  <Link href={`/admin/utilisateurs/${premier.utilisateur_cible}`} className="text-sm font-semibold text-adm-texte underline">
+                    @{premier.cible?.nom_utilisateur}
+                  </Link>
+                  {resume}
+                  <div className="flex flex-wrap gap-2">
+                    {premier.cible?.photo && (
+                      <ActionConfirmee
+                        action={retirerPhoto.bind(null, premier.utilisateur_cible)}
+                        libelle="Retirer la photo"
+                        titre="Retirer cette photo ?"
+                        message="Le fichier est effacé et l'icône de la personne revient. Elle pourra envoyer une autre photo."
+                        confirmer="Retirer"
+                        champs={[{ nom: "motif", libelle: "Motif (journal)", type: "texte" }]}
+                      />
+                    )}
+                    <BoutonAction action={traiterSignalement.bind(null, premier.id, premier.cible?.photo ? "rejete" : "traite")} libelle={premier.cible?.photo ? "Rejeter (photo correcte)" : "Clore"} />
+                    <ActionsAuteur auteur={premier.utilisateur_cible} />
+                  </div>
+                </div>
+              </div>
+            ) : premier.message ? (
               <CarteMessage
                 m={premier.message}
                 actions={

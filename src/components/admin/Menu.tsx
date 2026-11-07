@@ -18,6 +18,7 @@ const LIENS = [
   { href: "/admin/cadeaux", libelle: "Cadeaux", admin: true, compteur: "cadeaux" },
   { href: "/admin/curateurs", libelle: "Curateurs", admin: true, compteur: "curateurs" },
   { href: "/admin/communautes", libelle: "Communautés", admin: true },
+  { href: "/admin/badges", libelle: "Badges et icônes", admin: true },
   { href: "/admin/signalements", libelle: "Signalements", admin: true, compteur: "signalements", alerte: true },
   { href: "/admin/partenaires", libelle: "Partenaires", admin: true, compteur: "partenaires" },
   { href: "/admin/journal", libelle: "Journal", admin: true },

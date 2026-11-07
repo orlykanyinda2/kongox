@@ -2,6 +2,20 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.10.0] — 2026-11-07 — Communauté : invités, votes publics, icônes, badges
+
+### Ajouté
+- Vote en invité : un pseudo suffit, 200 pièces d'essai, un invité par appareil, limite par adresse IP ; mention « invité » ; passage au compte en gardant votes, pièces et pseudo (+1 000 pièces) ; invité inactif 30 jours fermé (ses mises restent)
+- Pour l'invité, « Crée ton compte » à la place de l'assistant, des commentaires, du bonus quotidien, des communautés, des cadeaux, de la boutique ; bandeau sous l'en-tête
+- « Qui a voté » sur chaque marché et chaque match (icône, pseudo, choix, pièces, heure ; filtres et tri), « X personnes que tu suis ont voté » sur les cartes et les marchés, avertissement avant de voter sur un marché politique
+- Icônes de profil : 30 icônes KongoX (gratuites, élite avec cadre spécial, boutique de 600 à 5 000 pièces gratuites), photo perso (recadrée, compressée, 500 Ko au maximum), signalement des photos ; page Profil › Mon icône
+- Badges : 20 badges bronze / argent / or attribués automatiquement, « Nouveau badge ! », page `/badges` avec la progression, 4 badges mis en avant sur le profil
+- Admin › Badges et icônes ; photos signalées dans Admin › Signalements
+
+### Modifié
+- Les prédictions sont publiques ; les classements ne comptent pas les invités
+- Les icônes remplacent les initiales (profils, classement, commentaires)
+
 ## [0.9.0] — 2026-11-07 — Étape 6 : partage, partenaires et cadeaux
 
 ### Ajouté

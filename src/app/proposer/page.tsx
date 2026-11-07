@@ -6,6 +6,7 @@ import { EnTete } from "@/components/mise-en-page/EnTete";
 import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
 import { FormulaireProposition } from "@/components/marches/FormulaireProposition";
 import { utilisateurConnecte } from "@/lib/compte/session";
+import { ReserveAuxComptes } from "@/components/compte/ReserveAuxComptes";
 
 export const metadata = { title: "Proposer une question — KongoX" };
 
@@ -35,6 +36,7 @@ async function Formulaire() {
   await connection(); // les dates limites dépendent du jour de la visite
   const u = await utilisateurConnecte();
   if (!u) redirect("/connexion");
+  if (u.invite) return <ReserveAuxComptes fonction="proposer" />;
   // Entre demain + 1 jour (24 h minimum) et 2 ans (mêmes limites que la fonction SQL)
   return <FormulaireProposition dateMin={jour(2)} dateMax={jour(729)} />;
 }

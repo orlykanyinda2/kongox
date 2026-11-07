@@ -70,8 +70,12 @@ export function CarteMarche({
       </div>
 
       <div className="flex items-center justify-between text-xs text-texte-secondaire md:border-t md:border-separateur md:pt-3 md:text-[13px]">
-        <span>
-          {formaterNombre(marche.volume)} {libelles.pieces}
+        <span className="flex flex-col">
+          <span>
+            {formaterNombre(marche.volume)} {libelles.pieces}
+          </span>
+          {/* Rempli après l'affichage pour une personne connectée (SuivisSurCartes) */}
+          <span data-suivis-marche={marche.id} />
         </span>
         <a
           href={lienWhatsApp(texteMarche(marche.question, pct, marche.id))}

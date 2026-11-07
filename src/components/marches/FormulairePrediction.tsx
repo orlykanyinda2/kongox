@@ -17,13 +17,14 @@ type Props = {
   solde: number;
   restant: number; // pièces qu'on peut encore miser aujourd'hui
   miseMinimum: number; // réglage « mise_minimum »
+  avertissementPublic?: boolean; // marché politique : rappeler que le nom et le vote sont publics
 };
 
 const MONTANTS = [50, 100, 200, 500];
 
 // Panneau Hunter Green pour prédire (maquette Marche).
 // Le gain affiché est une estimation pour aider à choisir ; les pièces ne bougent que par la fonction SQL.
-export function FormulairePrediction({ marcheId, options, pourcentages, libelles, solde, restant, miseMinimum }: Props) {
+export function FormulairePrediction({ marcheId, options, pourcentages, libelles, solde, restant, miseMinimum, avertissementPublic = false }: Props) {
   const t = useTranslations("prediction");
   const choixUrl = useSearchParams().get("choix");
   // ?choix=oui|non (OUI / NON) ou ?choix=1|N|2 (match)
@@ -31,6 +32,8 @@ export function FormulairePrediction({ marcheId, options, pourcentages, libelles
   const [ordre, setOrdre] = useState(Math.min(depuisUrl, options.length - 1));
   const [saisie, setSaisie] = useState("200");
   const [etat, action, enCours] = useActionState<EtatPrediction, FormData>(predire, {});
+  // Marché politique : un premier clic affiche l'avertissement, le second valide
+  const [averti, setAverti] = useState(false);
   // Mesure du fil : une prédiction réussie, rattachée à la section d'où venait le clic
   useEffect(() => {
     if (etat.succes) signalerPrediction(marcheId);
@@ -143,13 +146,29 @@ export function FormulairePrediction({ marcheId, options, pourcentages, libelles
         </p>
       )}
 
-      <button
-        type="submit"
-        disabled={enCours || blocage !== null}
-        className="h-14 rounded-champ bg-vert-jaune text-[17px] font-bold text-foret disabled:opacity-60"
-      >
-        {enCours ? t("envoi") : t("valider", { libelle: option.libelle, montant: formaterNombre(montant) })}
-      </button>
+      {avertissementPublic && averti && (
+        <p role="alert" className="rounded-bouton border-2 border-champagne bg-foret px-3 py-2.5 text-sm font-semibold text-white">
+          {t("avertissementPublic")}
+        </p>
+      )}
+      {avertissementPublic && !averti ? (
+        <button
+          type="button"
+          onClick={() => setAverti(true)}
+          disabled={enCours || blocage !== null}
+          className="h-14 rounded-champ bg-vert-jaune text-[17px] font-bold text-foret disabled:opacity-60"
+        >
+          {t("valider", { libelle: option.libelle, montant: formaterNombre(montant) })}
+        </button>
+      ) : (
+        <button
+          type="submit"
+          disabled={enCours || blocage !== null}
+          className="h-14 rounded-champ bg-vert-jaune text-[17px] font-bold text-foret disabled:opacity-60"
+        >
+          {enCours ? t("envoi") : avertissementPublic ? t("validerQuandMeme") : t("valider", { libelle: option.libelle, montant: formaterNombre(montant) })}
+        </button>
+      )}
       <span className="text-center text-xs text-[#C9D4B8]">{t("mention")}</span>
     </form>
   );

@@ -9,10 +9,18 @@ import { FiltresMarches } from "@/components/marches/FiltresMarches";
 import { ChargementProgressif } from "@/components/marches/ChargementProgressif";
 import { CATEGORIES, LIBELLES_CATEGORIES } from "@/lib/marches/categories";
 import { communautesActives, lireFiltres, rechercherMarches, STATUTS, TRIS } from "@/lib/marches/fil";
+import { utilisateurConnecte } from "@/lib/compte/session";
+import { SuivisSurCartes } from "@/components/votes/SuivisSurCartes";
 
 export const metadata = { title: "Tous les marchés — KongoX" };
 
 // Tous les marchés : recherche, filtres (catégorie, statut, communauté), tri, chargement progressif.
+// Personnes suivies qui ont voté (seulement pour un compte qui suit quelqu'un)
+async function SuivisSiCompte() {
+  const u = await utilisateurConnecte();
+  return u && !u.invite ? <SuivisSurCartes /> : null;
+}
+
 export default function PageMarches({ searchParams }: PageProps<"/marches">) {
   const t = useTranslations("fil");
   return (
@@ -23,6 +31,9 @@ export default function PageMarches({ searchParams }: PageProps<"/marches">) {
         <p className="mt-1.5 text-[15px] text-texte-secondaire">{t("textePage")}</p>
         <Suspense fallback={<div className="mt-6 h-96 animate-pulse rounded-carte bg-doux" aria-busy="true" />}>
           <Contenu searchParams={searchParams} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <SuivisSiCompte />
         </Suspense>
       </main>
       <PiedDePage />

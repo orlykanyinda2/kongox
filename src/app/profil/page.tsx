@@ -15,6 +15,11 @@ import { rejoindreCommunaute } from "@/app/actions/social";
 import { deconnecter } from "@/app/actions/compte";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterDate, formaterNombre, formaterPieces } from "@/lib/format";
+import { lireReglages } from "@/lib/reglages";
+import { ReserveAuxComptes } from "@/components/compte/ReserveAuxComptes";
+import { CreerCompteInvite } from "@/components/compte/CreerCompteInvite";
+import { BadgeIcone, type Niveau } from "@/components/badges/BadgeIcone";
+import { Avatar } from "@/components/profil/Avatar";
 
 export const metadata = { title: "Mon profil — KongoX" };
 
@@ -26,6 +31,9 @@ type Utilisateur = {
   serie_jours: number;
   badges: string[];
   cree_le: string;
+  invite: boolean;
+  icone: string | null;
+  photo: string | null;
 };
 
 type Transaction = {
@@ -74,7 +82,7 @@ async function ContenuProfil() {
   if (!id) redirect("/connexion");
 
   const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }, { data: questions }, { data: communautes }, { data: membre }, { data: cadeaux }] = await Promise.all([
-    supabase.from("utilisateurs").select("id, nom_utilisateur, role, solde_pieces, serie_jours, badges, cree_le").eq("id", id).single<Utilisateur>(),
+    supabase.from("utilisateurs").select("id, nom_utilisateur, role, solde_pieces, serie_jours, badges, cree_le, invite, icone, photo").eq("id", id).single<Utilisateur>(),
     supabase.from("coordonnees_utilisateurs").select("email_contact, telephone").eq("utilisateur_id", id).maybeSingle<{ email_contact: string | null; telephone: string | null }>(),
     supabase.from("transactions_pieces").select("id, montant, type, description, cree_le").order("cree_le", { ascending: false }).limit(10).returns<Transaction[]>(),
     supabase.from("marches").select("id, question, categorie, statut, motif").eq("auteur_id", id).order("cree_le", { ascending: false }).limit(10).returns<Question[]>(),
@@ -91,6 +99,16 @@ async function ContenuProfil() {
   ]);
   const aEnvoyer = (cadeaux ?? []).some((c) => c.statut === "a_envoyer");
   const mesCommunautes = new Set((membre ?? []).map((m) => m.communaute_id));
+  const [{ data: mesBadges }, { data: iconeInfo }] = await Promise.all([
+    supabase
+      .from("badges_gagnes")
+      .select("gagne_le, badge:badges!badges_gagnes_badge_code_fkey(code, nom, glyphe, niveau)")
+      .eq("utilisateur_id", id)
+      .order("gagne_le", { ascending: false })
+      .returns<{ gagne_le: string; badge: { code: string; nom: string; glyphe: string; niveau: string } }[]>(),
+    supabase.from("icones").select("niveau").eq("code", utilisateur?.icone ?? "").maybeSingle<{ niveau: string }>(),
+  ]);
+  const elite = iconeInfo?.niveau === "elite" && !utilisateur?.photo;
 
   if (!utilisateur) {
     return (
@@ -102,28 +120,30 @@ async function ContenuProfil() {
     );
   }
 
-  const initiales = utilisateur.nom_utilisateur
-    .split("_")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((m) => m[0]?.toUpperCase())
-    .join("");
   const membreDepuis = new Intl.DateTimeFormat("fr-FR", { month: "long", year: "numeric", timeZone: "Africa/Kinshasa" }).format(new Date(utilisateur.cree_le));
 
   return (
     <main className="mx-auto flex w-full max-w-contenu flex-1 flex-col gap-5 px-[18px] py-6 md:px-6 md:py-8">
-      <BonusQuotidien utilisateurId={utilisateur.id} />
+      {utilisateur.invite ? (
+        <CreerCompteInvite nom={utilisateur.nom_utilisateur} pieces={Number((await lireReglages()).bonus_inscription ?? 1000)} />
+      ) : (
+        <BonusQuotidien utilisateurId={utilisateur.id} />
+      )}
 
       <div className="flex flex-wrap gap-5">
         <div className="flex min-w-0 flex-[2_1_520px] flex-col gap-5">
           {/* Identité, badges et chiffres */}
           <section className={`${carte} flex flex-col gap-[18px]`}>
             <div className="flex items-center gap-4">
-              <span className="flex size-[72px] flex-none items-center justify-center rounded-full border-2 border-foret bg-vert-jaune font-titre text-2xl font-bold text-foret shadow-foret">
-                {initiales}
-              </span>
+              <Link href="/profil/icone" aria-label="Changer mon icône" className="relative flex-none">
+                <Avatar nom={utilisateur.nom_utilisateur} icone={utilisateur.icone} photo={utilisateur.photo} elite={elite} taille={72} />
+                <span className="absolute -bottom-1 -right-1 rounded-full border-2 border-foret bg-vert-jaune px-1.5 text-[11px] font-bold text-foret">Modifier</span>
+              </Link>
               <div className="min-w-0">
-                <h1 className="truncate text-[26px] tracking-[-0.5px] md:text-[32px]">@{utilisateur.nom_utilisateur}</h1>
+                <h1 className="truncate text-[26px] tracking-[-0.5px] md:text-[32px]">
+                  @{utilisateur.nom_utilisateur}
+                  {utilisateur.invite && <span className="ml-2 align-middle text-sm font-semibold text-texte-secondaire">(invité)</span>}
+                </h1>
                 <p className="text-sm text-texte-secondaire">{t("membreDepuis", { date: membreDepuis })}</p>
                 <Link href={`/u/${utilisateur.nom_utilisateur}`} className="text-sm font-bold text-hunter underline dark:text-vert-jaune">
                   Voir mon profil public
@@ -131,16 +151,23 @@ async function ContenuProfil() {
               </div>
             </div>
 
-            {(utilisateur.serie_jours > 0 || utilisateur.badges.length > 0 || utilisateur.role !== "utilisateur") && (
+            {(
+
               <ul className="flex flex-wrap gap-2" aria-label={t("badges")}>
                 {utilisateur.role !== "utilisateur" && (
                   <li className="rounded-full border-2 border-foret bg-foret px-3 py-1.5 text-[13px] font-bold text-white">{t(`role.${utilisateur.role}`)}</li>
                 )}
-                {utilisateur.badges.map((b) => (
-                  <li key={b} className="rounded-full border-2 border-foret bg-vert-jaune px-3 py-1.5 text-[13px] font-bold text-foret">
-                    {b}
+                {(mesBadges ?? []).slice(0, 6).map((b) => (
+                  <li key={b.badge.code} className="flex items-center gap-1.5 rounded-full border-2 border-foret bg-vert-jaune py-1 pl-1 pr-3 text-[13px] font-bold text-foret">
+                    <BadgeIcone glyphe={b.badge.glyphe} niveau={b.badge.niveau as Niveau} taille={22} />
+                    {b.badge.nom}
                   </li>
                 ))}
+                <li>
+                  <Link href="/badges" className="flex h-full items-center rounded-full border-2 border-contour px-3 py-1.5 text-[13px] font-bold">
+                    Tous mes badges
+                  </Link>
+                </li>
                 {utilisateur.serie_jours > 0 && (
                   <li className="rounded-full border-2 border-foret bg-brique px-3 py-1.5 text-[13px] font-bold text-white">
                     {t("serieBadge", { jours: utilisateur.serie_jours })}
@@ -220,7 +247,10 @@ async function ContenuProfil() {
         </div>
 
         <aside className="flex min-w-0 flex-[1_1_320px] flex-col gap-5">
-          {/* Téléphone pour les cadeaux */}
+          {/* Téléphone pour les cadeaux (pas pour les invités) */}
+          {utilisateur.invite ? (
+            <ReserveAuxComptes fonction="cadeaux" />
+          ) : (
           <section className="rounded-carte border-2 border-foret bg-hunter p-[22px] text-white shadow-brique-md">
             <h2 className="text-[21px]">{t("cadeauxTitre")}</h2>
             {aEnvoyer && !coordonnees?.telephone && (
@@ -243,6 +273,7 @@ async function ContenuProfil() {
             <p className="mt-2 text-sm leading-normal text-[#E4EAD3]">{t("cadeauxTexte")}</p>
             <FormulaireCoordonnee champ="telephone" valeur={coordonnees?.telephone ?? null} libelle={t("telephone")} placeholder="+243 8…" sombre />
           </section>
+          )}
 
           {/* E-mail de contact */}
           <section className={carte}>
@@ -258,6 +289,9 @@ async function ContenuProfil() {
           </section>
 
           {/* Communautés (3 au maximum) : comptent pour « communauté contre communauté » */}
+          {utilisateur.invite ? (
+            <ReserveAuxComptes fonction="communautes" />
+          ) : (
           <section id="communautes" className={`${carte} scroll-mt-24`}>
             <h2 className="text-[21px]">Mes communautés</h2>
             <p className="mt-2 text-sm text-texte-secondaire">Ta ville, ton université, ton fan-club : 3 au maximum.</p>
@@ -276,6 +310,7 @@ async function ContenuProfil() {
               </ul>
             )}
           </section>
+          )}
 
           {/* Mot de passe */}
           <section className={carte}>

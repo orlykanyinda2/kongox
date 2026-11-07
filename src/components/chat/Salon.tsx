@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 import type { RealtimeChannel, SupabaseClient } from "@supabase/supabase-js";
 import type { CibleSalon, MessageChat } from "@/lib/chat/donnees";
+import { Avatar } from "@/components/profil/Avatar";
 
 // Salon de chat (maquette Marche : « Commentaires », cartes avec badge OUI / NON).
 // Les messages arrivent en direct (Supabase Realtime). Pour garder la page légère,
 // le client Supabase n'est chargé que lorsque le salon devient visible à l'écran.
 
-export type EtatEcriture = "ok" | "connexion" | "membres" | "bloque";
+export type EtatEcriture = "ok" | "connexion" | "membres" | "bloque" | "invite";
 
 type Props = {
   cible: CibleSalon;
@@ -22,7 +23,7 @@ type Props = {
   longueurMax: number;
 };
 
-const CHAMPS = "id, marche_id, communaute_id, auteur_nom, choix, texte, masque, cree_le";
+const CHAMPS = "id, marche_id, communaute_id, auteur_nom, auteur_icone, auteur_photo, auteur_elite, choix, texte, masque, cree_le";
 const PAR_PAGE = 30;
 const MOTIFS = ["insulte", "arnaque", "spam", "ligne_rouge", "autre"] as const;
 const heure = new Intl.DateTimeFormat("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Africa/Kinshasa" });
@@ -214,7 +215,9 @@ export function Salon({ cible, type, initiaux, total: totalInitial, ecriture, mo
         <p className="rounded-champ bg-doux px-4 py-3 text-sm">
           {ecriture === "connexion"
             ? t.rich("connexion", { lien: (c) => <Link href="/connexion" className="font-bold underline">{c}</Link> })
-            : t(ecriture === "membres" ? "membres" : "bloque")}
+            : ecriture === "invite"
+              ? t.rich("invite", { lien: (c) => <Link href="/inscription" className="font-bold underline">{c}</Link> })
+              : t(ecriture === "membres" ? "membres" : "bloque")}
         </p>
       )}
 
@@ -226,7 +229,8 @@ export function Salon({ cible, type, initiaux, total: totalInitial, ecriture, mo
             <li key={m.id}>
               <article className="flex flex-col gap-1.5 rounded-[16px] border-2 border-contour bg-surface p-3.5 shadow-decale">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="flex min-w-0 items-baseline gap-2">
+                  <span className="flex min-w-0 items-center gap-2">
+                    <Avatar nom={m.auteur_nom} icone={m.auteur_icone} photo={m.auteur_photo} elite={m.auteur_elite} taille={28} />
                     <Link href={`/u/${m.auteur_nom}`} className="truncate text-sm font-bold">
                       @{m.auteur_nom}
                     </Link>

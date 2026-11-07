@@ -3,12 +3,13 @@ import Link from "next/link";
 import { EnTete } from "@/components/mise-en-page/EnTete";
 import { PiedDePage } from "@/components/mise-en-page/PiedDePage";
 import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
-import { classementPublic, derniersGagnants, duelsPublics, estPeriode, PERIODES, type LigneClassement, type Periode } from "@/lib/classement/donnees";
+import { avecIcones, classementPublic, derniersGagnants, duelsPublics, estPeriode, PERIODES, type LigneClassement, type Periode } from "@/lib/classement/donnees";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre } from "@/lib/format";
 import { urlSite } from "@/lib/partage";
 import { BoutonsPartage } from "@/components/social/BoutonsPartage";
+import { Avatar } from "@/components/profil/Avatar";
 
 export const metadata = { title: "Classement — KongoX" };
 
@@ -58,7 +59,9 @@ async function Contenu({ searchParams }: { searchParams: Promise<Record<string, 
       amis ? supabase.rpc("classement", { p_periode: periode, p_limite: 50, p_amis: true }) : Promise.resolve({ data: null }),
       supabase.rpc("mon_classement", { p_periode: periode }),
     ]);
-    lignes = amis ? ((liste ?? []) as LigneClassement[]).map((l) => ({ ...l, rang: Number(l.rang), score_mayele: Number(l.score_mayele), solde_pieces: Number(l.solde_pieces) })) : await classementPublic(periode, 50);
+    lignes = amis
+      ? await avecIcones(((liste ?? []) as LigneClassement[]).map((l) => ({ ...l, rang: Number(l.rang), score_mayele: Number(l.score_mayele), solde_pieces: Number(l.solde_pieces) })))
+      : await classementPublic(periode, 50);
     ma = moi as Ma;
   } else {
     lignes = await classementPublic(periode, 50);
@@ -120,6 +123,7 @@ async function Contenu({ searchParams }: { searchParams: Promise<Record<string, 
                 }`}
               >
                 <span className={`mb-auto flex size-14 items-center justify-center rounded-[18px] border-[3px] border-foret font-titre text-[26px] font-bold ${medailles[i]}`}>{r.rang}</span>
+                <Avatar nom={r.nom_utilisateur} icone={r.icone ?? null} photo={r.photo ?? null} elite={r.elite} taille={56} />
                 <Link href={`/u/${r.nom_utilisateur}`} className="max-w-full truncate font-titre text-xl font-bold hover:underline">
                   @{r.nom_utilisateur}
                 </Link>
@@ -143,6 +147,7 @@ async function Contenu({ searchParams }: { searchParams: Promise<Record<string, 
                 className={`flex items-center gap-3.5 rounded-champ px-3.5 py-3 ${r.rang <= 3 && lignes.length > 3 ? "md:hidden" : ""} ${r.nom_utilisateur === ma?.nom ? "border-2 border-foret bg-vert-jaune text-foret" : "bg-doux"}`}
               >
                 <span className="flex size-[34px] flex-none items-center justify-center rounded-[10px] border-2 border-foret bg-white text-sm font-bold text-foret">{r.rang}</span>
+                <Avatar nom={r.nom_utilisateur} icone={r.icone ?? null} photo={r.photo ?? null} elite={r.elite} taille={32} />
                 <Link href={`/u/${r.nom_utilisateur}`} className="min-w-0 flex-1 truncate text-[15px] font-bold hover:underline">
                   {r.nom_utilisateur === ma?.nom ? "Toi · " : ""}@{r.nom_utilisateur}
                 </Link>

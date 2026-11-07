@@ -10,6 +10,7 @@ import { FormulaireCandidature } from "@/components/compte/FormulaireCandidature
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { LIBELLES_CATEGORIES, type Categorie } from "@/lib/marches/categories";
+import { ReserveAuxComptes } from "@/components/compte/ReserveAuxComptes";
 
 export const metadata = { title: "Devenir curateur — KongoX" };
 
@@ -45,6 +46,7 @@ export default function PageCurateur() {
 async function Contenu() {
   const u = await utilisateurConnecte();
   if (!u) redirect("/connexion");
+  if (u.invite) return <ReserveAuxComptes fonction="communautes" />;
   const t = await getTranslations("curateur");
   const supabase = await creerClientServeur();
   const [{ data: candidatures }, { data: themes }] = await Promise.all([

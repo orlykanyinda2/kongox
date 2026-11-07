@@ -10,6 +10,9 @@ export type MessageChat = {
   marche_id: number | null;
   communaute_id: number | null;
   auteur_nom: string;
+  auteur_icone: string | null;
+  auteur_photo: string | null;
+  auteur_elite: boolean;
   choix: string | null;
   texte: string | null;
   masque: boolean;
@@ -18,7 +21,7 @@ export type MessageChat = {
 
 export type CibleSalon = { marche: number } | { communaute: number };
 
-export const CHAMPS_MESSAGE = "id, marche_id, communaute_id, auteur_nom, choix, texte, masque, cree_le";
+export const CHAMPS_MESSAGE = "id, marche_id, communaute_id, auteur_nom, auteur_icone, auteur_photo, auteur_elite, choix, texte, masque, cree_le";
 export const MESSAGES_PAR_PAGE = 30;
 
 export async function messagesSalon(cible: CibleSalon): Promise<{ messages: MessageChat[]; total: number }> {

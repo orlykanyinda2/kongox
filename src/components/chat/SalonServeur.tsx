@@ -10,7 +10,9 @@ export async function SalonServeur({ cible, type }: { cible: CibleSalon; type: "
   const [{ messages, total }, u, reglages] = await Promise.all([messagesSalon(cible), utilisateurConnecte(), lireReglages()]);
 
   let ecriture: EtatEcriture = "connexion";
-  if (u) {
+  if (u?.invite) {
+    ecriture = "invite";
+  } else if (u) {
     ecriture = "ok";
     const supabase = await creerClientServeur();
     const [{ data: blocage }, membre] = await Promise.all([
@@ -30,7 +32,7 @@ export async function SalonServeur({ cible, type }: { cible: CibleSalon; type: "
       initiaux={messages}
       total={total}
       ecriture={ecriture}
-      moi={u?.nom_utilisateur ?? null}
+      moi={u && !u.invite ? u.nom_utilisateur : null}
       longueurMax={Number(reglages.chat_longueur_max ?? 500)}
     />
   );

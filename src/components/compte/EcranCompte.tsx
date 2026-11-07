@@ -6,14 +6,19 @@ import { lienWhatsAppEquipe } from "@/lib/partage";
 import { Logo } from "@/components/Logo";
 import { BoutonTheme } from "@/components/BoutonTheme";
 import { FormulaireCompte } from "@/components/compte/FormulaireCompte";
+import { CreerCompteInvite } from "@/components/compte/CreerCompteInvite";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 
-// Si l'utilisateur est déjà connecté, on l'envoie sur son profil.
+// Déjà connecté avec un compte : direction le profil. Invité : proposition de créer son compte.
 async function RedirigerSiConnecte() {
   const supabase = await creerClientServeur();
   const { data } = await supabase.auth.getClaims();
-  if (data?.claims?.sub) redirect("/profil");
-  return null;
+  const id = data?.claims?.sub;
+  if (!id) return null;
+  // Un invité reste ici : il peut transformer son invité en compte (mêmes votes, mêmes pièces)
+  const { data: u } = await supabase.from("utilisateurs").select("nom_utilisateur, invite").eq("id", id).maybeSingle<{ nom_utilisateur: string; invite: boolean }>();
+  if (!u?.invite) redirect("/profil");
+  return <CreerCompteInvite nom={u.nom_utilisateur} pieces={Number((await lireReglages()).bonus_inscription ?? 1000)} />;
 }
 
 // Écran d'inscription et de connexion (maquettes/Inscription.dc.html)
@@ -25,9 +30,6 @@ export async function EcranCompte({ mode }: { mode: "inscription" | "connexion" 
 
   return (
     <main className="relative flex-1 overflow-hidden">
-      <Suspense fallback={null}>
-        <RedirigerSiConnecte />
-      </Suspense>
 
       {/* Formes qui flottent */}
       <div aria-hidden="true" className="absolute right-5 top-[70px] size-10 animate-flotte rounded-full border-[10px] border-vert-jaune" />
@@ -48,6 +50,10 @@ export async function EcranCompte({ mode }: { mode: "inscription" | "connexion" 
             {t("piecesOffertes")}
           </span>
         </h1>
+
+        <Suspense fallback={null}>
+          <RedirigerSiConnecte />
+        </Suspense>
 
         <FormulaireCompte modeInitial={mode} />
 

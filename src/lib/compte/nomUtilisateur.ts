@@ -17,3 +17,8 @@ export function nomValide(nom: string) {
 export function emailCache(nom: string) {
   return `${nom.toLowerCase()}@${DOMAINE_CACHE}`;
 }
+
+// « invite_… » est réservé aux invités fermés (pseudo libéré après 30 jours d'inactivité)
+export function nomReserve(nom: string) {
+  return nom.toLowerCase().startsWith("invite_");
+}
