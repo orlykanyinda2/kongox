@@ -111,7 +111,15 @@
     "mdpChange": "Mot de passe changé.",
     "mdpIdentique": "C'est déjà ton mot de passe actuel.",
     "ouvrirAdmin": "Ouvrir le panneau admin",
-    "devenirCurateur": "Devenir curateur"
+    "devenirCurateur": "Devenir curateur",
+    "mesCadeaux": "Mes cadeaux",
+    "cadeauAttendNumero": "Bravo, tu as gagné un cadeau ! Ajoute ton numéro ci-dessous pour le recevoir.",
+    "cadeau_credit": "Crédit",
+    "cadeau_forfait_internet": "Forfait internet",
+    "cadeau_produit": "Produit",
+    "offertPar": "offert par {sponsor}",
+    "cadeauEnvoye": "Envoyé par l'équipe",
+    "cadeauAEnvoyer": "L'équipe va te l'envoyer bientôt"
   },
   "notifications": {
     "titreParDefaut": "KongoX"
@@ -215,7 +223,8 @@
       "gagnee": "Gagné : +{gain}",
       "perdue": "Perdu",
       "remboursee": "Remboursé"
-    }
+    },
+    "offertePar": "Sponsorisé · Question offerte par {sponsor}"
   },
   "prediction": {
     "titre": "Faire ma prédiction",
@@ -337,7 +346,8 @@
     "hors_limites": "Valeur hors des limites autorisées.",
     "deja_regle": "Le marché de ce match est déjà réglé : le score ne peut plus changer.",
     "score_invalide": "Score invalide.",
-    "nom_pris": "Ce nom existe déjà."
+    "nom_pris": "Ce nom existe déjà.",
+    "numero_deja_recompense": "Ce numéro a déjà reçu un cadeau pour un autre compte (un cadeau par numéro)."
   },
   "assistant": {
     "titre": "Demande à l'assistant",

@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { EnregistrementServiceWorker } from "@/components/EnregistrementServiceWorker";
 import { SuiviFil } from "@/components/marches/SuiviFil";
 import { scriptTheme } from "@/lib/theme";
+import { OPEN_GRAPH, urlSite } from "@/lib/partage";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,9 +24,13 @@ const spaceGrotesk = Space_Grotesk({
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("meta");
   return {
+    metadataBase: new URL(urlSite()),
     title: t("titre"),
     description: t("description"),
     applicationName: "KongoX",
+    // Aperçu des liens (WhatsApp, Facebook, Telegram) : la carte image vient de opengraph-image.tsx
+    openGraph: { ...OPEN_GRAPH, title: t("titre"), description: t("description") },
+    twitter: { card: "summary_large_image" },
     icons: { apple: "/icones/apple-touch-icon.png" },
     appleWebApp: { capable: true, title: "KongoX", statusBarStyle: "default" },
   };

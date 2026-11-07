@@ -3,10 +3,12 @@ import Link from "next/link";
 import { EnTete } from "@/components/mise-en-page/EnTete";
 import { PiedDePage } from "@/components/mise-en-page/PiedDePage";
 import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
-import { classementPublic, duelsPublics, estPeriode, PERIODES, type LigneClassement, type Periode } from "@/lib/classement/donnees";
+import { classementPublic, derniersGagnants, duelsPublics, estPeriode, PERIODES, type LigneClassement, type Periode } from "@/lib/classement/donnees";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre } from "@/lib/format";
+import { urlSite } from "@/lib/partage";
+import { BoutonsPartage } from "@/components/social/BoutonsPartage";
 
 export const metadata = { title: "Classement — KongoX" };
 
@@ -40,11 +42,13 @@ export default function PageClassement({ searchParams }: PageProps<"/classement"
 
 type Ma = { rang: number | null; score_mayele: number | null; reglees: number; minimum: number; solde: number; nom: string } | null;
 
+const TYPES_CADEAU: Record<string, string> = { credit: "Crédit", forfait_internet: "Forfait internet", produit: "Produit" };
+
 async function Contenu({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = await searchParams;
   const periode: Periode = estPeriode(params.periode) ? params.periode : "semaine";
   const amis = params.vue === "amis";
-  const u = await utilisateurConnecte();
+  const [u, gagnants] = await Promise.all([utilisateurConnecte(), derniersGagnants(5)]);
 
   let lignes: LigneClassement[];
   let ma: Ma = null;
@@ -186,6 +190,18 @@ async function Contenu({ searchParams }: { searchParams: Promise<Record<string, 
               </div>
             )}
           </section>
+          <div className="rounded-carte border-2 border-contour bg-surface p-[22px] shadow-decale-md">
+            <h2 className="mb-3 text-xl">{ma?.rang ? "Partage ta place" : "Partager le classement"}</h2>
+            <BoutonsPartage
+              url={ma?.nom ? `${urlSite()}/u/${encodeURIComponent(ma.nom)}` : `${urlSite()}/classement`}
+              texte={
+                ma?.rang
+                  ? `Je suis n° ${ma.rang} du classement KongoX (${PERIODES.find((x) => x.cle === periode)?.libelle.toLowerCase()}), score Mayele ${ma.score_mayele} %. Tu fais mieux ?`
+                  : "Qui a le plus de mayele ? Le classement des pronostiqueurs KongoX."
+              }
+              carte={ma?.nom ? `/u/${encodeURIComponent(ma.nom)}/opengraph-image` : undefined}
+            />
+          </div>
           <section className="rounded-carte border-2 border-contour bg-surface p-[22px] shadow-decale-md">
             <h2 className="text-xl">Cadeaux de la semaine</h2>
             <p className="mt-2 text-sm leading-normal text-texte-secondaire">
@@ -195,6 +211,24 @@ async function Contenu({ searchParams }: { searchParams: Promise<Record<string, 
               </Link>{" "}
               pour être éligible.
             </p>
+            {gagnants.length > 0 && (
+              <>
+                <h3 className="mt-4 text-[15px]">Derniers gagnants</h3>
+                <ul className="mt-2 flex flex-col gap-1.5">
+                  {gagnants.map((g, i) => (
+                    <li key={i} className="flex flex-wrap items-baseline justify-between gap-x-2 rounded-bouton bg-doux px-3 py-2 text-sm">
+                      <Link href={`/u/${g.nom_utilisateur}`} className="font-bold">
+                        @{g.nom_utilisateur}
+                      </Link>
+                      <span className="text-[13px] text-texte-secondaire">
+                        {TYPES_CADEAU[g.type] ?? "Cadeau"}
+                        {g.sponsor ? ` · offert par ${g.sponsor}` : ""}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </section>
         </aside>
       </div>

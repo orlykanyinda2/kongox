@@ -45,3 +45,15 @@ export async function duelsPublics(periode: Periode): Promise<Duel[]> {
   const { data } = await creerClientPublic().rpc("duels", { p_periode: periode });
   return ((data ?? []) as Duel[]).map((d) => ({ ...d, score_a: Number(d.score_a), score_b: Number(d.score_b), part_a: Number(d.part_a) }));
 }
+
+export type Gagnant = { nom_utilisateur: string; type: string; description: string | null; sponsor: string | null; envoye_le: string };
+
+// Derniers gagnants de cadeaux (60 jours) : nom, cadeau, sponsor. Jamais le numéro.
+export async function derniersGagnants(limite = 5): Promise<Gagnant[]> {
+  "use cache";
+  cacheTag("cadeaux");
+  cacheLife({ stale: 120, revalidate: 120, expire: 86400 });
+  const { data, error } = await creerClientPublic().rpc("derniers_gagnants", { p_limite: limite });
+  if (error) console.error("[cadeaux] derniers gagnants :", error.message);
+  return (data ?? []) as Gagnant[];
+}

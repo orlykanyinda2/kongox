@@ -104,3 +104,49 @@ export function IconeEtincelle({ taille = 40, className }: P) {
     </svg>
   );
 }
+
+// Réseaux de partage (traits simples, pas de logos officiels en couleur)
+export function IconeFacebook({ taille = 18, className }: P) {
+  return (
+    <svg {...base(taille)} strokeWidth="2" className={className}>
+      <path d="M15 3h-2.5A3.5 3.5 0 0 0 9 6.5V10H6.5v3.5H9V21h3.5v-7.5H15l.5-3.5h-3V7a1 1 0 0 1 1-1H15z" />
+    </svg>
+  );
+}
+
+export function IconeTelegram({ taille = 18, className }: P) {
+  return (
+    <svg {...base(taille)} strokeWidth="2" className={className}>
+      <path d="M21 4 3 11l6 2.5L11.5 20l3-4.5L19 19z" />
+      <path d="m9 13.5 7-5.5" />
+    </svg>
+  );
+}
+
+export function IconeTikTok({ taille = 18, className }: P) {
+  return (
+    <svg {...base(taille)} strokeWidth="2" className={className}>
+      <path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5" />
+      <path d="M14 3a5 5 0 0 0 5 5" />
+    </svg>
+  );
+}
+
+export function IconeLien({ taille = 18, className }: P) {
+  return (
+    <svg {...base(taille)} strokeWidth="2" className={className}>
+      <path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1" />
+      <path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1" />
+    </svg>
+  );
+}
+
+export function IconeImage({ taille = 18, className }: P) {
+  return (
+    <svg {...base(taille)} strokeWidth="2" className={className}>
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="9" cy="10" r="2" />
+      <path d="m21 16-5-5-9 9" />
+    </svg>
+  );
+}

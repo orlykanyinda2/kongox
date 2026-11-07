@@ -106,10 +106,11 @@ async function MenuDonnees() {
   let compteurs: Compteurs = {};
   if (acces.admin) {
     const supabase = await creerClientServeur();
-    const [{ data: s }, { data: tb }, { count: signalements }] = await Promise.all([
+    const [{ data: s }, { data: tb }, { count: signalements }, { count: partenaires }] = await Promise.all([
       supabase.rpc("statistiques_admin"),
       supabase.rpc("tableau_de_bord"),
       supabase.from("signalements").select("id", { count: "exact", head: true }).eq("statut", "ouvert"),
+      supabase.from("demandes_partenaires").select("id", { count: "exact", head: true }).eq("statut", "nouvelle"),
     ]);
     const st = s as { en_attente: number; a_regler: number; cadeaux: number; candidatures: number; decisions: number } | null;
     compteurs = {
@@ -119,6 +120,7 @@ async function MenuDonnees() {
       curateurs: (st?.candidatures ?? 0) + (st?.decisions ?? 0),
       programmation: (tb as { programmes: number } | null)?.programmes,
       signalements: signalements ?? 0,
+      partenaires: partenaires ?? 0,
     };
   }
   return <Menu admin={acces.admin} compteurs={compteurs} />;

@@ -52,7 +52,7 @@ Ordre chronologique, du plus récent au plus ancien.
 
 - **Diversité** : au maximum 2 marchés de la même catégorie dans les 6 premiers d'une section.
 - **Épinglés** : un marché épinglé par un admin reste en tête de Tendances.
-- **Sponsorisés** : toujours affichés avec la mention « Sponsorisé ».
+- **Sponsorisés** : toujours affichés avec la mention « Sponsorisé » (sponsor défini par un admin, Admin › Marchés › un marché).
 - **Pas de doublon** : sur l'accueil, un marché n'apparaît que dans une seule section (ordre : Soki du jour, Tendances, Bientôt fermés, Nouveaux).
 - Seuls les marchés au statut `approuve` (en ligne) sont montrés.
 

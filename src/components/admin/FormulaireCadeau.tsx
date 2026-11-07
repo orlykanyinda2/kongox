@@ -21,9 +21,13 @@ export function FormulaireCadeau() {
           <option value="produit">Produit</option>
         </select>
       </label>
-      <label className={`${cls.label} sm:col-span-2`}>
+      <label className={cls.label}>
         Raison
         <input name="description" maxLength={200} placeholder="Ex. : top 3 de la semaine" className={`${cls.champ} mt-1`} />
+      </label>
+      <label className={cls.label}>
+        Sponsor (facultatif)
+        <input name="sponsor" maxLength={60} placeholder="Ex. : offert par une marque" className={`${cls.champ} mt-1`} />
       </label>
       <div className="flex items-center gap-3 sm:col-span-4">
         <button type="submit" disabled={enCours} className={cls.principal}>

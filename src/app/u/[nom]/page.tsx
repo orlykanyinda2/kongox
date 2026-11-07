@@ -6,12 +6,26 @@ import { PiedDePage } from "@/components/mise-en-page/PiedDePage";
 import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
 import { EtiquetteCategorie } from "@/components/marches/EtiquetteCategorie";
 import { BoutonSocial } from "@/components/social/BoutonSocial";
-import { IconeWhatsApp } from "@/components/icones";
+import { BoutonsPartage } from "@/components/social/BoutonsPartage";
 import { suivre } from "@/app/actions/social";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { estCategorie, LIBELLES_CATEGORIES, type Categorie } from "@/lib/marches/categories";
 import { formaterNombre } from "@/lib/format";
-import { lienWhatsApp, urlSite } from "@/lib/partage";
+import { OPEN_GRAPH, urlSite } from "@/lib/partage";
+import { resumeProfil } from "@/lib/og/profil";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: PageProps<"/u/[nom]">): Promise<Metadata> {
+  const nom = decodeURIComponent((await params).nom).replace(/^@/, "");
+  const p = await resumeProfil(nom);
+  if (!p) return { robots: { index: false } };
+  const description = `${p.score === null ? "Pronostiqueur" : `Score Mayele ${p.score} %`} · ${p.predictions} prédictions sur KongoX. Tu fais mieux ?`;
+  return {
+    title: `@${p.nom} — KongoX`,
+    description,
+    openGraph: { ...OPEN_GRAPH, title: `@${p.nom} sur KongoX`, description, url: `/u/${encodeURIComponent(p.nom)}` },
+  };
+}
 
 // Profil public d'un pronostiqueur (maquettes/Profil.dc.html) : badges, score Mayele, abonnés, prédictions récentes.
 export default function PageProfilPublic({ params, searchParams }: PageProps<"/u/[nom]">) {
@@ -109,15 +123,6 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
               ) : (
                 <SuivreOuConnexion nom={p.nom} actif={p.je_suis} />
               )}
-              <a
-                href={lienWhatsApp(`Regarde les pronostics de @${p.nom} sur KongoX : ${lienProfil}`)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex h-12 items-center gap-2 rounded-champ border-2 border-contour bg-surface px-[18px] text-[15px] font-bold text-texte"
-              >
-                <IconeWhatsApp />
-                Partager
-              </a>
             </div>
           </div>
 
@@ -188,6 +193,18 @@ async function Profil({ params, searchParams }: { params: Promise<{ nom: string 
       </div>
 
       <aside className="flex min-w-0 flex-[1_1_320px] flex-col gap-5">
+        <div className="rounded-carte border-2 border-contour bg-surface p-[22px] shadow-decale-md">
+          <h2 className="mb-3 text-xl">{p.soi_meme ? "Partage ton profil" : "Partager ce profil"}</h2>
+          <BoutonsPartage
+            url={lienProfil}
+            texte={
+              score !== null
+                ? `@${p.nom} a un score Mayele de ${score} % sur KongoX. Tu fais mieux ?`
+                : `Regarde les pronostics de @${p.nom} sur KongoX.`
+            }
+            carte={`/u/${encodeURIComponent(p.nom)}/opengraph-image`}
+          />
+        </div>
         <section className="rounded-carte border-2 border-contour bg-surface p-[22px] shadow-decale-md">
           <h2 className="text-xl">{p.soi_meme ? "Mes communautés" : "Ses communautés"}</h2>
           {p.communautes.length === 0 ? (

@@ -14,7 +14,7 @@ Dernière mise à jour : 2026-11-07
 | [x] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | terminé |
 | [x] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | terminé |
 | [x] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue (+ fil de marchés) | terminé |
-| [ ] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | à faire |
+| [x] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | terminé |
 
 Après l'étape 6 : vérification de sécurité et déploiement (section « Avant la mise en ligne » de `PROMPTS.md`).
 
@@ -24,6 +24,9 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
 - [ ] **Basculer la saison** dans Admin › Réglages : `football_saison` = saison en cours, `football_decalage_jours` = 0. Le bandeau « Données de test 2024 » disparaît alors de l'admin.
 - [ ] Vérifier que la **Linafoot** (ligue n° 424) est bien importée avec la saison en cours.
 - [ ] Vérification de sécurité et déploiement sur Vercel (PROMPTS.md, « Avant la mise en ligne »).
+- [ ] Mettre la vraie adresse du site dans `NEXT_PUBLIC_SITE_URL` sur Vercel (liens de partage et images des aperçus WhatsApp).
+- [ ] Renseigner le numéro WhatsApp de l'équipe dans Admin › Réglages (`whatsapp_equipe`) : bouton de la page partenaires et « Mot de passe oublié ? ».
+- [ ] Pages en streaming : une adresse inconnue renvoie « introuvable » avec un code 200 (voir la note du chat).
 
 ## Notes
 
@@ -76,3 +79,8 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - À faire par Jonathan : ajouter les insultes courantes en lingala et en swahili dans Admin › Signalements › Mots interdits (la liste de départ est en français).
   - Reporté : pourcentages OUI / NON en direct avec Realtime (prévu à l'étape 2 ; aujourd'hui ils se mettent à jour à chaque visite) ; « en train d'écrire ».
   - Remarque pour « Avant la mise en ligne » : sur les pages en streaming (marché, profil, communauté), une adresse inconnue renvoie la page « introuvable » avec `noindex`, mais un code HTTP 200 (le 404 est dans le flux). Comportement de Next.js, à vérifier lors de l'audit.
+- 2026-11-07 : `feat/chat` fusionnée (pull request n° 7, vérifié). `feat/partage` prête : l'étape 6 est terminée.
+  - Migration `20261107160000_partage_partenaires.sql` exécutée sur Supabase.
+  - 29 tests SQL / REST (demandes de partenariat et limites, sponsor, cadeaux, un cadeau par numéro, derniers gagnants sans numéro, droits) et 25 vérifications des pages (boutons de partage, cartes image PNG 1200 × 630, balises Open Graph dans `<head>` pour WhatsApp / Facebook / Telegram, `/partenaires`, Admin › Partenaires, Cadeaux, Marché, profil) ; cartes vérifiées à l'œil ; non-régression : chat, fil, back-office, étape 4, pages.
+  - Choix : TikTok n'a pas de lien de partage web, le bouton copie le lien et la carte se télécharge ; un même compte peut gagner plusieurs cadeaux, mais un numéro ne sert qu'à un seul compte.
+  - Non testé de bout en bout : l'envoi du formulaire partenaires depuis un navigateur (la fonction SQL et les limites sont testées).
