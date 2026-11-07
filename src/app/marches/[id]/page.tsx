@@ -8,7 +8,7 @@ import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
 import { EtiquetteCategorie } from "@/components/marches/EtiquetteCategorie";
 import { GraphiqueMarche } from "@/components/marches/GraphiqueMarche";
 import { FormulairePrediction } from "@/components/marches/FormulairePrediction";
-import { IconeRetour, IconeWhatsApp } from "@/components/icones";
+import { IconeRetour } from "@/components/icones";
 import { historiqueMarche, obtenirMarche, type Marche } from "@/lib/marches/donnees";
 import { matchDuMarche } from "@/lib/football/donnees";
 import { RepartitionMatch } from "@/components/football/RepartitionMatch";
@@ -18,11 +18,30 @@ import { SignalerMarche } from "@/components/chat/SignalerMarche";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterNombre, formaterPieces } from "@/lib/format";
-import { lienWhatsApp, texteMarche } from "@/lib/partage";
+import { OPEN_GRAPH, urlSite } from "@/lib/partage";
+import type { Metadata } from "next";
+import { BoutonsPartage } from "@/components/social/BoutonsPartage";
 import { lireReglages } from "@/lib/reglages";
 
 // Page d'un marché (maquettes/Marche.dc.html).
 // L'assistant IA et le salon du marché (commentaires en direct) sont sous le graphique.
+export async function generateMetadata({ params }: PageProps<"/marches/[id]">): Promise<Metadata> {
+  const numero = Number((await params).id);
+  if (!Number.isInteger(numero) || numero <= 0) return {};
+  const [marche, match] = await Promise.all([obtenirMarche(numero), matchDuMarche(numero)]);
+  if (!marche || !["approuve", "ferme", "regle"].includes(marche.statut)) return { robots: { index: false } };
+  const titre = match ? `${match.dom} – ${match.ext} : 1, N ou 2 ?` : marche.question;
+  const description = match
+    ? `${match.ligue.nom} · 1 ${match.pourcentages[0]} %, N ${match.pourcentages[1]} %, 2 ${match.pourcentages[2]} %. Donne ton avis avec tes pièces gratuites sur KongoX.`
+    : `${marche.pourcentageOui} % pensent OUI, ${100 - marche.pourcentageOui} % NON. Donne ton avis avec tes pièces gratuites sur KongoX.`;
+  return {
+    title: `${titre} — KongoX`,
+    description,
+    alternates: { canonical: `/marches/${numero}` },
+    openGraph: { ...OPEN_GRAPH, title: titre, description, url: `/marches/${numero}` },
+  };
+}
+
 export default function PageMarche({ params }: PageProps<"/marches/[id]">) {
   return (
     <div className="flex flex-1 flex-col">
@@ -81,6 +100,9 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
             {t("volume", { pieces: formaterNombre(marche.volume) })}
             {marche.auteur && <> · {t("proposePar", { nom: marche.auteur })}</>}
           </p>
+          {marche.sponsor && (
+            <p className="self-start rounded-full border border-separateur px-3 py-1 text-xs font-bold text-texte-secondaire">{t("offertePar", { sponsor: marche.sponsor })}</p>
+          )}
           {match ? <RepartitionMatch m={match} libelles={libelles} /> : <GraphiqueMarche historique={historique} pourcentage={marche.pourcentageOui} />}
         </div>
 
@@ -93,15 +115,15 @@ async function ContenuMarche({ params }: { params: PageProps<"/marches/[id]">["p
         </aside>
 
         <div className="flex min-w-0 flex-col gap-4 md:col-start-1 md:row-start-2">
-          <a
-            href={lienWhatsApp(texteMarche(marche.question, marche.pourcentageOui, marche.id))}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex h-[52px] items-center justify-center gap-2 rounded-champ bg-cat-vie-fond text-[15px] font-bold text-hunter"
-          >
-            <IconeWhatsApp />
-            {t("partagerWhatsApp")}
-          </a>
+          <BoutonsPartage
+            url={`${urlSite()}/marches/${marche.id}`}
+            texte={
+              match
+                ? `${match.dom} – ${match.ext} : 1 ${match.pourcentages[0]} %, N ${match.pourcentages[1]} %, 2 ${match.pourcentages[2]} % sur KongoX. Et toi ?`
+                : `${marche.question} — ${marche.pourcentageOui} % pensent OUI sur KongoX. Et toi ?`
+            }
+            carte={`/marches/${marche.id}/opengraph-image`}
+          />
 
           <Suspense fallback={null}>
             <MesPredictions marche={marche} libelles={libelles} />

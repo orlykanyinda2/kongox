@@ -2,6 +2,16 @@
 
 Toutes les modifications importantes de KongoX sont notées ici, de la plus récente à la plus ancienne.
 
+## [0.9.0] — 2026-11-07 — Étape 6 : partage, partenaires et cadeaux
+
+### Ajouté
+- Boutons de partage : WhatsApp, Facebook, Telegram, TikTok (lien copié), copier le lien, menu de partage du téléphone, « Télécharger la carte » ; sur les pages d'un marché, d'un match, d'un profil, d'une communauté et sur le classement
+- Cartes image générées (1200 × 630) pour chaque marché, chaque match, chaque profil et le site ; balises Open Graph et Twitter pour l'aperçu WhatsApp, Facebook et Telegram
+- Page « Devenir partenaire de KongoX » (`/partenaires`, maquette Partenaires) : 7 offres, bouton WhatsApp, formulaire enregistré avec limites anti-abus
+- Admin › Partenaires : suivi des demandes, note interne, compteur dans le menu
+- Sponsor d'un marché (« Question offerte par… », mention « Sponsorisé ») et d'un cadeau (« offert par… »)
+- Cadeaux : un cadeau par numéro, gagnants proposés depuis le classement, « Mes cadeaux » dans le profil, derniers gagnants sur le classement
+
 ## [0.8.0] — 2026-11-07 — Étape 5 (troisième partie) : chat et signalements
 
 ### Ajouté

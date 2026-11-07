@@ -165,15 +165,25 @@ export async function creerCadeau(_etat: EtatAction, donnees: FormData): Promise
     p_nom_utilisateur: String(donnees.get("nom") ?? "").trim().replace(/^@/, ""),
     p_type: String(donnees.get("type") ?? ""),
     p_description: String(donnees.get("description") ?? "").trim(),
+    p_sponsor: String(donnees.get("sponsor") ?? "").trim() || null,
   });
   if (error) return erreur(error.hint, error.message);
   rafraichir();
   return { succes: "Cadeau ajouté à la liste." };
 }
 
+// Gagnant proposé par le classement : un clic, cadeau « Crédit » avec la raison toute prête
+export async function marquerGagnant(nom: string, raison: string): Promise<EtatAction> {
+  const { error } = await appeler("creer_cadeau", { p_nom_utilisateur: nom, p_type: "credit", p_description: raison.slice(0, 200), p_sponsor: null });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir();
+  return { succes: "Ajouté aux cadeaux à envoyer." };
+}
+
 export async function marquerCadeauEnvoye(cadeau: number): Promise<EtatAction> {
   const { error } = await appeler("marquer_cadeau_envoye", { p_cadeau: cadeau });
   if (error) return erreur(error.hint, error.message);
+  updateTag("cadeaux"); // « Derniers gagnants » du classement
   rafraichir();
   return { succes: "Marqué comme envoyé." };
 }

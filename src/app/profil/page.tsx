@@ -73,14 +73,23 @@ async function ContenuProfil() {
   const id = session?.claims?.sub;
   if (!id) redirect("/connexion");
 
-  const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }, { data: questions }, { data: communautes }, { data: membre }] = await Promise.all([
+  const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }, { data: questions }, { data: communautes }, { data: membre }, { data: cadeaux }] = await Promise.all([
     supabase.from("utilisateurs").select("id, nom_utilisateur, role, solde_pieces, serie_jours, badges, cree_le").eq("id", id).single<Utilisateur>(),
     supabase.from("coordonnees_utilisateurs").select("email_contact, telephone").eq("utilisateur_id", id).maybeSingle<{ email_contact: string | null; telephone: string | null }>(),
     supabase.from("transactions_pieces").select("id, montant, type, description, cree_le").order("cree_le", { ascending: false }).limit(10).returns<Transaction[]>(),
     supabase.from("marches").select("id, question, categorie, statut, motif").eq("auteur_id", id).order("cree_le", { ascending: false }).limit(10).returns<Question[]>(),
     supabase.from("communautes").select("id, nom, type").eq("active", true).order("nom").returns<{ id: number; nom: string; type: string }[]>(),
     supabase.from("membres_communaute").select("communaute_id").eq("utilisateur_id", id),
+    supabase
+      .from("cadeaux")
+      .select("id, type, description, sponsor, statut, cree_le")
+      .eq("utilisateur_id", id)
+      .neq("statut", "annule")
+      .order("cree_le", { ascending: false })
+      .limit(5)
+      .returns<{ id: number; type: string; description: string | null; sponsor: string | null; statut: string; cree_le: string }[]>(),
   ]);
+  const aEnvoyer = (cadeaux ?? []).some((c) => c.statut === "a_envoyer");
   const mesCommunautes = new Set((membre ?? []).map((m) => m.communaute_id));
 
   if (!utilisateur) {
@@ -214,6 +223,23 @@ async function ContenuProfil() {
           {/* Téléphone pour les cadeaux */}
           <section className="rounded-carte border-2 border-foret bg-hunter p-[22px] text-white shadow-brique-md">
             <h2 className="text-[21px]">{t("cadeauxTitre")}</h2>
+            {aEnvoyer && !coordonnees?.telephone && (
+              <p role="alert" className="mt-3 rounded-champ bg-vert-jaune px-3 py-2.5 text-sm font-bold text-foret">
+                {t("cadeauAttendNumero")}
+              </p>
+            )}
+            {(cadeaux ?? []).length > 0 && (
+              <ul className="mt-3 flex flex-col gap-2" aria-label={t("mesCadeaux")}>
+                {cadeaux!.map((c) => (
+                  <li key={c.id} className="rounded-champ bg-white/10 px-3 py-2.5 text-sm">
+                    <span className="font-bold">{t(`cadeau_${c.type}`)}</span>
+                    {c.description && <> · {c.description}</>}
+                    {c.sponsor && <> · {t("offertPar", { sponsor: c.sponsor })}</>}
+                    <span className="mt-0.5 block text-xs text-[#E4EAD3]">{c.statut === "envoye" ? t("cadeauEnvoye") : t("cadeauAEnvoyer")}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
             <p className="mt-2 text-sm leading-normal text-[#E4EAD3]">{t("cadeauxTexte")}</p>
             <FormulaireCoordonnee champ="telephone" valeur={coordonnees?.telephone ?? null} libelle={t("telephone")} placeholder="+243 8…" sombre />
           </section>

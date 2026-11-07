@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { EnTetePage, Pastille, Section, StatutMarche } from "@/components/admin/ui";
 import { FormulaireMarche } from "@/components/admin/FormulaireMarche";
+import { FormulaireSponsor } from "@/components/admin/FormulaireSponsor";
 import { ActionConfirmee, BoutonAction } from "@/components/admin/Actions";
 import { changerEtatMarche, dupliquerMarche, fermerMarche, mettreEnAvant, supprimerMarche } from "@/app/actions/backoffice";
 import { definirSoki } from "@/app/actions/admin";
@@ -31,6 +32,7 @@ type Marche = {
   soki_du_jour: boolean;
   soki_programme: boolean;
   mis_en_avant: boolean;
+  sponsor: string | null;
   motif: string | null;
   cree_le: string;
   auteur: { nom_utilisateur: string } | null;
@@ -48,7 +50,7 @@ async function FicheMarche({ params }: { params: Promise<{ id: string }> }) {
     supabase
       .from("marches")
       .select(
-        "id, question, categorie, source, statut, date_publication, date_fin, soki_du_jour, soki_programme, mis_en_avant, motif, cree_le, " +
+        "id, question, categorie, source, statut, date_publication, date_fin, soki_du_jour, soki_programme, mis_en_avant, sponsor, motif, cree_le, " +
           "auteur:utilisateurs!marches_auteur_id_fkey(nom_utilisateur), options:options_marche!options_marche_marche_id_fkey(id, libelle, ordre, total_mise)",
       )
       .eq("id", n)
@@ -147,6 +149,12 @@ async function FicheMarche({ params }: { params: Promise<{ id: string }> }) {
           )}
         </div>
       </Section>
+
+      {m.statut !== "supprime" && (
+        <Section titre="Sponsor">
+          <FormulaireSponsor marche={m.id} sponsor={m.sponsor} />
+        </Section>
+      )}
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Section titre={modifiable ? "Modifier" : "Contenu"}>

@@ -12,6 +12,18 @@ import { creerClientPublic } from "@/lib/supabase/public";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { utilisateurConnecte } from "@/lib/compte/session";
 import { formaterNombre } from "@/lib/format";
+import { OPEN_GRAPH, urlSite } from "@/lib/partage";
+import type { Metadata } from "next";
+import { BoutonsPartage } from "@/components/social/BoutonsPartage";
+
+export async function generateMetadata({ params }: PageProps<"/communautes/[id]">): Promise<Metadata> {
+  const numero = Number((await params).id);
+  if (!Number.isInteger(numero) || numero <= 0) return {};
+  const { data } = await creerClientPublic().from("communautes").select("nom, description").eq("id", numero).eq("active", true).maybeSingle<{ nom: string; description: string | null }>();
+  if (!data) return { robots: { index: false } };
+  const description = data.description ?? `Le salon de la communauté ${data.nom} sur KongoX.`;
+  return { title: `${data.nom} — KongoX`, description, openGraph: { ...OPEN_GRAPH, title: `${data.nom} sur KongoX`, description, url: `/communautes/${numero}` } };
+}
 
 // Page d'une communauté : présentation, bouton Rejoindre, salon de discussion en direct.
 export default function PageCommunaute({ params }: PageProps<"/communautes/[id]">) {
@@ -73,6 +85,10 @@ async function Contenu({ params }: { params: PageProps<"/communautes/[id]">["par
           </Link>
         )}
       </header>
+
+      <div className="mt-4">
+        <BoutonsPartage url={`${urlSite()}/communautes/${c.id}`} texte={`Rejoins la communauté ${c.nom} sur KongoX : on prédit ensemble, avec des pièces gratuites.`} />
+      </div>
 
       <div className="mt-6">
         <Suspense fallback={<div className="h-48 animate-pulse rounded-[18px] bg-doux" />}>

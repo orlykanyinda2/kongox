@@ -354,6 +354,49 @@ Nouveaux réglages : `chat_longueur_max` (500), `chat_intervalle_secondes` (5), 
 
 Trois vues : **signalements ouverts** (un bloc par message ou par marché, avec tous les motifs ; masquer, rejeter, garder masqué, rétablir, bloquer l'auteur 24 h ou 7 jours, ouvrir le marché), **messages masqués** (texte d'origine, rétablir, bloquer ou débloquer l'auteur), **mots interdits** (ajouter, retirer). Le menu affiche le nombre de signalements ouverts.
 
+## Partage, partenaires et cadeaux (étape 6)
+
+Migration : `supabase/migrations/20261107160000_partage_partenaires.sql`. Code : `src/components/social/BoutonsPartage.tsx`, `src/lib/partage.ts`, `src/lib/og/`, les fichiers `opengraph-image.tsx`, `src/app/partenaires/page.tsx`, `src/app/admin/partenaires/page.tsx`, `src/app/admin/cadeaux/page.tsx`.
+
+### Partage
+
+- `BoutonsPartage` (page d'un marché ou d'un match, profil public, communauté, classement) : **WhatsApp** en premier, puis Facebook (`facebook.com/sharer`), Telegram (`t.me/share/url`), **TikTok** (pas de lien de partage web : le lien est copié, avec « Télécharger la carte » pour une vidéo ou un statut), **Copier le lien**, et « Partager… » (menu du téléphone, `navigator.share`) quand il existe.
+- Les cartes de marché de l'accueil gardent leur petit bouton WhatsApp (page légère).
+
+### Cartes image et Open Graph
+
+- Cartes 1200 × 630 dessinées par `next/og` (`ImageResponse`) avec les couleurs de DESIGN.md et les polices Space Grotesk et Inter (`src/assets/polices`, licence OFL) :
+  - `/opengraph-image` : carte du site (« Le Congo a un avis. Prouve-le. ») ;
+  - `/marches/[id]/opengraph-image` : question, pourcentage OUI, barre, pièces misées, catégorie, sponsor ; pour un match : les deux équipes, la ligue et 1 / N / 2 ;
+  - `/u/[nom]/opengraph-image` : nom, score Mayele, prédictions, abonnés.
+- Un marché inconnu ou pas en ligne donne la carte du site (la question n'est jamais montrée).
+- Balises : `metadataBase` = `NEXT_PUBLIC_SITE_URL`, `og:title`, `og:description`, `og:image` (+ taille), `og:url`, `og:site_name`, `twitter:card = summary_large_image`. Les pages d'un marché, d'un profil, d'une communauté et `/partenaires` ont leur titre et leur description. Les robots d'aperçu (WhatsApp, Facebook, Telegram…) reçoivent les balises dans `<head>` ; les navigateurs les reçoivent en flux.
+- **`NEXT_PUBLIC_SITE_URL` doit être la vraie adresse en production**, sinon les images des aperçus pointent vers `localhost`.
+
+### Page partenaires
+
+`/partenaires` reprend la maquette : les 7 offres, puis « Parlons de votre projet » avec le bouton WhatsApp de l'équipe (réglage `whatsapp_equipe`) et un formulaire. « Postuler » (curateurs) mène à `/curateur` ; les autres boutons choisissent le type dans le formulaire. Champ piège caché contre les robots.
+
+| Table | Rôle | Accès |
+| --- | --- | --- |
+| `demandes_partenaires` | Nom, organisation, type (`marque`, `sponsor_cadeaux`, `curateur`, `influenceur`, `media`, `pronostiqueur`, `chercheur`, `autre`), contact (WhatsApp ou e-mail), message, statut (`nouvelle` → `en_cours` → `traitee` / `archivee`), note interne | Admins ; écrite seulement par `envoyer_demande_partenaire()` |
+
+| Fonction | Rôle | Accès |
+| --- | --- | --- |
+| `envoyer_demande_partenaire(nom, organisation, type, contact, message)` | Vérifie les champs et le contact ; 30 demandes par heure en tout, 3 par jour pour un même contact | Tout le monde |
+| `traiter_demande_partenaire(demande, statut, note)` | Suivi, journalisé | Admins |
+| `definir_sponsor_marche(marche, sponsor)` | « Question offerte par… » (vide = pas de sponsor), modifiable même après des mises, journalisé | Admins |
+
+Admin › Partenaires liste les demandes (à traiter, toutes…), avec un lien direct pour répondre (WhatsApp ou e-mail) ; le menu compte les nouvelles demandes. Admin › Marchés › un marché : champ « Sponsor ».
+
+### Cadeaux
+
+- `cadeaux.sponsor` : « offert par… » (formulaire Admin › Cadeaux) ; `creer_cadeau(nom, type, description, sponsor)`.
+- **Un cadeau par numéro** : `marquer_cadeau_envoye()` refuse un numéro qui a déjà reçu un cadeau pour un autre compte (`numero_deja_recompense`). Le même compte peut gagner plusieurs fois.
+- **Gagnants proposés** (Admin › Cadeaux) : les 5 premiers du classement de la semaine et du mois, avec « Sans numéro » et « Cadeau cette semaine » ; « Marquer gagnant » ajoute un cadeau Crédit à envoyer.
+- **Profil** : « Mes cadeaux » (à envoyer / envoyé, sponsor) et, si un cadeau attend, un message pour ajouter son numéro.
+- **Derniers gagnants** sur `/classement` : `derniers_gagnants()` (public) donne le nom, le cadeau et le sponsor des 60 derniers jours, jamais le numéro.
+
 ## Connexion (Supabase Auth)
 
 - L'utilisateur ne donne qu'un nom d'utilisateur et un mot de passe.

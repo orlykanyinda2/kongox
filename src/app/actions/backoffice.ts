@@ -162,6 +162,14 @@ export async function modifierReglage(cle: string, numerique: boolean, _etat: Et
   return { succes: "Enregistré." };
 }
 
+// Sponsor d'un marché (« Question offerte par… »), modifiable même après des mises
+export async function definirSponsor(marche: number, _etat: EtatAction, donnees: FormData): Promise<EtatAction> {
+  const { error } = await appeler("definir_sponsor_marche", { p_marche: marche, p_sponsor: String(donnees.get("sponsor") ?? "") });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir(true);
+  return { succes: "Sponsor enregistré." };
+}
+
 // Réglages du fil de marchés (coefficients décimaux, sections affichées ou cachées)
 export async function modifierReglageFil(cle: string, _etat: EtatAction, donnees: FormData): Promise<EtatAction> {
   const brut = String(donnees.get("valeur") ?? "").trim().replace(/\s/g, "").replace(",", ".");
