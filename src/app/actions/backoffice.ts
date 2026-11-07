@@ -1,7 +1,7 @@
 "use server";
 
 import { updateTag } from "next/cache";
-import { appeler, dateKinshasa, erreur, idParNom, rafraichir, type EtatAction } from "@/lib/admin/rpc";
+import { appeler, dateKinshasa, erreur, idParNom, rafraichir, verifierAdmin, type EtatAction } from "@/lib/admin/rpc";
 
 // Back-office : marchés, programmation, pièces, réglages.
 // Chaque fonction SQL vérifie elle-même que l'appelant est admin.
@@ -136,6 +136,9 @@ export async function bonusEnMasse(donnees: FormData): Promise<EtatAction> {
   const { data, error } = await appeler("bonus_en_masse", {
     p_cible: cible,
     p_noms: cible === "liste" ? noms : null,
+    p_communaute: cible === "communaute" ? Number(donnees.get("communaute")) : null,
+    p_top: cible === "top" ? Number(donnees.get("top")) : null,
+    p_periode: String(donnees.get("periode") ?? "semaine"),
     p_montant: Number.parseInt(String(donnees.get("montant") ?? "").replace(/\s/g, ""), 10),
     p_raison: String(donnees.get("raison") ?? ""),
   });
@@ -156,4 +159,64 @@ export async function modifierReglage(cle: string, numerique: boolean, _etat: Et
   updateTag("reglages");
   rafraichir(true);
   return { succes: "Enregistré." };
+}
+
+// ---------------------------------------------------------------------
+// Football, communautés
+// ---------------------------------------------------------------------
+export async function importerMaintenant(): Promise<EtatAction> {
+  if (!(await verifierAdmin())) return erreur("reserve_admin");
+  const { importerFootball } = await import("@/lib/football/import");
+  const bilans = await importerFootball({ declenchePar: "admin", forcer: true });
+  rafraichir(true);
+  const texte = bilans
+    .map((b) => `${b.type === "a_venir" ? "Matchs à venir" : "Résultats"} : ${b.statut} (${b.appels} requête(s), ${b.matchs} match(s))${b.statut === "erreur" || b.statut === "limite" ? ` — ${b.message}` : ""}`)
+    .join(" · ");
+  return bilans.some((b) => b.statut === "erreur") ? { erreur: texte } : { succes: texte };
+}
+
+export async function activerLigue(ligue: number, active: boolean): Promise<EtatAction> {
+  const { error } = await appeler("activer_ligue", { p_ligue: ligue, p_active: active });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir();
+  return { succes: active ? "Ligue activée." : "Ligue désactivée." };
+}
+
+export async function corrigerMatch(match: number, donnees: FormData): Promise<EtatAction> {
+  const statut = String(donnees.get("statut") ?? "termine");
+  const dom = donnees.get("buts_dom") === "" ? null : Number(donnees.get("buts_dom"));
+  const ext = donnees.get("buts_ext") === "" ? null : Number(donnees.get("buts_ext"));
+  const { error } = await appeler("corriger_match", { p_match: match, p_buts_dom: dom, p_buts_ext: ext, p_statut: statut });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir(true);
+  return { succes: statut === "termine" ? "Score enregistré, marché réglé." : "Match annulé, mises remboursées." };
+}
+
+export async function creerCommunaute(_etat: EtatAction, donnees: FormData): Promise<EtatAction> {
+  const { error } = await appeler("creer_communaute", {
+    p_nom: String(donnees.get("nom") ?? ""),
+    p_type: String(donnees.get("type") ?? "autre"),
+    p_description: String(donnees.get("description") ?? ""),
+  });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir();
+  return { succes: "Communauté créée." };
+}
+
+export async function creerDuel(_etat: EtatAction, donnees: FormData): Promise<EtatAction> {
+  const { error } = await appeler("creer_duel", {
+    p_titre: String(donnees.get("titre") ?? ""),
+    p_a: Number(donnees.get("a")),
+    p_b: Number(donnees.get("b")),
+  });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir();
+  return { succes: "Duel créé." };
+}
+
+export async function activerDuel(duel: number, actif: boolean): Promise<EtatAction> {
+  const { error } = await appeler("activer_duel", { p_duel: duel, p_actif: actif });
+  if (error) return erreur(error.hint, error.message);
+  rafraichir();
+  return { succes: actif ? "Duel affiché." : "Duel masqué." };
 }

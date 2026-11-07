@@ -86,7 +86,7 @@ Exemple testé : OUI 100 + 200, NON 101 → cagnotte 401 ; gains 134 et 267.
 
 ## Tables créées (étape 3)
 
-Migration : `supabase/migrations/20261108090000_admin_et_curateurs.sql`.
+Migration : `supabase/migrations/20261107100000_admin_et_curateurs.sql`.
 
 | Table | Rôle | Qui peut lire | Qui peut écrire |
 | --- | --- | --- | --- |
@@ -142,7 +142,7 @@ Ensuite, les autres admins se nomment depuis le panneau (Utilisateurs → Rôle)
 
 ## Back-office admin (étape 3, suite)
 
-Migration : `supabase/migrations/20261109090000_backoffice_admin.sql`. Style des écrans : DESIGN.md, section « Panneau admin ».
+Migration : `supabase/migrations/20261107110000_backoffice_admin.sql`. Style des écrans : DESIGN.md, section « Panneau admin ».
 
 ### Statuts d'un marché (complet)
 
@@ -194,15 +194,59 @@ Les montants dans `messages/fr.json` s'écrivent avec des marqueurs : « [[bonus
 
 Les textes du panneau admin (outil interne, en français) sont écrits directement dans les composants `src/components/admin/` et les pages `src/app/admin/`, sans passer par `messages/fr.json` ; seuls les messages d'erreur des fonctions SQL y restent (`erreursAdmin`). Les tableaux trient, filtrent et paginent par l'adresse ; l'export CSV passe par `src/app/admin/export/[type]/route.ts` (vérifie `est_admin()`, séparateur `;`).
 
+## Football, classements, profils (étape 4)
+
+Migration : `supabase/migrations/20261107120000_football_classements_profils.sql`.
+
+### Matchs et import
+
+| Table | Rôle | Lecture | Écriture |
+| --- | --- | --- | --- |
+| `ligues` | Championnats importés (Premier League 39, Ligue des champions 2, Liga 140, Serie A 135, Bundesliga 78, Ligue 1 61, **Linafoot 424**), activables | Tout le monde | `activer_ligue()` (admin) |
+| `equipes` | Équipes (nom, logo du fournisseur) | Tout le monde | Import |
+| `matchs` | `date_match` (affichée), `date_api` (réelle), statut (`a_venir`, `en_cours`, `termine`, `annule`, `reporte`), score publié, dernière réponse du fournisseur (`statut_api`, `buts_*_api`), `marche_id` | Tout le monde | Import, `corriger_match()` (admin) |
+| `appels_api` | Compteur de requêtes par jour (Kinshasa) et par fournisseur | Admins | `reserver_appel_api()` |
+| `imports_football` | Journal des imports (type, statut, requêtes, matchs, message, déclencheur) | Admins | Import |
+
+**Un marché « 1n2 » par match** (`marches.type_reponse = '1n2'`, options `1` / `N` / `2`, fermeture au coup d'envoi). Il réutilise la cagnotte, la limite quotidienne et le règlement exact.
+
+**Import économe** (`src/lib/football/`, côté serveur, clé `API_FOOTBALL_KEY`) :
+- Code indépendant du fournisseur : `types.ts` (format commun `MatchNormalise`), `apiFootball.ts` (adaptateur), `import.ts` (orchestration). Pour changer de fournisseur, on écrit un autre adaptateur.
+- Matchs à venir : une fois par jour (si aucun import réussi depuis 20 h), 1 requête par ligue active, sur `football_jours_a_venir` jours.
+- Résultats : seulement pour les matchs dont la fin estimée (coup d'envoi + 2 h) est passée et dont le score est inconnu, 20 matchs par requête, au plus toutes les 30 minutes par match.
+- Avant chaque requête, `reserver_appel_api()` compte et **refuse au-delà de `api_football_limite_jour`** (90) : l'import s'arrête.
+- Un seul import du même type à la fois (`commencer_import()`).
+- Si le fournisseur ne répond pas : erreur notée dans le journal, les données déjà en base restent affichées.
+- Déclenchement : à la visite de `/football` (après l'envoi de la page, au plus une vérification toutes les 10 minutes), par Vercel Cron en production (`vercel.json`, route `/api/cron/football` protégée par `CRON_SECRET`), et par le bouton « Importer maintenant » (Admin › Matchs).
+- `appliquer_resultats()` (après chaque import et toutes les 5 minutes par pg_cron `kongox-resultats-matchs`) publie le score quand la fin estimée est passée et règle le marché (score à 90 minutes ; annulé ou reporté = remboursement).
+
+**Mode test (saison 2024 gratuite)** : `football_saison` = 2024 et `football_decalage_jours` = 728 (104 semaines, pour garder les jours de la semaine). Les matchs de novembre 2024 sont rejoués aux mêmes jours de novembre 2026 ; le fournisseur connaît déjà les scores, mais ils ne sont publiés qu'à la fin estimée du match. Bandeau « Données de test 2024 » dans l'admin. En production : saison en cours et décalage 0 (voir AVANCEMENT.md, « Avant la mise en ligne »).
+
+### Classements, abonnements, communautés
+
+| Table | Rôle | Lecture | Écriture |
+| --- | --- | --- | --- |
+| `abonnements` | Qui suit qui | Tout le monde | `suivre(nom, oui/non)` |
+| `communautes` | Villes, universités, fan-clubs (créées par un admin) | Tout le monde | `creer_communaute()` (admin) |
+| `membres_communaute` | 3 communautés au maximum par personne | Tout le monde | `rejoindre_communaute()` |
+| `duels_communautes` | « Communauté contre communauté » de la page Classement | Tout le monde | `creer_duel()`, `activer_duel()` (admin) |
+
+`marches.communaute_id` (facultatif) prépare le filtre par communauté du fil de marchés.
+
+- **Score Mayele** = prédictions justes ÷ prédictions réglées (gagnées ou perdues ; remboursées exclues), sur la période (semaine, mois, tout ; heure de Kinshasa, selon la date de règlement du marché). Il faut au moins `classement_min_predictions` (5) prédictions réglées pour être classé. Ordre : score, puis nombre de prédictions réglées, puis solde.
+- `classement(periode, limite, amis)` (public ; `amis` = moi + ceux que je suis), `mon_classement(periode)`, `duels(periode)` : score d'une communauté = prédictions justes de tous ses membres ÷ prédictions réglées ; la barre montre la part de chaque communauté.
+- `profil_public(nom)` et `predictions_publiques(nom, filtre)` : le profil public montre les prédictions d'un joueur (question, choix, mise, résultat). La table `predictions` reste privée : seules ces fonctions en publient un résumé.
+- `bonus_en_masse` accepte maintenant les cibles `communaute` et `top` (N premiers du classement de la semaine, du mois ou depuis le début).
+- `regler_marche_interne()` / `annuler_marche_interne()` : règlement sans contrôle admin, utilisé par les matchs ; `regler_marche()` (admin) l'appelle.
+
+Nouveaux réglages : `football_saison`, `football_decalage_jours`, `football_jours_a_venir`, `api_football_limite_jour`, `classement_min_predictions`.
+
 ## Tables prévues (étapes suivantes)
 
 | Table | Rôle |
 | --- | --- |
-| `matchs` | Matchs importés d'API-Football |
-| `membres_communaute` | Qui appartient à quelle communauté |
 | `messages` | Messages du chat (match, marché, communauté) |
 | `signalements` | Messages ou marchés signalés |
-| `abonnements` | Qui suit quel pronostiqueur |
 
 ## Connexion (Supabase Auth)
 

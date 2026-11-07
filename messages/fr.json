@@ -341,6 +341,9 @@
     "montant_masse_invalide": "Montant invalide (1 à 10 000 pièces par compte).",
     "aucun_compte": "Aucun compte ne correspond.",
     "trop_de_comptes": "Trop de comptes d'un coup (5 000 maximum).",
-    "hors_limites": "Valeur hors des limites autorisées."
+    "hors_limites": "Valeur hors des limites autorisées.",
+    "deja_regle": "Le marché de ce match est déjà réglé : le score ne peut plus changer.",
+    "score_invalide": "Score invalide.",
+    "nom_pris": "Ce nom existe déjà."
   }
 }

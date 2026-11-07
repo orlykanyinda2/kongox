@@ -75,6 +75,7 @@ Voir `.env.example`. Ne jamais envoyer `.env.local` sur GitHub (il est dans `.gi
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Clé publique Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | Clé secrète Supabase (serveur uniquement) |
 | `API_FOOTBALL_KEY` | Clé API-Football |
+| `CRON_SECRET` | Secret de l'import planifié des matchs (route `/api/cron/football`, Vercel Cron) |
 | `AI_API_KEY` | Clé de l'API de l'assistant IA |
 | `NEXT_PUBLIC_SITE_URL` | Adresse publique du site, pour les liens de partage (ex. `https://kongox.vercel.app`) |
 | `NEXT_PUBLIC_WHATSAPP_EQUIPE` | Numéro WhatsApp de l'équipe (ex. `243812345678`), pour « Mot de passe oublié ? » |

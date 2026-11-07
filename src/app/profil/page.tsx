@@ -10,6 +10,8 @@ import { IconePiece } from "@/components/IconePiece";
 import { BonusQuotidien } from "@/components/compte/BonusQuotidien";
 import { FormulaireCoordonnee } from "@/components/compte/FormulaireCoordonnee";
 import { FormulaireNouveauMotDePasse } from "@/components/compte/FormulaireNouveauMotDePasse";
+import { BoutonSocial } from "@/components/social/BoutonSocial";
+import { rejoindreCommunaute } from "@/app/actions/social";
 import { deconnecter } from "@/app/actions/compte";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 import { formaterDate, formaterNombre, formaterPieces } from "@/lib/format";
@@ -71,12 +73,15 @@ async function ContenuProfil() {
   const id = session?.claims?.sub;
   if (!id) redirect("/connexion");
 
-  const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }, { data: questions }] = await Promise.all([
+  const [{ data: utilisateur }, { data: coordonnees }, { data: transactions }, { data: questions }, { data: communautes }, { data: membre }] = await Promise.all([
     supabase.from("utilisateurs").select("id, nom_utilisateur, role, solde_pieces, serie_jours, badges, cree_le").eq("id", id).single<Utilisateur>(),
     supabase.from("coordonnees_utilisateurs").select("email_contact, telephone").eq("utilisateur_id", id).maybeSingle<{ email_contact: string | null; telephone: string | null }>(),
     supabase.from("transactions_pieces").select("id, montant, type, description, cree_le").order("cree_le", { ascending: false }).limit(10).returns<Transaction[]>(),
     supabase.from("marches").select("id, question, categorie, statut, motif").eq("auteur_id", id).order("cree_le", { ascending: false }).limit(10).returns<Question[]>(),
+    supabase.from("communautes").select("id, nom, type").eq("active", true).order("nom").returns<{ id: number; nom: string; type: string }[]>(),
+    supabase.from("membres_communaute").select("communaute_id").eq("utilisateur_id", id),
   ]);
+  const mesCommunautes = new Set((membre ?? []).map((m) => m.communaute_id));
 
   if (!utilisateur) {
     return (
@@ -111,6 +116,9 @@ async function ContenuProfil() {
               <div className="min-w-0">
                 <h1 className="truncate text-[26px] tracking-[-0.5px] md:text-[32px]">@{utilisateur.nom_utilisateur}</h1>
                 <p className="text-sm text-texte-secondaire">{t("membreDepuis", { date: membreDepuis })}</p>
+                <Link href={`/u/${utilisateur.nom_utilisateur}`} className="text-sm font-bold text-hunter underline dark:text-vert-jaune">
+                  Voir mon profil public
+                </Link>
               </div>
             </div>
 
@@ -221,6 +229,24 @@ async function ContenuProfil() {
             </p>
             <FormulaireCoordonnee champ="email_contact" valeur={coordonnees?.email_contact ?? null} libelle={t("emailContact")} placeholder="nom@exemple.com" />
             <p className="text-xs text-texte-secondaire">{t("emailFacultatif")}</p>
+          </section>
+
+          {/* Communautés (3 au maximum) : comptent pour « communauté contre communauté » */}
+          <section id="communautes" className={`${carte} scroll-mt-24`}>
+            <h2 className="text-[21px]">Mes communautés</h2>
+            <p className="mt-2 text-sm text-texte-secondaire">Ta ville, ton université, ton fan-club : 3 au maximum.</p>
+            {(communautes ?? []).length === 0 ? (
+              <p className="mt-3 text-sm text-texte-secondaire">Les communautés arrivent bientôt.</p>
+            ) : (
+              <ul className="mt-3 flex flex-col gap-2">
+                {communautes!.map((c) => (
+                  <li key={c.id} className="flex items-center justify-between gap-2 rounded-bouton bg-doux px-3 py-2">
+                    <span className="text-[15px] font-semibold">{c.nom}</span>
+                    <BoutonSocial action={rejoindreCommunaute.bind(null, c.id)} actif={mesCommunautes.has(c.id)} libelleActif="Quitter" libelleInactif="Rejoindre" petit />
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
 
           {/* Mot de passe */}

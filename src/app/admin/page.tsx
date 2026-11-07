@@ -6,7 +6,8 @@ import { GraphiqueSerie } from "@/components/admin/GraphiqueSerie";
 import { exigerAcces } from "@/lib/admin/acces";
 import { valeur, type Params } from "@/lib/admin/tableau";
 import { creerClientServeur } from "@/lib/supabase/serveur";
-import { formaterNombre } from "@/lib/format";
+import { formaterDate, formaterNombre } from "@/lib/format";
+import { lireReglages } from "@/lib/reglages";
 
 export default function PageTableauDeBord({ searchParams }: PageProps<"/admin">) {
   return (
@@ -28,10 +29,15 @@ async function TableauDeBord({ searchParams }: { searchParams: Promise<Params> }
   const periode = PERIODES[cle] ?? PERIODES["7"];
 
   const supabase = await creerClientServeur();
-  const [{ data: jour }, { data: serie }] = await Promise.all([
+  const aujourdhui = new Intl.DateTimeFormat("en-CA", { timeZone: "Africa/Kinshasa" }).format(new Date());
+  const [{ data: jour }, { data: serie }, { data: appels }, { data: dernierImport }, reglages] = await Promise.all([
     supabase.rpc("tableau_de_bord"),
     supabase.rpc("series_tableau_de_bord", { p_jours: periode.jours }),
+    supabase.from("appels_api").select("nombre").eq("jour", aujourdhui).eq("fournisseur", "api_football").maybeSingle(),
+    supabase.from("imports_football").select("debut, type, statut").order("debut", { ascending: false }).limit(1).maybeSingle(),
+    lireReglages(),
   ]);
+  const limiteApi = Number(reglages.api_football_limite_jour);
   const d = (jour ?? {}) as Record<string, number>;
   const points = ((serie ?? []) as Jour[]).map((p) => ({ ...p, inscrits: Number(p.inscrits), actifs: Number(p.actifs), predictions: Number(p.predictions), pieces_misees: Number(p.pieces_misees) }));
   const series = (k: keyof Omit<Jour, "jour">) => points.map((p) => ({ jour: p.jour, valeur: p[k] }));
@@ -48,6 +54,19 @@ async function TableauDeBord({ searchParams }: { searchParams: Promise<Params> }
         <Chiffre valeur={formaterNombre(d.en_attente ?? 0)} libelle="Questions en attente" lien="/admin/approbation" alerte={(d.en_attente ?? 0) > 0} />
         <Chiffre valeur={formaterNombre(d.a_regler ?? 0)} libelle="Marchés à régler" lien="/admin/resultats" alerte={(d.a_regler ?? 0) > 0} />
       </div>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3 xl:grid-cols-6">
+        <Chiffre
+          valeur={`${appels?.nombre ?? 0} / ${limiteApi}`}
+          libelle="Requêtes API-Football aujourd'hui"
+          lien="/admin/matchs"
+          alerte={(appels?.nombre ?? 0) >= limiteApi}
+        />
+      </div>
+      {dernierImport && (
+        <p className="-mt-2 text-[13px] text-adm-secondaire">
+          Dernier import : {dernierImport.type === "a_venir" ? "matchs à venir" : "résultats"}, {formaterDate(dernierImport.debut)} ({dernierImport.statut ?? "en cours"}).
+        </p>
+      )}
       <p className="text-[13px] text-adm-secondaire">
         {formaterNombre(d.utilisateurs ?? 0)} comptes · {formaterNombre(d.en_ligne ?? 0)} marchés en ligne · {formaterNombre(d.programmes ?? 0)} programmés
       </p>

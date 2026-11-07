@@ -50,9 +50,10 @@ async function Pieces({ searchParams }: { searchParams: Promise<Params> }) {
   if (sens === "ajout") requete = requete.gt("montant", 0);
   if (sens === "retrait") requete = requete.lt("montant", 0);
   if (/^[0-9a-f-]{36}$/.test(lot)) requete = requete.eq("lot", lot);
-  const [{ data, count }, reglages] = await Promise.all([
+  const [{ data, count }, reglages, { data: communautes }] = await Promise.all([
     requete.order(tri, { ascending: croissant }).range(debut, fin).returns<Ligne[]>(),
     lireReglages(),
+    supabase.from("communautes").select("id, nom").eq("active", true).order("nom"),
   ]);
 
   const colonnes: Colonne<Ligne>[] = [
@@ -104,7 +105,7 @@ async function Pieces({ searchParams }: { searchParams: Promise<Params> }) {
           <FormulaireAjustement max={Number(reglages.ajustement_max)} />
         </Section>
         <Section titre="Bonus en masse">
-          <FormulaireBonusMasse />
+          <FormulaireBonusMasse communautes={communautes ?? []} />
         </Section>
       </div>
       <h2 className="mt-2 text-[15px] font-semibold">Historique des ajustements</h2>

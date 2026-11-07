@@ -156,7 +156,7 @@ export function FormulaireAjustement({ nom = "", max }: { nom?: string; max: num
 }
 
 // Bonus en masse : liste de noms, ou tous les comptes actifs (7 / 30 jours)
-export function FormulaireBonusMasse() {
+export function FormulaireBonusMasse({ communautes = [] }: { communautes?: { id: number; nom: string }[] }) {
   const formulaire = useRef<HTMLFormElement>(null);
   const dialogue = useRef<HTMLDialogElement>(null);
   const [cible, setCible] = useState("liste");
@@ -172,7 +172,16 @@ export function FormulaireBonusMasse() {
           e.preventDefault();
           const d = new FormData(e.currentTarget);
           const noms = String(d.get("noms") ?? "").split(/[\s,;]+/).filter(Boolean).length;
-          const qui = cible === "liste" ? `${noms} nom(s) de la liste` : cible === "actifs_7j" ? "tous les comptes actifs ces 7 derniers jours" : "tous les comptes actifs ces 30 derniers jours";
+          const qui =
+            cible === "liste"
+              ? `${noms} nom(s) de la liste`
+              : cible === "actifs_7j"
+                ? "tous les comptes actifs ces 7 derniers jours"
+                : cible === "actifs_30j"
+                  ? "tous les comptes actifs ces 30 derniers jours"
+                  : cible === "communaute"
+                    ? `tous les membres de « ${communautes.find((c) => String(c.id) === d.get("communaute"))?.nom ?? "?"} »`
+                    : `les ${d.get("top")} premiers du classement (${d.get("periode") === "mois" ? "mois" : d.get("periode") === "tout" ? "depuis le début" : "semaine"})`;
           setResume(`Verser ${formaterNombre(Number(d.get("montant")))} pièces à ${qui} (jamais à toi-même). Raison : « ${d.get("raison")} ».`);
           dialogue.current?.showModal();
         }}
@@ -184,13 +193,42 @@ export function FormulaireBonusMasse() {
             <option value="liste">Une liste de noms</option>
             <option value="actifs_7j">Comptes actifs (7 jours)</option>
             <option value="actifs_30j">Comptes actifs (30 jours)</option>
+            <option value="communaute">Une communauté</option>
+            <option value="top">Les N premiers du classement</option>
           </select>
-          <span className={cls.aide}>Communauté et « N premiers du classement » : à l&apos;étape 4.</span>
         </label>
         <label className={cls.label}>
           Montant par compte (1 à 10 000)
           <input name="montant" type="number" min={1} max={10000} required className={`${cls.champ} mt-1`} />
         </label>
+        {cible === "communaute" && (
+          <label className={`${cls.label} sm:col-span-2`}>
+            Communauté
+            <select name="communaute" required className={`${cls.champ} mt-1`}>
+              {communautes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.nom}
+                </option>
+              ))}
+            </select>
+          </label>
+        )}
+        {cible === "top" && (
+          <>
+            <label className={cls.label}>
+              Combien de premiers (1 à 200)
+              <input name="top" type="number" min={1} max={200} defaultValue={10} required className={`${cls.champ} mt-1`} />
+            </label>
+            <label className={cls.label}>
+              Classement
+              <select name="periode" defaultValue="semaine" className={`${cls.champ} mt-1`}>
+                <option value="semaine">De la semaine</option>
+                <option value="mois">Du mois</option>
+                <option value="tout">Depuis le début</option>
+              </select>
+            </label>
+          </>
+        )}
         {cible === "liste" && (
           <label className={`${cls.label} sm:col-span-2`}>
             Noms d&apos;utilisateur (séparés par des espaces, virgules ou retours à la ligne)

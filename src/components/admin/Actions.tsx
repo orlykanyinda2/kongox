@@ -29,7 +29,7 @@ export function BoutonAction({ action, libelle, variante = "secondaire" }: { act
   );
 }
 
-type ChampConfirmation = { nom: string; libelle: string; requis?: boolean; type?: "texte" | "zone" };
+type ChampConfirmation = { nom: string; libelle: string; requis?: boolean; type?: "texte" | "zone" | "nombre" };
 
 type PropsConfirmation = {
   action: (donnees: FormData) => Promise<EtatAction>;
@@ -77,6 +77,8 @@ export function ActionConfirmee({ action, libelle, titre, message, confirmer, va
               {c.libelle}
               {c.type === "zone" ? (
                 <textarea name={c.nom} required={c.requis} rows={3} className={`${cls.zoneTexte} mt-1`} />
+              ) : c.type === "nombre" ? (
+                <input name={c.nom} type="number" min={0} max={99} required={c.requis} inputMode="numeric" className={`${cls.champ} mt-1 w-24`} />
               ) : (
                 <input name={c.nom} required={c.requis} minLength={c.requis ? 3 : undefined} className={`${cls.champ} mt-1`} />
               )}

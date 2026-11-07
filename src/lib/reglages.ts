@@ -17,6 +17,11 @@ export const REGLAGES_PAR_DEFAUT: Reglages = {
   seuil_essai_curateur: 10,
   propositions_en_attente_max: 5,
   ajustement_max: 100000,
+  football_saison: 2024,
+  football_decalage_jours: 728,
+  football_jours_a_venir: 7,
+  api_football_limite_jour: 90,
+  classement_min_predictions: 5,
   whatsapp_equipe: "",
 };
 

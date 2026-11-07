@@ -7,6 +7,7 @@ import { PiedDePage } from "@/components/mise-en-page/PiedDePage";
 import { BarreNavigation } from "@/components/mise-en-page/BarreNavigation";
 import { HeroMobile, HeroOrdinateur } from "@/components/accueil/Hero";
 import { BandeauPartenaires, CeQuePenseKinshasa, CommentCaMarche } from "@/components/accueil/Sections";
+import { ClassementSemaine, MatchsAVenirAccueil } from "@/components/accueil/Football";
 import { ListeMarches } from "@/components/marches/ListeMarches";
 import { BonusQuotidien } from "@/components/compte/BonusQuotidien";
 import { IconePlus } from "@/components/icones";
@@ -14,7 +15,6 @@ import { listerMarchesOuverts } from "@/lib/marches/donnees";
 import { utilisateurConnecte } from "@/lib/compte/session";
 
 // Page d'accueil (maquettes Main.dc.html et Mobile.dc.html).
-// Les sections « Matchs à venir » et « Classement de la semaine » arrivent à l'étape 4.
 export default function Accueil() {
   const t = useTranslations("accueil");
 
@@ -47,8 +47,17 @@ export default function Accueil() {
         </section>
 
         <Suspense fallback={null}>
-          <CeQuePenseKinshasa />
+          <MatchsAVenirAccueil />
         </Suspense>
+
+        <section id="classement" className="mx-auto flex max-w-contenu flex-wrap gap-6 px-[18px] pb-6 pt-10 md:px-6 md:pt-14">
+          <Suspense fallback={<div className="h-80 min-w-0 flex-[1_1_420px] animate-pulse rounded-[24px] bg-doux" />}>
+            <ClassementSemaine />
+          </Suspense>
+          <Suspense fallback={null}>
+            <CeQuePenseKinshasa />
+          </Suspense>
+        </section>
         <CommentCaMarche />
         <BandeauPartenaires />
       </main>
