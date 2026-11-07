@@ -4,14 +4,14 @@ Ce fichier dit où en est la construction. Claude Code le lit au début de chaqu
 
 Statuts possibles : **à faire** · **en cours** · **terminé**
 
-Dernière mise à jour : 2026-11-07
+Dernière mise à jour : 2026-11-09
 
 | | Étape | Contenu | Statut |
 | --- | --- | --- | --- |
 | [x] | 0 — Créer le projet | Next.js + TypeScript + Tailwind, next-intl (français), PWA, client Supabase, thème clair/sombre de DESIGN.md, Git + premier commit | terminé |
 | [x] | 1 — Connexion et pièces | Inscription / connexion par nom d'utilisateur, noms drôles, tables `utilisateurs` et `transactions_pieces`, 1 000 pièces à l'inscription, bonus quotidien de 100 pièces, série `serie_jours` (+200 pièces tous les 7 jours) | terminé |
 | [x] | 2 — Marchés et prédictions | Tables `marches`, `options_marche`, `predictions`, statuts, cagnotte, gains, bonus +50 pièces pour une question approuvée, accueil + page d'un marché + « Proposer une question », seed, limite de 2 000 pièces par jour | terminé |
-| [ ] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | à faire |
+| [x] | 3 — Admin et curateurs | Panneau admin (file d'approbation, règlement, mots de passe, utilisateurs, cadeaux), rôles `admin` et `curateur`, période d'essai | terminé |
 | [ ] | 4 — Football, classements et profils | Import API-Football, prédictions 1 N 2, classements avec score Mayele, profils publics et abonnements | à faire |
 | [ ] | 5 — Chat et assistant IA | Salons Realtime (match, marché, communauté), signalement, filtre de mots, assistant IA multilingue | à faire |
 | [ ] | 6 — Partage, partenaires et cadeaux | Boutons de partage, cartes image + Open Graph, page partenaires, écran admin des cadeaux | à faire |
@@ -35,3 +35,12 @@ Après l'étape 6 : vérification de sécurité et déploiement (section « Avan
   - 41 tests automatiques des fonctions SQL passent (mises, limite, approbation +50, règlement avec arrondi exact, remboursement, annulation, sécurité, conservation des pièces) ; pages vérifiées en visiteur et connecté.
   - Reporté : écran admin pour approuver / régler (étape 3) ; pourcentages en temps réel avec Supabase Realtime, assistant IA et commentaires sur la page d'un marché (étape 5) ; « Matchs à venir » et « Classement de la semaine » sur l'accueil (étape 4) ; cartes image et Open Graph (étape 6).
   - À vérifier par Jonathan : les phrases en lingala de la carte de l'assistant sur l'accueil (`messages/fr.json`, `accueil.assistant…`).
+- 2026-11-08 : `feat/connexion` et `feat/marches` fusionnées dans `main` (vérifié). Étape 3 terminée sur la branche `feat/admin`.
+  - Migration de l'étape 3 exécutée sur Supabase. 42 tests SQL (curateurs, essai → autonome, cadeaux, rôles, RLS, journal) + 41 tests de l'étape 2 (non-régression) + 32 vérifications des pages admin (visiteur, utilisateur, curateur, admin) passent.
+  - Aucun admin pour l'instant : voir « Premier admin » dans `docs/ARCHITECTURE.md`.
+  - Reporté : signalements et modération du chat (étape 5), matchs (étape 4) — les écrans admin affichent « Cet écran arrive à l'étape… ».
+- 2026-11-09 : panneau admin refait en back-office sobre (demande d'Orly), toujours sur `feat/admin`, avant la pull request.
+  - Migration `20261109090000_backoffice_admin.sql` exécutée sur Supabase. 51 tests SQL du back-office + 42 (étape 3) + 41 (étape 2) passent ; 34 vérifications des écrans admin (admin, curateur, utilisateur, export CSV, textes réglés) + pages publiques passent.
+  - Décisions validées par Orly : marché verrouillé après la première mise (sauf date de fin et mise en avant) ; bonus en masse par liste de noms ou comptes actifs (communauté et classement à l'étape 4) ; réglages des pièces modifiables.
+  - Premier admin : `ondiq` (créé le 2026-11-08).
+  - Reporté : un marché par match d'un championnat (étape 4, avec l'import des matchs) ; signalements (étape 5).

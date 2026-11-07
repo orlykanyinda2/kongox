@@ -14,13 +14,14 @@ type Props = {
   pourcentageOui: number;
   solde: number;
   restant: number; // pièces qu'on peut encore miser aujourd'hui
+  miseMinimum: number; // réglage « mise_minimum »
 };
 
 const MONTANTS = [50, 100, 200, 500];
 
 // Panneau Hunter Green pour prédire (maquette Marche).
 // Le gain affiché est une estimation pour aider à choisir ; les pièces ne bougent que par la fonction SQL.
-export function FormulairePrediction({ marcheId, options, pourcentageOui, solde, restant }: Props) {
+export function FormulairePrediction({ marcheId, options, pourcentageOui, solde, restant, miseMinimum }: Props) {
   const t = useTranslations("prediction");
   const choixUrl = useSearchParams().get("choix");
   const [ordre, setOrdre] = useState(choixUrl === "non" ? 1 : 0);
@@ -36,7 +37,7 @@ export function FormulairePrediction({ marcheId, options, pourcentageOui, solde,
 
   let blocage: string | null = null;
   if (restant <= 0) blocage = t("limiteAtteinte");
-  else if (montant < 10) blocage = t("minimum");
+  else if (montant < miseMinimum) blocage = t("minimum");
   else if (montant > solde) blocage = t("soldeInsuffisant", { solde: formaterNombre(solde) });
   else if (montant > restant) blocage = t("depasseLimite", { restant: formaterNombre(restant) });
 

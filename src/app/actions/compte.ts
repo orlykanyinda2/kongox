@@ -155,6 +155,29 @@ export async function mettreAJourCoordonnees(_etat: EtatFormulaire, donnees: For
 }
 
 // ---------------------------------------------------------------------
+// Changer son mot de passe (par exemple après une réinitialisation par un admin)
+// ---------------------------------------------------------------------
+export async function changerMotDePasse(_etat: EtatFormulaire, donnees: FormData): Promise<EtatFormulaire> {
+  const t = await getTranslations("erreurs");
+  const tp = await getTranslations("profil");
+  const motDePasse = String(donnees.get("mot_de_passe") ?? "");
+  const confirmation = String(donnees.get("confirmation") ?? "");
+  if (motDePasse.length < MDP_LONGUEUR_MIN || motDePasse.length > MDP_LONGUEUR_MAX) {
+    return { erreur: t("mdpLongueur", { min: MDP_LONGUEUR_MIN }) };
+  }
+  if (motDePasse !== confirmation) return { erreur: t("mdpDifferents") };
+
+  const supabase = await creerClientServeur();
+  const { error } = await supabase.auth.updateUser({ password: motDePasse });
+  if (error) {
+    if (error.code === "same_password") return { erreur: tp("mdpIdentique") };
+    console.error("[mot de passe]", error.code, error.message);
+    return { erreur: t("serveur") };
+  }
+  return { succes: tp("mdpChange") };
+}
+
+// ---------------------------------------------------------------------
 // Bonus quotidien : 100 pièces par jour, +200 tous les 7 jours de suite
 // ---------------------------------------------------------------------
 export async function reclamerBonus(): Promise<ResultatBonus | null> {

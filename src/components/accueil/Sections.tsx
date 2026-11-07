@@ -72,7 +72,7 @@ export function BandeauPartenaires() {
           <Link href="/partenaires" className="flex h-[54px] items-center justify-center rounded-champ bg-vert-jaune px-[22px] text-base font-bold text-foret">
             {t("voirOffres")}
           </Link>
-          <Link href="/partenaires" className="flex h-[54px] items-center justify-center rounded-champ border-2 border-sauge px-[22px] text-base font-bold text-white">
+          <Link href="/curateur" className="flex h-[54px] items-center justify-center rounded-champ border-2 border-sauge px-[22px] text-base font-bold text-white">
             {t("devenirCurateur")}
           </Link>
         </div>

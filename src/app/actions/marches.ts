@@ -47,7 +47,7 @@ export async function predire(_etat: EtatPrediction, donnees: FormData): Promise
   const libelle = String(donnees.get("libelle") ?? "");
 
   if (!Number.isInteger(marche) || !Number.isInteger(option)) return { erreur: await messageErreur("option_invalide") };
-  if (!Number.isInteger(montant) || montant < 10) return { erreur: await messageErreur("montant_invalide") };
+  if (!Number.isInteger(montant) || montant < 1) return { erreur: await messageErreur("montant_invalide") };
 
   const supabase = await creerClientServeur();
   const { data, error } = await supabase.rpc("placer_prediction", { p_marche: marche, p_option: option, p_montant: montant });

@@ -41,7 +41,7 @@ export const viewport: Viewport = {
 
 // Textes envoyés au navigateur : seulement ceux des composants "use client" (pages plus légères).
 // Ajouter ici le nom d'une section de messages/fr.json si un nouveau composant client l'utilise.
-const TEXTES_NAVIGATEUR = ["accueil", "bonus", "compte", "marche", "navigation", "prediction", "profil", "proposer", "theme"] as const;
+const TEXTES_NAVIGATEUR = ["accueil", "bonus", "compte", "curateur", "marche", "navigation", "prediction", "profil", "proposer", "theme"] as const;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   const tous = useMessages();

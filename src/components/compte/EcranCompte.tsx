@@ -1,14 +1,15 @@
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
+import { lireReglages } from "@/lib/reglages";
 import { Logo } from "@/components/Logo";
 import { BoutonTheme } from "@/components/BoutonTheme";
 import { FormulaireCompte } from "@/components/compte/FormulaireCompte";
 import { creerClientServeur } from "@/lib/supabase/serveur";
 
-// Lien WhatsApp de l'équipe pour « Mot de passe oublié ? »
-function lienWhatsApp() {
-  const numero = process.env.NEXT_PUBLIC_WHATSAPP_EQUIPE?.replace(/[^0-9]/g, "");
+// Lien WhatsApp de l'équipe pour « Mot de passe oublié ? » (réglage du panneau admin, sinon variable d'environnement)
+function lienWhatsApp(reglage: string) {
+  const numero = (reglage || process.env.NEXT_PUBLIC_WHATSAPP_EQUIPE || "").replace(/[^0-9]/g, "");
   if (!numero) return null;
   const texte = encodeURIComponent("Bonjour KongoX, j'ai oublié mon mot de passe. Mon nom d'utilisateur : ");
   return `https://wa.me/${numero}?text=${texte}`;
@@ -23,10 +24,10 @@ async function RedirigerSiConnecte() {
 }
 
 // Écran d'inscription et de connexion (maquettes/Inscription.dc.html)
-export function EcranCompte({ mode }: { mode: "inscription" | "connexion" }) {
-  const t = useTranslations("compte");
-  const tc = useTranslations("commun");
-  const whatsapp = lienWhatsApp();
+export async function EcranCompte({ mode }: { mode: "inscription" | "connexion" }) {
+  const t = await getTranslations("compte");
+  const tc = await getTranslations("commun");
+  const whatsapp = lienWhatsApp(String((await lireReglages()).whatsapp_equipe ?? ""));
 
   return (
     <main className="relative flex-1 overflow-hidden">
